@@ -1,13 +1,33 @@
-# jazzPanda
-<img  src="inst/images/jazzPanda_logo.png"  width="591" height="591">
-<!-- badges: start -->
-[![DOI](https://zenodo.org/badge/724929670.svg)](https://zenodo.org/doi/10.5281/zenodo.10360070)
-<!-- badges: end -->
 
+[![DOI](https://zenodo.org/badge/724929670.svg)](https://zenodo.org/doi/10.5281/zenodo.10360070)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://github.com/phipsonlab/jazzPanda/blob/main/LICENSE)
+<!-- PROJECT LOGO -->
+<br />
+<div align="center">
+  <a href="https://github.com/github_username/repo_name">
+    <img src="inst/images/jazzPanda_logo.png" alt="Logo" width="200" height="200">
+  </a>
+
+<h3 align="center">jazzPanda: A hybrid approach to find spatially relevant marker genes 
+ 
+  in image-based spatial transcriptomics data </h3>
+
+  <p align="center">
+    <br />
+    <a href="https://github.com/phipsonlab/jazzPanda_analysis"><strong>Explore the analysis »</strong></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <a href="https://github.com/phipsonlab/jazzPanda/blob/main/vignettes/jazzPanda.Rmd"><strong>Explore the vignette »</strong></a>
+    <br />
+    <br />
+    ·
+    <a href="https://github.com/phipsonlab/jazzPanda/issues/new?labels=bug&template=bug-report---.md">Report Bug</a> &nbsp;&nbsp;&nbsp;
+    ·
+    <a href="https://github.com/phipsonlab/jazzPanda/issues/new?labels=enhancement&template=feature-request---.md">Request Feature</a>
+  </p>
+</div>
 
 ## Introduction
 
-The jazzPanda package currently contains functions to find marker genes
+The jazzPanda package contains functions to find marker genes
 based on the spatial coordinates for imaging-based spatial transcriptomics 
 technologies including 10x Xenium, NanoString CosMx and Vizgen MERSCOPE. 
 
@@ -27,4 +47,3 @@ In order to view the vignette for jazzPanda use the following command:
 ``` r
 browseVignettes("jazzPanda")
 ```
-
