@@ -1,0 +1,1209 @@
+---
+title: "jazzPanda example"
+date: "`r format(Sys.time(), '%d %b %Y')`"
+vignette: >
+    %\VignetteIndexEntry{jazzPanda example}
+    %\VignetteEncoding{UTF-8}
+    %\VignetteEngine{knitr::rmarkdown}
+output: rmarkdown::html_vignette
+html_document:
+    fig_caption: yes
+    fig_retina: FALSE
+    keep_md: FALSE
+editor_options: 
+    chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+    echo = TRUE,
+    message = FALSE,
+    warning = FALSE
+)
+```
+
+# Introduction
+Spatial transcriptomics allows the spatial profiling of complex tissue 
+architectures. The spatial arrangement and interactions between cells can aid 
+in understanding of complex functions and regulatory mechanisms in various 
+tissue micro environments. Commercially available image-based spatial 
+technologies such as Xenium, CosMX, and MERSCOPSE take advantage of 
+fluorescence-based microscopy to quantify transcripts 
+and focus on a pre-designed panel of genes. \n
+
+One crucial step in the analysis of spatial transcriptomics data is cell 
+type annotation. There are a number of ways to perform cell type annotation, 
+and marker analysis is one of them. Marker gene analysis to identify genes 
+highly expressed in each cluster compared to the remaining clusters. 
+The identified marker genes are used to annotate clusters with cell types. 
+Computationally tools originally developed for single cell data are used for 
+spatial transcriptomics studies. However, those methods ignore the 
+spatial information for the cells and gene. 
+There is limited literature on developing marker gene detection methods 
+that account for the spatial distribution of gene expression. 
+jazzPanda provides two novel approaches to detect marker genes with transformed 
+spatial information. Our first approach is based on correlation and the second 
+linear modelling approach can account for technical noise and work for 
+studies with multiple samples. \n
+
+# jazzzPanda framework
+We assume a marker gene will show a significant linear relationship with the 
+target cluster over the tissue space. This suggests that the transcript 
+detection of a marker gene will show similar patterns with the cells from
+the cluster over tissue space. Given the cluster label of every cell, 
+there are two steps to obtain marker genes for every cluster. We first compute 
+spatial vectors from the spatial coordinates of the genes and the clusters. 
+After that, we can measure the linear relationship between the genes and 
+clusters based on spatial vectors. We develop two approaches for detecting 
+genes that show strong linear relationship with the cluster. 
+
+- **Step 1:** *Create spatial vectors for every gene and every cluster*  
+    `get_vectors()` can be used to convert the transcript detection and the 
+    cell centroids to spatial vectors. You can specify the tile shape and 
+    length based on you dataset. The hex bins will generally take longer 
+    than the square/rectangle bins to compute. 
+    In practice, we find that we can choose the length tiles such that
+    the average cell per tile
+    ($\frac{\texttt{\#}\text{ cells per cluster} }{\texttt{\#}\text{ tiles}}$) 
+    is close to one for each cluster. \n
+    
+- **Step 2:** *Detect marker genes*
+    - Correlation approach: `compute_permp()`
+    This approach can detect marker genes for one sample study. We calculate 
+    a correlation coefficient between every pair of gene and cluster vector.
+    We perform permutation testing to assess the statistical significance of 
+    the calculated correlation and followed by multiple testing adjustment 
+    to control the false discovery rate. We keep the genes with significant 
+    adjusted p-value and large correlation as marker genes. 
+    In practice, we recommend to calculate a correlation threshold value 
+    for every cluster based on the data distribution. 
+    During our analysis, we use 75\% quantile value of all correlations to 
+    the given cluster as the cutoff and manage to keep meaningful marker genes. 
+    
+    - Linear modelling approach: `lasso_markers()`
+    In this approach, we treat the gene vector as the response variable and 
+    the cluster vectors as the explanatory variables. We select the important
+    cluster vectors by lasso regularization first, and fit a linear model to 
+    find the cluster that show minimum p-value and largest model coefficient.
+    This approach can account for multi-sample studies and the technical 
+    background noise (such as the non-specific binding).
+    We recommend to set a model coefficient cutoff value based on your data. 
+    A large cutoff value will result in fewer marker genes whereas 
+    a small cutoff value will detect more marker genes.
+    We find a cutoff value at 0.1 or 0.2 work well for our analysis. 
+    Marker genes with less than 0.1 model coefficient are generally weak 
+    markers.  
+    Two tables will be returned from this approach:  
+        1. We record the most significant cluster for each gene
+        as `lasso_top_result`. This table provides unique marker genes for 
+        every cluster. Genes whose top 
+        cluster shows a model coefficient smaller than the specified cutoff 
+        value will not be labeled as marker genes.  
+        
+        2. We record all the significant cluster for each gene as 
+        `lasso_full_result`. This table can be used to investigate shared 
+        marker genes for different clusters. 
+        
+# Example 
+The dataset used in this vignette is a selected subset from two 
+replicates of Xenium human breast cancer tissue Sample 1. We select 20 genes 
+for package illustration. This subset was 
+extracted from the raw dataset as described in the R script
+located at `/inst/generate_vignette_data.R`. \n
+
+This subset data is used for package illustration purpose only. 
+The resulting marker genes may not be strong markers for annotating clusters. 
+Please see the full analysis for this dataset for marker genes. 
+
+```{r}
+library(Seurat)
+library(ggplot2)
+library(jazzPanda)
+library(data.table)
+library(dplyr)
+library(glmnet)
+library(caret)
+library(corrplot)
+library(igraph)
+library(ggraph)
+library(ggrepel)
+library(gridExtra)
+library(utils)
+library(spatstat)
+library(tidyr)
+library(ggpubr)
+```
+
+```{r}
+# ggplot style
+defined_theme = theme(strip.text = element_text(size = rel(1)),
+                        strip.background = element_rect(fill = NA, 
+                                                    colour = "black"),
+                        axis.line=element_blank(),
+                        axis.text.x=element_blank(),
+                        axis.text.y=element_blank(),
+                        axis.ticks=element_blank(),
+                        axis.title.x=element_blank(),
+                        axis.title.y=element_blank(),
+                        legend.position="none",
+                        panel.background=element_blank(),
+                        panel.border=element_blank(),
+                        panel.grid.major=element_blank(),
+                        panel.grid.minor=element_blank(),
+                        plot.background=element_blank())
+```
+
+## Load data 
+```{r load subset of rep1}
+data(rep1_sub, rep1_clusters, rep1_neg)
+rep1_clusters$cluster=factor(rep1_clusters$cluster,
+                            levels=paste("c",1:8, sep=""))
+# record all real genes in the data
+all_real_genes = unique(as.character(rep1_sub$trans_info$feature_name))
+all_celltypes = unique(rep1_clusters[,c("anno","cluster")])
+# nc_patterns = "^BLANK_|^NegControlProbe_|^NegControlCodeword_|^antisense_"
+# nc_targets = grep(pattern =nc_patterns , x = all_genes,value = TRUE)
+# all_real_genes = setdiff(all_genes, nc_targets)
+```
+
+The required input data structure for the main function `lasso_markers()` 
+is a list of matrices. We will illustrate how to simply create the required 
+input data from the raw output of different technologies in the following 
+examples: 
+
+### 10x Xenium data
+The constructed xenium_data can be used in function `get_vectors()`.
+The defined nc_lst can be used in function` create_genesets()`.
+```{r xeium_example, eval=FALSE}
+
+path <- 'path/to/data/directory'
+mtx_name="cell_feature_matrix"
+trans_name="transcripts.csv.gz"
+
+transcript_info <- as.data.frame(fread(paste(path, trans_name,sep="")))
+transcript_info$x <- as.numeric(transcript_info$x_location)
+transcript_info$y <- as.numeric(transcript_info$y_location)
+data <- Read10X(data.dir = paste(path,mtx_name, sep=""))
+# count matrix 
+cm <- as.matrix(data$`Gene Expression`)
+
+# negative control targets
+r_codeword <- as.matrix(data$`Negative Control Codeword`)
+r_probe <- as.matrix(data$`Negative Control Probe`)
+
+xenium_data = list(cm = cm, trans_info=transcript_info )
+
+# -----------------------------------------------------------------------------
+# cell label and coordinates 
+clusters_info =  read.csv("./cells_meta.csv")
+# the cluster label, sample label and coordinates for each cell 
+cl_req_cols = c("x","y","cluster","sample")
+clusters_df = clusters_info[,cl_req_cols]
+
+# -----------------------------------------------------------------------------
+# define negative control objects if available, need to repeat for each sample
+# load coordinates for each detection, must contain following columns 
+# - "x": x coordinate
+# - "y": y coordinate 
+# - "target": negative control names 
+# - "sample": sample label 
+probe_target = row.names(r_probe)
+codeword=row.names(r_codeword)
+
+nc_coords = read.csv("./negative_controls_detections.csv")
+nc_names = unique(nc_coords$feature_name)
+kpt_cols = c("x","y","feature_name","sample")
+transcript_neg = transcript_info[transcript_info$feature_name %in% 
+                                c(probe_target, codeword_target),
+                                c("x_location","y_location","feature_name")]
+colnames(transcript_neg)[1:3]= c("x","y","feature_name")
+transcript_neg$sample = "sample1"
+nc_lst = list(trans_info = transcript_neg, 
+                probe=probe_target, 
+                codeword=codeword)
+```
+
+### MERSCOPE data
+The constructed merscope_data can be used in function `get_vectors()`.
+The defined nc_lst can be used in function` create_genesets()`. 
+```{r merscope example, eval=FALSE}
+# count matrix
+# rows as genes and columns as cells
+# gene name as row names 
+data_p = "path/to/merscope/output/data/"
+cm = qread("./counts.qs")
+# cell label and coordinates 
+clusters_info =  read.csv("./cells_meta.csv")
+
+# -----------------------------------------------------------------------------
+# if transcript coordinates are available, need to repeat for each sample
+# load transcript data, transcripts must contain follwing columns 
+# - "x": x coordinate
+# - "y": y coordinate 
+# - "feature_name": gene name 
+tr_req_cols = c("x", "y", "feature_name")
+transcript_df =  read.csv("./transcripts.csv")
+merscope_data = list(cm = cm, trans_info = transcript_df[,req_cols])
+# the defined merscope_data can be used in function get_vectors() 
+
+# the cluster label, sample label and coordinates for each cell 
+cl_req_cols = c("x","y","cluster","sample")
+clusters_df = clusters_info[,cl_req_cols]
+
+# -----------------------------------------------------------------------------
+# define negative control objects if available, need to repeat for each sample
+# load coordinates for each detection, must contain following columns 
+# - "x": x coordinate
+# - "y": y coordinate 
+# - "target": negative control names 
+# - "sample": sample label 
+nc_coords = read.csv("./negative_controls_detections.csv")
+nc_names = unique(nc_coords$feature_name)
+kpt_cols = c("x","y","feature_name","sample")
+nc_lst = list(trans_info = nc_coords[,kpt_cols])
+
+```
+
+### CosMx data
+The constructed cosmx_data can be used in function `get_vectors()`.
+The defined nc_lst can be used in function` create_genesets()`. 
+```{r cosmx example, eval=FALSE}
+tiledbURI <- "file/path/to/TileDB/array/on/local/machine"
+
+# read in SOMACollection
+tiledb_scdataset <- tiledbsc::SOMACollection$new(uri = tiledbURI, 
+                                                verbose = FALSE)
+cm <- tiledb_scdataset$somas$RNA$X$members$counts$to_matrix(batch_mode = TRUE)
+
+# the cluster label, sample label and coordinates for each cell 
+clusters_info <- tiledb_scdataset$somas$RNA$obs$to_dataframe()
+
+# -----------------------------------------------------------------------------
+# if transcript coordinates are available, need to repeat for each sample
+# load transcript data, transcripts must contain follwing columns 
+# - "x": x coordinate
+# - "y": y coordinate 
+# - "feature_name": gene name 
+req_cols = c("x","y","feature_name")
+cosmx_data = list(cm = cm, trans_info = transcript_df[,c(req_cols)])
+# 
+
+# clusters and cell locations 
+cl_req_cols = c("x","y","cluster","sample")
+clusters_df = clusters_info[,cl_req_cols]
+
+# -----------------------------------------------------------------------------
+# if available
+# define negative control objects if available
+# need to repeat for each background category and each sample
+# load coordinates for each detection, must contain following columns 
+# - "x": x coordinate
+# - "y": y coordinate 
+# - "target": negative control names 
+# - "sample": sample label 
+nc_coords = read.csv("./negative_controls_detections.csv")
+nc_names = unique(nc_coords$feature_name)
+kpt_cols = c("x","y","feature_name","sample")
+nc_lst = list(trans_info = nc_coords[,kpt_cols])
+
+```
+
+If you have a Seurat object, you can build the required object as follows.
+The defined example_vectors_cm/example_vectors_tr can be passed 
+to `lasso_markers` to identify marker genes. 
+
+### from a Seurat object 
+```{r eval=FALSE}
+# cm is the count matrix
+seu_obj =Seurat::CreateSeuratObject(counts = cm)
+# make sure the clusters information contains column names: 
+# cluster, x, y and sample
+clusters_info = rep1_clusters
+# make sure the transcript information contains column names: 
+# feature_name, x, y
+transcript_coords = rep1_sub$trans_info
+data_example = list(cm=seu_obj@assays$RNA$counts,
+                    trans_info =transcript_coords)
+
+w_x =  c(min(floor(min(data$trans_info$x)), floor(min(clusters_info$x))), 
+        max(ceiling(max(data$trans_info$x)), ceiling(max(clusters_info$x))))
+w_y =  c(min(floor(min(data$trans_info$y)), floor(min(clusters_info$y))), 
+        max(ceiling(max(data$trans_info$y)), ceiling(max(clusters_info$y))))
+
+# build spatial vectors from transcript coordinates and cluster coordinates 
+example_vectors_tr = get_vectors(data_lst= list(data_example),
+                                cluster_info = clusters_info,
+                                bin_type="square",
+                                bin_param=c(10,10), 
+                                all_genes = row.names(cm), 
+                                w_x=w_x, w_y=w_y)
+# -----------------------------------------------------------------------------
+# build spatial vectors from count matrix and cluster coordinates 
+# make sure the cluster information contains column names: 
+# cluster, x, y, sample and cell_id
+colnames(clusters_info)[5] = "cell_id"
+example_vectors_cm = get_vectors(data_lst= NULL,
+                                cm_lst=list(rep1=seu_obj@assays$RNA$counts),
+                                cluster_info = clusters_info,
+                                bin_type="square",
+                                bin_param=c(10,10), 
+                                all_genes = row.names(cm), 
+                                w_x=w_x, w_y=w_y)
+BiocCheck::.filter_data
+```
+
+## Visualise the clusters over the tissue space
+We can plot the cells coordinates for each cluster of Replicate 1 subset
+```{r rep clusters vis, fig.height=5,  fig.width=6,warning=FALSE}
+p1<-ggplot(data = rep1_clusters,
+        aes(x = x, y = y, color=cluster))+
+        geom_point(position=position_jitterdodge(jitter.width=0,
+                                        jitter.height=0), size=0.1)+
+        scale_y_reverse()+
+        theme_classic()+
+        facet_wrap(~sample)+
+        scale_color_manual(values = c("#FC8D62","#66C2A5" ,"#8DA0CB","#E78AC3",
+                        "#A6D854","skyblue","purple3","#E5C498"))+
+        guides(color=guide_legend(title="cluster", nrow = 2,
+                        override.aes=list(alpha=1, size=2)))+
+        
+        theme(axis.text.x=element_blank(),
+                axis.text.y=element_blank(),
+                axis.ticks=element_blank(),
+                axis.title.x=element_blank(),
+                axis.title.y=element_blank(),
+                panel.spacing = unit(0.5, "lines"),
+                legend.position="none",
+                strip.text = element_text(size = rel(1)))+
+        xlab("")+
+        ylab("")
+p2<-ggplot(data = rep1_clusters,
+        aes(x = x, y = y, color=cluster))+
+        geom_point(position=position_jitterdodge(jitter.width=0, 
+                                    jitter.height=0), size=0.1)+
+        facet_wrap(~cluster, nrow = 2)+
+        scale_y_reverse()+
+        theme_classic()+
+        scale_color_manual(values = c("#FC8D62","#66C2A5" ,"#8DA0CB","#E78AC3",
+                        "#A6D854","skyblue","purple3","#E5C498"))+
+        guides(color=guide_legend(title="cluster", nrow = 1,
+        override.aes=list(alpha=1, size=4)))+
+        theme(axis.text.x=element_blank(),
+            axis.text.y=element_blank(),
+            axis.ticks=element_blank(),
+            axis.title.x=element_blank(),
+            axis.title.y=element_blank(),
+            panel.spacing = unit(0.5, "lines"), 
+            legend.text = element_text(size=10),
+            legend.position="none",
+            legend.title = element_text(size=10),
+            strip.text = element_text(size = rel(1)))+
+        xlab("")+
+        ylab("")
+
+spacer <- patchwork::plot_spacer()
+layout_design <- (p1 / spacer) | p2
+
+layout_design <- layout_design + 
+                    patchwork::plot_layout(widths = c(1, 4), heights = c(1, 1)) 
+
+print(layout_design)
+```
+
+## Spatial vectors
+We can visualize the spatial vectors for clusters and genes as follows. 
+As an example for creating spatial vectors for genes, we plot the transcript
+detections for the gene EPCAM over tissue space, along with the square and 
+hex binning result. Similarly, we plot the cell coordinates in cluster c1, 
+as well as the square and hex bin values over the space as an example. 
+We can see that with the square and hex bins capture the key patterns of the
+original coordinates. Hex bins can capture more details than square bins. 
+
+### Example of gene vectors 
+```{r plot spatial genes, fig.width=6, fig.height=4}
+
+w_x =  c(min(floor(min(rep1_sub$trans_info$x)),
+        floor(min(rep1_clusters$x))), 
+        max(ceiling(max(rep1_sub$trans_info$x)),
+        ceiling(max(rep1_clusters$x))))
+w_y =  c(min(floor(min(rep1_sub$trans_info$y)),
+        floor(min(rep1_clusters$y))), 
+        max(ceiling(max(rep1_sub$trans_info$y)),
+        ceiling(max(rep1_clusters$y))))
+
+# plot transcript detection coordinates
+selected_genes = rep1_sub$trans_info$feature_name == "EPCAM"
+loc_mt = as.data.frame(rep1_sub$trans_info[selected_genes,
+                        c("x","y","feature_name")]%>%distinct())
+colnames(loc_mt)=c("x","y","feature_name")
+layout(matrix(c(1, 2, 3), 1, 3, byrow = TRUE))
+par(mar=c(5,3,6,3))
+plot(loc_mt$x, loc_mt$y, main = "", xlab = "", ylab = "", 
+        pch = 20, col = "maroon4", cex = 0.1,xaxt='n', yaxt='n')   
+title(main = "EPCAM transcript detection", line = 3)
+box() 
+
+# plot square binning 
+curr<-loc_mt[loc_mt[,"feature_name"]=="EPCAM",c("x","y")] %>% distinct()
+curr_ppp <- ppp(curr$x,curr$y,w_x, w_y)
+vec_quadrat <- quadratcount(curr_ppp, 10,10)
+vec_its <- intensity(vec_quadrat, image=TRUE)
+par(mar=c(0.01,1, 1, 2))
+plot(vec_its, main = "")
+title(main = "square binning", line = -2)
+
+# plot hex binning 
+w <- owin(xrange=w_x, yrange=w_y)
+H <- hextess(W=w, 20)
+bin_length <- length(H$tiles)
+curr<-loc_mt[loc_mt[,"feature_name"]=="EPCAM",c("x","y")] %>% distinct()
+curr_ppp <- ppp(curr$x,curr$y,w_x, w_y)
+vec_quadrat <- quadratcount(curr_ppp, tess=H)
+vec_its <- intensity(vec_quadrat, image=TRUE)
+par(mar=c(0.1,1, 1, 2))
+plot(vec_its, main = "")
+title(main = "hex binning", line = -2)
+
+```
+
+### Example of cluster vectors 
+```{r plot spatial clusters, fig.width=6, fig.height=4}
+w_x =  c(min(floor(min(rep1_sub$trans_info$x)),
+            floor(min(rep1_clusters$x))), 
+        max(ceiling(max(rep1_sub$trans_info$x)),
+            ceiling(max(rep1_clusters$x))))
+w_y =  c(min(floor(min(rep1_sub$trans_info$y)),
+            floor(min(rep1_clusters$y))), 
+        max(ceiling(max(rep1_sub$trans_info$y)),
+            ceiling(max(rep1_clusters$y))))
+
+# plot cell coordinates
+loc_mt = as.data.frame(rep1_clusters[rep1_clusters$cluster=="c1",
+            c("x","y","cluster")])
+colnames(loc_mt)=c("x","y","cluster")
+layout(matrix(c(1, 2, 3), 1, 3, byrow = TRUE))
+par(mar=c(5,3,6,3))
+plot(loc_mt$x, loc_mt$y, main = "", xlab = "", ylab = "", 
+        pch = 20, col = "maroon4", cex = 0.1,xaxt='n', yaxt='n')   
+title(main = "cell coordinates in cluster c1", line = 3)
+box() 
+
+# plot square binning 
+curr<-loc_mt[loc_mt[,"cluster"]=="c1", c("x","y")]%>%distinct()
+curr_ppp <- ppp(curr$x,curr$y,w_x, w_y)
+vec_quadrat <- quadratcount(curr_ppp, 10,10)
+vec_its <- intensity(vec_quadrat, image=TRUE)
+par(mar=c(0.1,1, 1, 2))
+plot(vec_its, main = "")
+title(main = "square binning", line = -2)
+
+# plot hex binning 
+w <- owin(xrange=w_x, yrange=w_y)
+H <- hextess(W=w, 20)
+bin_length <- length(H$tiles)
+curr<-loc_mt[loc_mt[,"cluster"]=="c1",c("x","y")] %>%distinct()
+curr_ppp <- ppp(curr$x,curr$y,w_x, w_y)
+vec_quadrat <- quadratcount(curr_ppp, tess=H)
+vec_its <- intensity(vec_quadrat, image=TRUE)
+par(mar=c(0.1,1, 1, 2))
+plot(vec_its, main = "")
+title(main = "hex binning", line = -2)
+
+```
+
+The function `get_vectors()` can be used to create spatial vectors for
+all the genes and clusters.
+These spatial vectors may take the form of squares, rectangles, or hexagons 
+specified by the `bin_type` parameter. 
+
+### Spatial vectors for all genes and clusters
+```{r create rep1 all vectors}
+seed_number= 589
+
+w_x =  c(min(floor(min(rep1_sub$trans_info$x)),
+            floor(min(rep1_clusters$x))), 
+        max(ceiling(max(rep1_sub$trans_info$x)),
+            ceiling(max(rep1_clusters$x))))
+w_y =  c(min(floor(min(rep1_sub$trans_info$y)),
+            floor(min(rep1_clusters$y))), 
+        max(ceiling(max(rep1_sub$trans_info$y)),
+            ceiling(max(rep1_clusters$y))))
+
+grid_length = 10
+# get spatial vectors
+rep1_sq10_vectors = get_vectors(data_lst= list(rep1_sub),
+                                cluster_info = rep1_clusters,
+                                bin_type="square",
+                                bin_param=c(grid_length,grid_length), 
+                                all_genes = all_real_genes , 
+                                w_x=w_x, w_y=w_y)
+```
+
+The constructed spatial vectors can be used to quantify cluster-cluster and
+gene-gene correlation.
+
+#### Cluster-Cluster correlation
+```{r fig.width=6, fig.height=6}
+exp_ord = paste("c", 1:8, sep="")
+rep1_sq10_vectors$cluster_mt = rep1_sq10_vectors$cluster_mt[,exp_ord]
+cor_cluster_mt = cor(rep1_sq10_vectors$cluster_mt,
+                rep1_sq10_vectors$cluster_mt, method = "pearson")
+# Calculate pairwise correlations
+cor_gene_mt = cor(rep1_sq10_vectors$gene_mt, rep1_sq10_vectors$gene_mt,
+                    method = "pearson")
+
+col <- grDevices::colorRampPalette(c("#4477AA", "#77AADD", 
+                                    "#FFFFFF","#EE9988", "#BB4444"))
+
+corrplot::corrplot(cor_cluster_mt, method="color", col=col(200), diag=TRUE,
+                addCoef.col = "black",type="upper",
+                tl.col="black", tl.srt=45, mar=c(0,0,5,0),sig.level = 0.05, 
+                insig = "blank", 
+                title = "cluster-cluster correlation (square bin = 40x40)"
+                )
+```
+
+#### Gene-Cluster correlation
+```{r gene_cluster_corr, warning=FALSE, message=FALSE,fig.width=6,fig.height=6}
+
+cor_genecluster_mt = cor(x=rep1_sq10_vectors$gene_mt, 
+                        y=rep1_sq10_vectors$cluster_mt, method = "pearson")
+
+gg_correlation = as.data.frame(cbind(apply(cor_gene_mt, MARGIN=1, 
+                                            FUN = mean, na.rm=TRUE),
+                                        apply(cor_genecluster_mt, MARGIN=1, 
+                                            FUN = mean, na.rm=TRUE)))
+colnames(gg_correlation) = c("mean_correlation","mean_cluster")  
+gg_correlation$gene=row.names(gg_correlation)
+
+plot(ggplot(data = gg_correlation, 
+    aes(x= mean_correlation, y=mean_cluster))+
+        geom_point()+
+        geom_text_repel(aes(label=gg_correlation$gene), size=1.8, hjust=1)+
+    theme_bw()+
+    theme(legend.title=element_blank(),
+            axis.text.y = element_text(size=20),
+            axis.text.x = element_text(size=20),
+            axis.title.x=element_text(size=20),
+            axis.title.y=element_text(size=20), 
+            panel.spacing = unit(0.5, "lines"), 
+            legend.position="none",
+            legend.text=element_blank())+
+    xlab("Average gene-gene correlation")+
+    ylab("Average gene-cluster correlation"))
+
+```
+
+We can also construct a gene network based on the spatial vector for the
+genes.
+
+#### Gene network
+```{r gene_graph, warning=FALSE, message=FALSE, fig.width=6, fig.height=6}
+
+vector_graph= igraph::graph_from_adjacency_matrix(cor_gene_mt,
+                                                mode = "undirected", 
+                                                weighted = TRUE, 
+                                                diag = FALSE)
+
+vector_graph=igraph::simplify(igraph::delete.edges(vector_graph, 
+                        E(vector_graph)[abs(E(vector_graph)$weight) <= 0.7]))
+
+layout=igraph::layout_with_kk(vector_graph)
+
+# Plot the graph
+ggraph::ggraph(vector_graph, layout = layout) +
+    geom_edge_link(aes(edge_alpha = weight), show.legend = FALSE) +
+    geom_node_point(color = "lightblue", size = 5) +
+    geom_node_text(aes(label = name), 
+                    vjust = 1, hjust = 1,size=2,color="orange", repel = TRUE) 
+
+```
+
+## Linear relationship between markers and clusters
+
+We assume that the relationship between a marker gene vector its cluster
+spatial vector is linear. \n
+
+Here are several genes and their annotation from the panel. \n
+
+|         |                            |
+|---------|----------------------------|
+| Gene    | Annotation                 |
+| ERBB2   | Breast cancer cells        |
+| IL7R    | T cells                    |
+| MZB1    | B cells                    |
+| AQP1    | Endothelial                |
+| LUM     | Fibroblasts                |
+
+```{r linear vector to vector plot, fig.height=2, fig.width=7}
+genes_lst = c("ERBB2","AQP1","LUM","IL7R","MZB1")
+
+for (i_cluster in c("c1","c8","c3","c6","c7")){
+    cluster_vector=rep1_sq10_vectors$cluster_mt[,i_cluster]
+    
+    data_vis=as.data.frame(cbind("cluster", cluster_vector,
+                            rep1_sq10_vectors$gene_mt[, genes_lst]))
+    
+    colnames(data_vis)=c("cluster","cluster_vector",genes_lst)
+    data_vis=reshape2::melt(data_vis,variable.name = "genes",
+                            value.name = "gene_vector",
+                            id= c("cluster","cluster_vector" ))
+    data_vis$cluster_vector=as.numeric(data_vis$cluster_vector)
+    data_vis$genes=factor(data_vis$genes)
+    data_vis$gene_vector=as.numeric(data_vis$gene_vector)
+    
+    plot(ggplot(data = data_vis, 
+            aes(x= cluster_vector, y=gene_vector))+
+            geom_point(size=0.1)+
+            facet_wrap(~genes,scales = "free_y", ncol=10)+
+            theme_bw()+
+            theme(legend.title=element_blank(),
+                axis.text.y = element_text(size=6),
+                axis.text.x = element_text(size=6,angle=0),
+                axis.title.x=element_text(size=10),
+                axis.title.y=element_text(size=10), 
+                panel.spacing = unit(0.5, "lines"), 
+                legend.position="none",
+                legend.text=element_blank(),
+                strip.text = element_text(size = rel(1)))+
+                xlab(paste(i_cluster," - cluster vector", sep=""))+
+                ylab("gene vector"))
+}
+
+```
+
+## Scenario 1: one sample
+
+A straightforward approach to identifying genes that exhibit a linear 
+correlation with cluster vectors involves computing the Pearson correlation 
+for each gene with every cluster. To assess the statistical significance 
+of these correlations, the `compute_permp()` function can be used 
+to perform permutation testing, generating a p-value for every pair of gene 
+cluster and cluster vector. 
+
+### Correlation-based method to detect marker genes 
+
+```{r rep1 permutation}
+
+w_x =  c(min(floor(min(rep1_sub$trans_info$x)),
+            floor(min(rep1_clusters$x))), 
+        max(ceiling(max(rep1_sub$trans_info$x)),
+            ceiling(max(rep1_clusters$x))))
+w_y =  c(min(floor(min(rep1_sub$trans_info$y)),
+            floor(min(rep1_clusters$y))), 
+        max(ceiling(max(rep1_sub$trans_info$y)),
+            ceiling(max(rep1_clusters$y))))
+set.seed(seed_number)
+perm_p = compute_permp(data=rep1_sub,
+                        cluster_info=rep1_clusters, 
+                        perm.size=1000,
+                        bin_type="square",
+                        bin_param=c(10,10),
+                        all_genes= all_real_genes,
+                        correlation_method = "pearson", 
+                        n.cores=1, 
+                        correction_method="BH",
+                        w_x=w_x ,
+                        w_y=w_y)
+
+# observed correlation for every pair of gene and cluster vector
+obs_corr = as.data.frame(perm_p$obs.stat)
+head(obs_corr)
+
+# permutation adjusted p-value for every pair of gene and cluster vector
+perm_res = as.data.frame(perm_p$perm.pval.adj)
+head(perm_res)
+```
+
+#### Visualise top marker genes detected by correlation approach
+Genes with a significant adjusted p-value are considered as marker genes for
+the corresponding cluster. We can rank the marker genes by the observed 
+correlationand plot the transcript detection coordinates for the top three
+marker genes for every cluster. 
+```{r rep1 permutation vis, fig.width=6, fig.height=3}
+res_df_1000=as.data.frame(perm_p$perm.pval.adj)
+res_df_1000$gene=row.names(res_df_1000)
+cluster_names = unique(as.character(rep1_clusters$cluster))
+for (cl in cluster_names){
+    perm_sig = res_df_1000[res_df_1000[,cl]<0.05,]
+    # define a cutoff value based on 75% quantile 
+    obs_cutoff = quantile(obs_corr[, cl], 0.75)
+    perm_cl=intersect(row.names(perm_res[perm_res[,cl]<0.05,]),
+                        row.names(obs_corr[obs_corr[, cl]>obs_cutoff,]))
+    inters=perm_cl
+    rounded_val=signif(as.numeric(obs_corr[inters,cl]), digits = 3)
+    inters_df = as.data.frame(cbind(gene=inters, value=rounded_val))
+    inters_df$value = as.numeric(inters_df$value)
+    inters_df=inters_df[order(inters_df$value, decreasing = TRUE),]
+    inters_df = inters_df[1:min(nrow(inters_df),2),]
+    inters_df$text= paste(inters_df$gene,inters_df$value,sep=": ")
+    curr_genes = rep1_sub$trans_info$feature_name %in% inters_df$gene
+    data_vis =rep1_sub$trans_info[curr_genes, c("x","y","feature_name")]
+    data_vis$text = inters_df[match(data_vis$feature_name,inters_df$gene),
+                                "text"]
+    data_vis$text = factor(data_vis$text, levels=inters_df$text)
+    p1<-ggplot(data = data_vis,
+                aes(x = x, y = y))+
+                geom_point(size=0.01,color="maroon4")+
+                facet_wrap(~text,ncol=10, scales="free")+
+                scale_y_reverse()+
+                guides(fill = guide_colorbar(height= unit(5, "cm")))+
+                defined_theme
+    cl_pt<-ggplot(data = rep1_clusters[rep1_clusters$cluster==cl, ],
+                    aes(x = x, y = y, color=cluster))+
+                    geom_point(position=position_jitterdodge(jitter.width=0, 
+                                            jitter.height=0), size=0.2)+
+                    facet_wrap(~cluster)+
+                    scale_y_reverse()+
+                    theme_classic()+
+                    scale_color_manual(values = "black")+
+                    defined_theme
+    lyt <- cl_pt | p1
+    layout_design <- lyt + patchwork::plot_layout(widths = c(1,3)) 
+    print(layout_design)
+}
+```
+
+#### Visualise cluster vector and the top marker genes at spatial vector level
+To check the linear relationship between the cluster vector and the marker 
+gene vectors, we can plot the cluster vector on x-axis, and the marker gene 
+vector on y-axis. The figure below shows the relationship between the 
+cluster vector and the top marker gene vectors detected by correlation
+approach. 
+```{r vvplot_corr, fig.width=8, fig.height=6}
+
+cluster_names = paste("c", 1:8, sep="")
+plot_lst=list()
+for (cl in cluster_names){
+    perm_sig = res_df_1000[res_df_1000[,cl]<0.05,]
+    curr_cell_type = all_celltypes[all_celltypes$cluster==cl,"anno"]
+    obs_cutoff = quantile(obs_corr[, cl], 0.75)
+    perm_cl=intersect(row.names(perm_res[perm_res[,cl]<0.05,]),
+                        row.names(obs_corr[obs_corr[, cl]>obs_cutoff,]))
+    inters=perm_cl
+    rounded_val=signif(as.numeric(obs_corr[inters,cl]), digits = 3)
+    inters_df = as.data.frame(cbind(gene=inters, value=rounded_val))
+    inters_df$value = as.numeric(inters_df$value)
+    inters_df=inters_df[order(inters_df$value, decreasing = TRUE),]
+    inters_df$text= paste(inters_df$gene,inters_df$value,sep=": ")
+    mk_gene = inters_df[1:min(2, nrow(inters_df)),"gene"]
+    if (length(mk_gene > 0)){
+        dff = as.data.frame(cbind(rep1_sq10_vectors$cluster_mt[,cl],
+                                    rep1_sq10_vectors$gene_mt[,mk_gene]))
+        colnames(dff) = c("cluster", mk_gene)
+        
+        dff$vector_id = c(1:(grid_length * grid_length))
+        long_df <- dff %>% 
+        pivot_longer(cols = -c(cluster, vector_id), names_to = "gene", 
+                                values_to = "vector_count")
+        long_df$gene = factor(long_df$gene, levels=mk_gene)
+        
+        p=ggplot(long_df, aes(x = cluster, y = vector_count )) +
+            geom_point( size=0.01) +
+            facet_wrap(~gene, scales = "free_y", nrow=1) +
+            labs(x = paste("cluster vector ", curr_cell_type, sep=""), 
+                    y = "marker gene vectors") +
+            theme_minimal()+
+            guides(color=guide_legend(nrow = 1,
+                        override.aes=list(alpha=1, size=2)))+
+            theme(panel.grid = element_blank(),legend.position = "none",
+                    strip.text = element_text(size = rel(1)),
+                    axis.line=element_blank(),
+                    legend.title = element_blank(),
+                    legend.key.size = unit(0.5, "cm"),
+                    legend.text = element_text(size=10),
+                    axis.text=element_blank(),
+                    axis.ticks=element_blank(),
+                    axis.title=element_text(size = 10),
+                    panel.border =element_rect(colour = "black", 
+                                                fill=NA, linewidth=0.5)
+            )
+        plot_lst[[cl]] = p
+    }
+}
+combined_plot <- ggarrange(plotlist = plot_lst, 
+                            ncol = 2, nrow = 4,
+                            common.legend = FALSE, legend = "none")
+
+combined_plot 
+
+```
+The other method to identify linearly correlated genes for each cluster is
+to construct a linear model for each gene. We can use the `lasso_markers`
+function to get the most relevant cluster label for every gene.
+
+### Linear modeling approach to detect marker genes 
+We can create spatial vectors for negative control genes and include
+them as background noise "clusters".
+```{r rep1 lasso_markers with background}
+
+rep1_nc_vectors = create_genesets(data_lst=list("rep1"= rep1_neg),
+                                    name_lst=list(probe=rep1_neg$probe, 
+                                                codeword=rep1_neg$codeword), 
+                                    bin_type="square",
+                                    bin_param=c(10, 10), 
+                                    w_x=w_x, w_y=w_y)
+
+set.seed(seed_number)
+
+rep1_lasso_with_nc = lasso_markers(gene_mt=rep1_sq10_vectors$gene_mt,
+                                    cluster_mt = rep1_sq10_vectors$cluster_mt,
+                                    sample_names=c("rep1"),
+                                    keep_positive=TRUE, 
+                                    coef_cutoff=0.2,
+                                    background=rep1_nc_vectors)
+
+rep1_top_df_nc = rep1_lasso_with_nc$lasso_top_result
+# the top result table 
+head(rep1_top_df_nc)
+
+# the full result table 
+rep1_full_df = rep1_lasso_with_nc$lasso_full_result
+head(rep1_full_df)
+```
+
+
+#### Visualise top marker genes detected by linear modelling approach
+We can rank the marker genes by its linear model coefficient to the cluster
+ans plot the transcript detection coordinates for the top three marker genes
+for every cluster. 
+```{r lasso-rep1 vis, fig.width=6, fig.height=3}
+
+cluster_names = paste("c", 1:8, sep="")
+for (cl in setdiff(cluster_names,"NoSig")){
+    inters=rep1_top_df_nc[rep1_top_df_nc$top_cluster==cl,"gene"]
+    rounded_val=signif(as.numeric(rep1_top_df_nc[inters,"glm_coef"]),
+                                    digits = 3)
+    inters_df = as.data.frame(cbind(gene=inters, value=rounded_val))
+    inters_df$value = as.numeric(inters_df$value)
+    inters_df=inters_df[order(inters_df$value, decreasing = TRUE),]
+    inters_df$text= paste(inters_df$gene,inters_df$value,sep=": ")
+    
+    if (length(inters > 0)){
+        inters_df = inters_df[1:min(2, nrow(inters_df)),]
+        inters = inters_df$gene
+        iters_rep1= rep1_sub$trans_info$feature_name %in% inters
+        vis_r1 =rep1_sub$trans_info[iters_rep1,
+                                c("x","y","feature_name")]
+        vis_r1$value = inters_df[match(vis_r1$feature_name,inters_df$gene),
+                                "value"]
+        #vis_r1=vis_r1[order(vis_r1$value,decreasing = TRUE),]
+        vis_r1$text_label= paste(vis_r1$feature_name,
+                                    vis_r1$value,sep=": ")
+        vis_r1$text_label=factor(vis_r1$text_label, levels = inters_df$text)
+        vis_r1$sample="rep1"
+        p1<- ggplot(data = vis_r1,
+                    aes(x = x, y = y))+ 
+                    geom_point(size=0.01,color="maroon4")+
+                    facet_wrap(~text_label,ncol=10, scales="free")+
+                    scale_y_reverse()+
+                    guides(fill = guide_colorbar(height= unit(5, "cm")))+
+                    defined_theme
+        cl_pt<-ggplot(data = rep1_clusters[rep1_clusters$cluster==cl, ],
+                    aes(x = x, y = y, color=cluster))+
+                    geom_point(position=position_jitterdodge(jitter.width=0, 
+                                            jitter.height=0), size=0.2)+
+                    facet_wrap(~cluster)+
+                    scale_y_reverse()+
+                    theme_classic()+
+                    scale_color_manual(values = "black")+
+                    defined_theme
+        lyt <- cl_pt | p1
+        layout_design <- lyt + patchwork::plot_layout(widths = c(1,3)) 
+        print(layout_design)
+}}
+```
+
+
+#### Visualise cluster vector and the top marker genes at spatial vector level
+We can plot the cluster vector on x-axis, and the marker gene vectors (detected 
+by the linear modelling approach) on y-axis to validate the linear relationship 
+assumption between the cluster vector and the marker gene vectors. 
+```{r vvplot_glm, fig.width=8, fig.height=6}
+
+cluster_names = paste("c", 1:8, sep="")
+plot_lst=list()
+for (cl in cluster_names){
+    curr_cell_type = all_celltypes[all_celltypes$cluster==cl,"anno"]
+    inters=rep1_top_df_nc[rep1_top_df_nc$top_cluster==cl,"gene"]
+    if (length(inters > 0)){
+        rounded_val=signif(as.numeric(rep1_top_df_nc[inters,"glm_coef"]),
+                                digits = 3)
+        inters_df = as.data.frame(cbind(gene=inters, value=rounded_val))
+        inters_df$value = as.numeric(inters_df$value)
+        inters_df=inters_df[order(inters_df$value, decreasing = TRUE),]
+        inters_df$text= paste(inters_df$gene,inters_df$value,sep=": ")
+    
+        inters_df = inters_df[1:min(2, nrow(inters_df)),]
+        mk_gene = inters_df$gene
+
+        dff = as.data.frame(cbind(rep1_sq10_vectors$cluster_mt[,cl],
+                                rep1_sq10_vectors$gene_mt[,mk_gene]))
+        colnames(dff) = c("cluster", mk_gene)
+        dff$vector_id = c(1:(grid_length * grid_length))
+        long_df <- dff %>% 
+        pivot_longer(cols = -c(cluster, vector_id), names_to = "gene", 
+                        values_to = "vector_count")
+        long_df$gene = factor(long_df$gene, levels=mk_gene)
+        p=ggplot(long_df, aes(x = cluster, y = vector_count )) +
+            geom_point( size=0.01) +
+            facet_wrap(~gene, scales = "free_y", nrow=1) +
+            labs(x = paste("cluster vector ", curr_cell_type, sep=""), 
+                    y = "marker gene vectors") +
+            theme_minimal()+
+            guides(color=guide_legend(nrow = 1,
+                        override.aes=list(alpha=1, size=2)))+
+            theme(panel.grid = element_blank(),legend.position = "none",
+                    strip.text = element_text(size = rel(1)),
+                    axis.line=element_blank(),
+                    legend.title = element_blank(),
+                    legend.key.size = unit(0.5, "cm"),
+                    legend.text = element_text(size=10),
+                    axis.text=element_blank(),
+                    axis.ticks=element_blank(),
+                    axis.title=element_text(size = 10),
+                    panel.border =element_rect(colour = "black", 
+                                                fill=NA, linewidth=0.5)
+        )
+        plot_lst[[cl]] = p
+    }
+}
+combined_plot <- ggarrange(plotlist = plot_lst, 
+                            ncol = 2, nrow = 4,
+                            common.legend = FALSE, legend = "none")
+
+combined_plot 
+
+```
+
+## Scenario 2: multiple samples
+Load the replicate 2 from sample 1. 
+```{r load rep2 data}
+data(rep2_sub, rep2_clusters, rep2_neg)
+rep2_clusters$cluster=factor(rep2_clusters$cluster,
+                            levels=paste("c",1:8, sep=""))
+rep1_clusters$cells = paste(row.names(rep1_clusters),"_1",sep="")
+rep2_clusters$cells =paste(row.names(rep2_clusters),"_2",sep="")
+rep_clusters = rbind(rep1_clusters,rep2_clusters)
+rep_clusters$cluster=factor(rep_clusters$cluster,
+                            levels=paste("c",1:8, sep=""))
+table(rep_clusters$sample, rep_clusters$cluster)
+```
+
+#### Visualise the clusters 
+We can plot the coordinates of cells for every cluster in every replicate 
+```{r tworep cluster vis, fig.height=4,  fig.width=8, warning=FALSE}
+
+ggplot(data = rep_clusters,
+        aes(x = x, y = y, color=cluster))+
+        geom_point(position=position_jitterdodge(jitter.width=0, 
+                                                jitter.height=0),size=0.1)+
+        facet_grid(sample~cluster)+
+        scale_y_reverse()+
+        theme_classic()+
+        scale_color_manual(values = c("#FC8D62","#66C2A5" ,"#8DA0CB","#E78AC3",
+                                "#A6D854","skyblue","purple3","#E5C498"))+
+        guides(color=guide_legend(title="cluster", nrow = 1,
+        override.aes=list(alpha=1, size=7)))+
+        theme(
+            axis.line=element_blank(),
+            axis.text.x=element_blank(),
+            axis.text.y=element_blank(),
+            axis.ticks=element_blank(),
+            axis.title.x=element_blank(),
+            axis.title.y=element_blank(),
+            panel.background=element_blank(),
+            panel.border=element_blank(),
+            panel.grid.major=element_blank(),
+            panel.grid.minor=element_blank(),
+            plot.background=element_blank(),
+            legend.text = element_text(size=10),
+            legend.position="none",
+            legend.title = element_text(size=10),
+            strip.text = element_text(size = rel(1)))+
+        xlab("")+
+        ylab("")
+```
+
+When we have multiple replicates in the dataset, we can find marker
+genes by providing additional sample information as the input for the function
+`lasso_markers`.
+
+### Linear modeling approach to detect marker genes 
+```{r tworep no background}
+w_x =  c(min(floor(min(rep1_sub$trans_info$x)),
+            floor(min(rep2_sub$trans_info$x)),
+            floor(min(rep_clusters$x))), 
+        max(ceiling(max(rep1_sub$trans_info$x)),
+            ceiling(max(rep2_sub$trans_info$x)),
+            ceiling(max(rep_clusters$x))))
+w_y =  c(min(floor(min(rep1_sub$trans_info$y)),
+            floor(min(rep2_sub$trans_info$y)),
+            floor(min(rep_clusters$y))), 
+        max(ceiling(max(rep1_sub$trans_info$y)),
+            ceiling(max(rep2_sub$trans_info$y)),
+            ceiling(max(rep_clusters$y))))
+grid_length=10
+# get spatial vectors
+two_rep_vectors = get_vectors(data_lst= list("rep1"=rep1_sub, 
+                                            "rep2" = rep2_sub),
+                            cluster_info = rep_clusters, bin_type="square",
+                            bin_param=c(grid_length, grid_length),
+                            all_genes = all_real_genes , 
+                            w_x=w_x, w_y=w_y)
+
+two_rep_nc_vectors = create_genesets(data_lst=list("rep1" = rep1_neg, 
+                                                    "rep2" = rep2_neg),
+                                        name_lst=list(probe=rep1_neg$probe, 
+                                                    codeword=rep1_neg$codeword),
+                                        bin_type="square",
+                                        bin_param=c(10,10), 
+                                        w_x=w_x, w_y=w_y)
+set.seed(seed_number)
+two_rep_lasso_with_nc = lasso_markers(gene_mt=two_rep_vectors$gene_mt,
+                                    cluster_mt = two_rep_vectors$cluster_mt,
+                                    sample_names=c("rep1","rep2"),
+                                    keep_positive=TRUE, 
+                                    coef_cutoff=0.2,
+                                    background=two_rep_nc_vectors,n_fold = 5)
+tworep_res=two_rep_lasso_with_nc$lasso_top_result
+tworep_res$celltype = rep_clusters[match(tworep_res$top_cluster,
+                                            rep_clusters$cluster),"anno"]
+table(tworep_res$top_cluster)
+head(tworep_res)
+```
+
+#### Visualise the top marker genes for each cluster
+```{r top3 marker gene, fig.height=6, fig.width=6}
+
+for (cl in all_celltypes$anno){
+    inters=tworep_res[tworep_res$celltype==cl,"gene"]
+    rounded_val=signif(as.numeric(tworep_res[inters,"glm_coef"]),
+                        digits = 3)
+    inters_df = as.data.frame(cbind(gene=inters, value=rounded_val))
+    inters_df$value = as.numeric(inters_df$value)
+    inters_df=inters_df[order(inters_df$value, decreasing = TRUE),]
+    inters_df$text= paste(inters_df$gene,inters_df$value,sep=": ")
+    if (length(inters > 0)){
+        inters_df = inters_df[1:min(2, nrow(inters_df)),]
+        inters = inters_df$gene
+        iters_rep1= rep1_sub$trans_info$feature_name %in% inters
+        vis_r1 =rep1_sub$trans_info[iters_rep1,
+                                c("x","y","feature_name")]
+        vis_r1$value = inters_df[match(vis_r1$feature_name,inters_df$gene),
+                                "value"]
+        vis_r1=vis_r1[order(vis_r1$value,decreasing = TRUE),]
+        vis_r1$text_label= paste(vis_r1$feature_name,
+                                    vis_r1$value,sep=": ")
+        vis_r1$text_label=factor(vis_r1$text_label)
+        vis_r1$sample="rep1"
+        iters_rep2= rep2_sub$trans_info$feature_name %in% inters
+        vis_r2 =rep2_sub$trans_info[iters_rep2,
+                                c("x","y","feature_name")]
+        vis_r2$value = inters_df[match(vis_r2$feature_name,inters_df$gene),
+                                "value"]
+        vis_r2=vis_r2[order(vis_r2$value, decreasing = TRUE),]
+        vis_r2$text_label= paste(vis_r2$feature_name,
+                                vis_r2$value,sep=": ")
+        vis_r2$text_label=factor(vis_r2$text_label)
+        vis_r2$sample="rep2"
+        p1<- ggplot(data = vis_r1,
+                    aes(x = x, y = y))+ 
+                    geom_point(size=0.01,color="maroon4")+
+                    facet_grid(sample~text_label, scales="free")+
+                    scale_y_reverse()+
+                    guides(fill = guide_colorbar(height= unit(5, "cm")))+
+                    defined_theme
+        p2<- ggplot(data = vis_r2,
+                    aes(x = x, y = y))+ 
+                    geom_point(size=0.01,color="maroon4")+
+                    facet_grid(sample~text_label,scales="free")+
+                    scale_y_reverse()+
+                    guides(fill = guide_colorbar(height= unit(5, "cm")))+
+                    defined_theme
+        
+        cl_pt<-ggplot(data = rep_clusters[rep_clusters$anno==cl, ],
+                    aes(x = x, y = y, color=cluster))+
+                    geom_point(position=position_jitterdodge(jitter.width=0, 
+                                            jitter.height=0), size=0.2)+
+                    facet_grid(sample~cluster)+
+                    scale_y_reverse()+
+                    theme_classic()+
+                    scale_color_manual(values = "black")+
+                    defined_theme
+        lyt <- cl_pt | (p1 / p2) 
+        if (cl %in% c("c6","c7")){
+            lyt <- cl_pt | ((p1 / p2) | patchwork::plot_spacer())   
+        }
+        layout_design <- lyt + patchwork::plot_layout(widths = c(1,3)) 
+
+        print(layout_design)
+}}
+```
+
+#### Visualise cluster vector and the top marker genes at spatial vector level
+The figure below shows the relationship between the cluster vector and the 
+top marker gene vectors detected by linear modelling approach by accounting 
+for multiple samples and background noise 
+```{r vvplot_twosample, fig.width=8, fig.height=6}
+cluster_names = paste("c", 1:8, sep="")
+plot_lst=list()
+for (cl in cluster_names){
+    inters=tworep_res[tworep_res$top_cluster==cl,"gene"]
+    curr_cell_type = all_celltypes[all_celltypes$cluster==cl,"anno"]
+    rounded_val=signif(as.numeric(tworep_res[inters,"glm_coef"]),
+                            digits = 3)
+    inters_df = as.data.frame(cbind(gene=inters, value=rounded_val))
+    inters_df$value = as.numeric(inters_df$value)
+    inters_df=inters_df[order(inters_df$value, decreasing = TRUE),]
+    inters_df$text= paste(inters_df$gene,inters_df$value,sep=": ")
+        
+    mk_gene = inters_df[1:min(2, nrow(inters_df)),"gene"]
+    if (length(inters > 0)){
+        dff = as.data.frame(cbind(two_rep_vectors$cluster_mt[,cl],
+                                    two_rep_vectors$gene_mt[,mk_gene]))
+        colnames(dff) = c("cluster", mk_gene)
+        total_tiles = grid_length * grid_length
+        dff$vector_id = c(1:total_tiles)
+        dff$sample= "Replicate1"
+        dff[(total_tiles+1):(total_tiles*2),"sample"] = "Replicate2"
+        dff$vector_id = c(1:total_tiles, 1:total_tiles)
+        long_df <- dff %>% 
+        pivot_longer(cols = -c(cluster, sample, vector_id), names_to = "gene", 
+                        values_to = "vector_count")
+        long_df$gene = factor(long_df$gene, levels=mk_gene)
+        p=ggplot(long_df, 
+                        aes(x = cluster, y = vector_count, color =sample)) +
+            geom_point( size=0.01) +
+            facet_wrap(~gene, scales = "free_y", nrow=1) +
+            labs(x = paste("cluster vector ", curr_cell_type, sep=""), 
+                    y = "marker gene vectors") +
+            theme_minimal()+
+            guides(color=guide_legend(nrow = 1,
+                        override.aes=list(alpha=1, size=2)))+
+            theme(panel.grid = element_blank(),legend.position = "bottom",
+                    strip.text = element_text(size = rel(1)),
+                    axis.line=element_blank(),
+                    legend.title = element_blank(),
+                    legend.key.size = unit(0.5, "cm"),
+                    legend.text = element_text(size=10),
+                    axis.text=element_blank(),
+                    axis.ticks=element_blank(),
+                    axis.title=element_text(size = 10),
+                    panel.border =element_rect(colour = "black", 
+                                                fill=NA, linewidth=0.5)
+            )
+        plot_lst[[cl]] = p
+    }
+}
+combined_plot <- ggarrange(plotlist = plot_lst, 
+                            ncol = 2, nrow = 4,
+                            common.legend = TRUE, legend = "top")
+
+combined_plot 
+```
+
+
+```{r session info}
+sessionInfo()
+```
