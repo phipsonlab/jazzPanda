@@ -14,14 +14,9 @@
 
   <p align="center">
     <br />
-    <a href="https://github.com/phipsonlab/jazzPanda_analysis"><strong>Explore the analysis »</strong></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
     <a href="https://github.com/phipsonlab/jazzPanda/blob/main/vignettes/jazzPanda.Rmd"><strong>Explore the vignette »</strong></a>
     <br />
     <br />
-    ·
-    <a href="https://github.com/phipsonlab/jazzPanda/issues/new?labels=bug&template=bug-report---.md">Report Bug</a> &nbsp;&nbsp;&nbsp;
-    ·
-    <a href="https://github.com/phipsonlab/jazzPanda/issues/new?labels=enhancement&template=feature-request---.md">Request Feature</a>
   </p>
 </div>
 
