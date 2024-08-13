@@ -5,13 +5,13 @@
 \title{Create spatial vectors for genes from transcript coordinates}
 \usage{
 get_gene_vectors_tr(
-    data_lst,
-    all_genes,
-    bin_type,
-    bin_param,
-    bin_length,
-    w_x,
-    w_y
+  data_lst,
+  all_genes,
+  bin_type,
+  bin_param,
+  bin_length,
+  w_x,
+  w_y
 )
 }
 \arguments{

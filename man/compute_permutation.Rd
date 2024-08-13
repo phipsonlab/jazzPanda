@@ -5,16 +5,16 @@
 \title{Compute permutation statistics for permutation framework}
 \usage{
 compute_permutation(
-    cluster_info,
-    perm.size = 1000,
-    correlation_method = "pearson",
-    bin_type,
-    bin_param,
-    n.cores = 1,
-    w_x,
-    w_y,
-    gene_mt,
-    cluster_names
+  cluster_info,
+  perm.size = 1000,
+  correlation_method = "pearson",
+  bin_type,
+  bin_param,
+  n.cores = 1,
+  w_x,
+  w_y,
+  gene_mt,
+  cluster_names
 )
 }
 \arguments{

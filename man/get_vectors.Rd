@@ -5,15 +5,15 @@
 \title{Vectorise the spatial coordinates}
 \usage{
 get_vectors(
-    data_lst,
-    cluster_info,
-    cm_lst = NULL,
-    bin_type,
-    bin_param,
-    all_genes,
-    w_x,
-    w_y,
-    n_cores = 1
+  data_lst,
+  cluster_info,
+  cm_lst = NULL,
+  bin_type,
+  bin_param,
+  all_genes,
+  w_x,
+  w_y,
+  n_cores = 1
 )
 }
 \arguments{

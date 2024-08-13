@@ -9,7 +9,7 @@ A list of named matrices:
 \describe{
     \item{cm}{the count matrix}
     \item{trans_info}{a data frame containing the coordinates for 
-                    every transcript}
+                     every transcript}
 }
 }
 \source{

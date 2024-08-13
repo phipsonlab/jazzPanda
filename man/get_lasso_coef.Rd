@@ -5,13 +5,13 @@
 \title{help function to get lasso coefficient for every cluster for a given model}
 \usage{
 get_lasso_coef(
-    i_gene,
-    gene_mt,
-    vec_cluster,
-    cluster_names,
-    n_fold = 10,
-    n_samples,
-    sample_names
+  i_gene,
+  gene_mt,
+  vec_cluster,
+  cluster_names,
+  n_fold = 10,
+  n_samples,
+  sample_names
 )
 }
 \arguments{

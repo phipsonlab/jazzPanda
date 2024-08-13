@@ -5,13 +5,13 @@
 \title{Convert the coordinates of set of genes into vectors.}
 \usage{
 create_genesets(
-    data_lst,
-    name_lst,
-    bin_type = "square",
-    bin_param,
-    w_x = w_x,
-    w_y = w_y,
-    cluster_info
+  data_lst,
+  name_lst,
+  bin_type = "square",
+  bin_param,
+  w_x = w_x,
+  w_y = w_y,
+  cluster_info
 )
 }
 \arguments{

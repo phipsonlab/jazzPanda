@@ -5,11 +5,11 @@
 \title{helper function to check the inputs passed to marker detection function}
 \usage{
 check_valid_input(
-    gene_mt,
-    cluster_mt,
-    sample_names,
-    n_fold = 10,
-    background = NULL
+  gene_mt,
+  cluster_mt,
+  sample_names,
+  n_fold = 10,
+  background = NULL
 )
 }
 \arguments{

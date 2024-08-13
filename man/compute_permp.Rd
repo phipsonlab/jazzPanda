@@ -5,17 +5,17 @@
 \title{Calculate a p-value for correlation with permutation.}
 \usage{
 compute_permp(
-    data,
-    cluster_info,
-    perm.size,
-    bin_type,
-    bin_param,
-    all_genes,
-    correlation_method = "pearson",
-    n.cores = 1,
-    correction_method = "BH",
-    w_x,
-    w_y
+  data,
+  cluster_info,
+  perm.size,
+  bin_type,
+  bin_param,
+  all_genes,
+  correlation_method = "pearson",
+  n.cores = 1,
+  correction_method = "BH",
+  w_x,
+  w_y
 )
 }
 \arguments{

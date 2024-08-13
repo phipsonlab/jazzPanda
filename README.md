@@ -1,6 +1,8 @@
-
+<!-- badges: start -->
 [![DOI](https://zenodo.org/badge/724929670.svg)](https://zenodo.org/doi/10.5281/zenodo.10360070)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://github.com/phipsonlab/jazzPanda/blob/main/LICENSE)
+[![R-CMD-check](https://github.com/phipsonlab/jazzPanda/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/phipsonlab/jazzPanda/actions/workflows/R-CMD-check.yaml)
+<!-- badges: end -->
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
