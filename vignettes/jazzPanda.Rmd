@@ -46,7 +46,7 @@ spatial information. Our first approach is based on correlation and the second
 linear modelling approach can account for technical noise and work for 
 studies with multiple samples. \n
 
-# jazzzPanda framework
+# jazzPanda framework
 We assume a marker gene will show a significant linear relationship with the 
 target cluster over the tissue space. This suggests that the transcript 
 detection of a marker gene will show similar patterns with the cells from
