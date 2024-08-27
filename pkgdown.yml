@@ -1,0 +1,9 @@
+pandoc: 3.1.11
+pkgdown: 2.1.0
+pkgdown_sha: ~
+articles:
+  jazzPanda: jazzPanda.html
+last_built: 2024-08-27T03:55Z
+urls:
+  reference: https://phipsonlab.github.io/jazzPanda/reference
+  article: https://phipsonlab.github.io/jazzPanda/articles
