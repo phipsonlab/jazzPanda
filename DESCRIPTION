@@ -37,7 +37,7 @@ Suggests:
     testthat (>= 3.0.0)
 Description: This package contains the function to find marker genes for image-based spatial transcriptomics data. There are functions to create spatial vectors from the cell and transcript coordiantes, which are passed as inputs to find marker genes. Marker genes are detected for every cluster by two approaches. The first approach is by permtuation testing, which is implmented in parallel for finding marker genes for one sample study. The other approach is to build a linear model for every gene. This approach can account for multiple samples and backgound noise. 
 License: GPL-3 + file LICENSE
-URL: https://github.com/phipsonlab/jazzPanda
+URL: https://github.com/phipsonlab/jazzPanda, https://bhuvad.github.io/jazzPanda/
 BugReports: https://github.com/phipsonlab/jazzPanda/issues
 biocViews: Spatial, GeneExpression, DifferentialExpression, StatisticalMethod, Transcriptomics
 RoxygenNote: 7.3.2

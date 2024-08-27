@@ -9,13 +9,11 @@ A list of named matrices:
 \describe{
     \item{cm}{the count matrix}
     \item{trans_info}{a data frame containing the coordinates for 
-                    every transcript}
+                     every transcript}
 }
 }
 \source{
-\url{https://cf.10xgenomics.com/samples/xenium/1.0.1/
-Xenium_FFPE_Human_Breast_Cancer_Rep1/
-Xenium_FFPE_Human_Breast_Cancer_Rep1_outs.zip}
+\url{https://cf.10xgenomics.com/samples/xenium/1.0.1/Xenium_FFPE_Human_Breast_Cancer_Rep1/Xenium_FFPE_Human_Breast_Cancer_Rep1_outs.zip}
 }
 \usage{
 data(rep1_sub)

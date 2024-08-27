@@ -5,14 +5,14 @@
 \title{Compute observation statistic for permutation framework}
 \usage{
 compute_observation(
-    data,
-    cluster_info,
-    correlation_method = "pearson",
-    all_genes = all_genes,
-    bin_type,
-    bin_param,
-    w_x,
-    w_y
+  data,
+  cluster_info,
+  correlation_method = "pearson",
+  all_genes = all_genes,
+  bin_type,
+  bin_param,
+  w_x,
+  w_y
 )
 }
 \arguments{
