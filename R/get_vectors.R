@@ -408,7 +408,8 @@ check_binning<- function(bin_param, bin_type, w_x, w_y){
 get_vectors<- function(data_lst, cluster_info,cm_lst=NULL, bin_type, bin_param,
                         all_genes, w_x, w_y, n_cores=1){
     # check input
-    if ((is.null(data_lst) ==TRUE) & (is.null(cluster_info) == TRUE)){
+    if ((is.null(data_lst) ==TRUE) & 
+        (is.null(cluster_info) == TRUE) & (is.null(cm_lst) == TRUE)){
         stop("Invalid input, no coordinates information is specified") }
     if ((is.null(cluster_info) == FALSE)){
         req_cols <- c("x","y","cluster","sample")
@@ -426,14 +427,18 @@ get_vectors<- function(data_lst, cluster_info,cm_lst=NULL, bin_type, bin_param,
                     must contain columns 'x', 'y', 'cluster',
                     'sample','cell_id' for every cell") } } }
     if ((is.null(data_lst) == FALSE) ){
+        
         if ((is.vector(all_genes) == FALSE)){
             stop("Invalid input all_genes, should be a vector of character")}
         req_cols <- c("x", "y","feature_name")
-        for (rpp in data_lst){
+        for (i in names(data_lst)){
+            rpp = data_lst[[i]]
             if (length(setdiff(req_cols, colnames(rpp$trans_info))) > 0)
                 stop("Invalid column names detected in input data_lst.
                         Must contain columns 'x', 'y',
-                        'feature_name' for every transcript") } }
+                        'feature_name' for every transcript") 
+            if(length(setdiff(all_genes,rpp$trans_info$feature_name)) >0){
+    stop("Invalid input all_genes, can not match all_genes from data_lst")} }} 
     # must provide cluster info if gene vectors are created from count matrix
     if ((is.null(cm_lst) == FALSE) & (is.null(cluster_info) == TRUE)){
         stop("Missing cluster information to build gene vector matrix.")}

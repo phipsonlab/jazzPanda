@@ -52,8 +52,9 @@ check_geneset_input <- function(data_lst, bin_type, bin_param,
     }
     
     use_cm <- FALSE
-    for (rpp in data_lst){
-        if (typeof(rpp) == "list"){
+    for (i in names(data_lst)){
+        rpp = data_lst[[i]]
+        if (class(rpp) == "list"){
             req_cols <- c('x', 'y', 'feature_name' )
             if (length(setdiff(req_cols, colnames(rpp$trans_info))) > 0){
                 stop("Invalid column names detected in input data_lst. 
