@@ -797,20 +797,20 @@ p-value for every pair of gene cluster and cluster vector.</p>
 <code class="sourceCode R"><span><span class="co"># permutation adjusted p-value for every pair of gene and cluster vector</span></span>
 <span><span class="va">perm_res</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">perm_p</span><span class="op">$</span><span class="va">perm.pval.adj</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">perm_res</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">##       c5         c8          c3          c2          c1          c4          c6</span></span>
-<span><span class="co">## LUM    1 0.05661006 0.006660007 1.000000000 1.000000000 0.004440004 0.005994006</span></span>
-<span><span class="co">## CD68   1 0.67765568 0.163836164 1.000000000 1.000000000 0.002854289 0.063013909</span></span>
-<span><span class="co">## ERBB2  1 1.00000000 1.000000000 0.006660007 0.003996004 1.000000000 1.000000000</span></span>
-<span><span class="co">## MZB1   1 0.76385153 0.754629985 1.000000000 1.000000000 0.009990010 0.002220002</span></span>
-<span><span class="co">## EPCAM  1 1.00000000 1.000000000 0.079920080 0.003996004 1.000000000 1.000000000</span></span>
-<span><span class="co">## PTPRC  1 0.64135864 0.754629985 1.000000000 1.000000000 0.002854289 0.002220002</span></span>
+<pre><code><span><span class="co">##       c5         c8          c3         c2          c1          c4          c6</span></span>
+<span><span class="co">## LUM    1 0.02664003 0.006660007 1.00000000 1.000000000 0.011100011 0.002220002</span></span>
+<span><span class="co">## CD68   1 0.72927073 0.123876124 1.00000000 1.000000000 0.002854289 0.058403135</span></span>
+<span><span class="co">## ERBB2  1 1.00000000 1.000000000 0.00999001 0.003996004 1.000000000 1.000000000</span></span>
+<span><span class="co">## MZB1   1 0.78690540 0.731576116 1.00000000 1.000000000 0.011988012 0.002220002</span></span>
+<span><span class="co">## EPCAM  1 1.00000000 1.000000000 0.08391608 0.003996004 1.000000000 1.000000000</span></span>
+<span><span class="co">## PTPRC  1 0.66933067 0.731576116 1.00000000 1.000000000 0.002854289 0.002220002</span></span>
 <span><span class="co">##                c7</span></span>
-<span><span class="co">## LUM   0.042457542</span></span>
-<span><span class="co">## CD68  0.261556625</span></span>
+<span><span class="co">## LUM   0.059940060</span></span>
+<span><span class="co">## CD68  0.266400266</span></span>
 <span><span class="co">## ERBB2 1.000000000</span></span>
-<span><span class="co">## MZB1  0.003330003</span></span>
+<span><span class="co">## MZB1  0.002854289</span></span>
 <span><span class="co">## EPCAM 1.000000000</span></span>
-<span><span class="co">## PTPRC 0.003330003</span></span></code></pre>
+<span><span class="co">## PTPRC 0.002854289</span></span></code></pre>
 <div class="section level5">
 <h5 id="visualise-top-marker-genes-detected-by-correlation-approach">Visualise top marker genes detected by correlation approach<a class="anchor" aria-label="anchor" href="#visualise-top-marker-genes-detected-by-correlation-approach"></a>
 </h5>
