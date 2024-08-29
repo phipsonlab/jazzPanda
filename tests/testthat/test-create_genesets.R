@@ -20,6 +20,11 @@ geneset_res_A = create_genesets(data_lst=list("rep1"= data),
                                 bin_type="square",
                                 bin_param=c(2,2),
                                 w_x=c(0,25), w_y=c(0,25))
+geneset_res_A_hex = create_genesets(data_lst=list("rep1"= data),
+                                name_lst=list(dummy_W=c("A")),
+                                bin_type="hexagon",
+                                bin_param=c(10),
+                                w_x=c(0,25), w_y=c(0,25))
 test_that("Invaid input",{
 expect_error(create_genesets(data_lst=list("rep1"= data),
                              name_lst=list(dummy_W=c("A")),
@@ -43,7 +48,7 @@ expect_error(create_genesets(data_lst=data_invalid,
                              bin_param=c(2,2),
                              w_x=c(0,25), w_y=c(0,25)))
 
-expect_error(create_genesets(data_lst=list("rep1"= data_invalid_noname),
+expect_error(create_genesets(data_lst=list(data_invalid_noname),
                              name_lst=list(dummy_W=c("A")),
                              bin_type="square",
                              bin_param=c(2,2),
@@ -59,6 +64,7 @@ expect_error(create_genesets(data_lst=list("rep1"= data_invalid_missing_trans_co
 test_that("Test can create vectors for a single gene set with a single element A", {
     expect_equal(colnames(geneset_res_A), c("dummy_W"))
     expect_equal(as.vector(geneset_res_A$dummy_W), c(0,0,10, 0))
+    expect_equal(as.vector(geneset_res_A_hex$dummy_W), c(2,5,0,3,0,0,0))
 })
 geneset_res_C = create_genesets(data_lst=list("rep1"= data),
                                 name_lst=list(dummy_W=c("C")),

@@ -77,9 +77,18 @@ lasso_res_background = lasso_markers(gene_mt=vecs_lst$gene_mt*(-1),
 invlid_vec = vecs_lst
 colnames(invlid_vec$cluster_mt)=NULL
 colnames(invlid_vec$gene_mt)=NULL
+# clusters are named as integers 
+invlid_vec_int = vecs_lst
+colnames(invlid_vec_int$cluster_mt)=1:ncol(invlid_vec_int$cluster_mt)
+# background has NULL names
 invalid_back =background_sv
 colnames(invalid_back)=NULL
+# background matrix has overlaps with cluster_mt
 invalid_back_overlapped =vecs_lst$cluster_mt
+# cluster_mt with < nfold nonzeros
+invalid_mt_le_fold = cbind(vecs_lst$cluster_mt,
+                           invalid_col=rep(0, nrow(vecs_lst$cluster_mt)))
+invalid_mt_le_fold[1:8,ncol(invalid_mt_le_fold)] = 1:8
 test_that("Invalid input", {
     expect_error(lasso_markers(gene_mt=vecs_lst$gene_mt[1:2, ],
                                cluster_mt = vecs_lst$cluster_mt,
@@ -117,7 +126,26 @@ test_that("Invalid input", {
                                keep_positive=FALSE,
                                coef_cutoff=0,
                                background=invalid_back_overlapped))
+    expect_error(lasso_markers(gene_mt=vecs_lst$gene_mt,
+                               cluster_mt = vecs_lst$cluster_mt,
+                               sample_names=c("rep1"),
+                               keep_positive=FALSE,
+                               coef_cutoff=0,
+                               background=background_sv[1:10,]))
+    expect_error(lasso_markers(gene_mt=vecs_lst$gene_mt,
+                               cluster_mt = invalid_mt_le_fold,
+                               sample_names=c("rep1"),
+                               keep_positive=FALSE,
+                               coef_cutoff=0,
+                               background=NULL))
+    expect_error(lasso_markers(gene_mt=vecs_lst$gene_mt,
+                               cluster_mt = invlid_vec_int$cluster_mt,
+                               sample_names=NULL,
+                               keep_positive=FALSE,
+                               coef_cutoff=0,
+                               background=NULL))
 })
+
 ########################################################################
 test_that("lasso- one sample case - dimension correct", {
     expect_equal(length(lasso_res1), 2)
@@ -347,16 +375,31 @@ background_sv_all = create_genesets(data_lst=list("sample1"= data,
                                 bin_type="square",
                                 bin_param = c(20,20),
                                 w_x = w_x, w_y=w_y)
-lasso_nosig = lasso_markers(gene_mt=vecs_lst$gene_mt,
+lasso_nosig_bg = lasso_markers(gene_mt=vecs_lst$gene_mt,
                                      cluster_mt = vecs_lst$cluster_mt,
                                      sample_names=c("sample1","sample2"),
                                      keep_positive=TRUE,
                                      coef_cutoff=0,
                                      background=background_sv_all)
+set.seed(989)
+rand_cl_mt = matrix(runif(n=1600,min=0, max = 1),
+                    ncol=2, 
+                    nrow=nrow(vecs_lst$cluster_mt))
+colnames(rand_cl_mt)=colnames(vecs_lst$cluster_mt)[1:2]
+rand_cl_mt = as.data.frame(cbind(rand_cl_mt, vecs_lst$cluster_mt[, c(3:4)]))
+lasso_nosig_cl = lasso_markers(gene_mt=vecs_lst$gene_mt,
+                            cluster_mt = rand_cl_mt,
+                            sample_names=c("sample1","sample2"),
+                            keep_positive=TRUE,
+                            coef_cutoff=0,
+                            background=NULL)
 test_that("set gene as NA if no clusters are significant", {
-    expect_equal(length(lasso_nosig), 2)
-    expect_equal(unique(lasso_nosig$lasso_top_result$top_cluster), c("NoSig"))
-    expect_equal(unique(lasso_nosig$lasso_full_result$cluster), 
+    expect_equal(length(lasso_nosig_bg), 2)
+    expect_equal(unique(lasso_nosig_bg$lasso_top_result$top_cluster), c("NoSig"))
+    expect_equal(unique(lasso_nosig_bg$lasso_full_result$cluster), 
                  c("dummy_A1","A","dummy_A2","dummy_B1","B","dummy_B2"))
+    
+    expect_equal(length(lasso_nosig_cl), 2)
+    expect_equal(unique(lasso_nosig_cl$lasso_top_result$top_cluster), c("NoSig"))
 })
 
