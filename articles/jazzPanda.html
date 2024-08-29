@@ -53,7 +53,7 @@
 
       <h1>jazzPanda example</h1>
             
-            <h4 data-toc-skip class="date">28 Aug 2024</h4>
+            <h4 data-toc-skip class="date">29 Aug 2024</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/phipsonlab/jazzPanda/blob/main/vignettes/jazzPanda.Rmd" class="external-link"><code>vignettes/jazzPanda.Rmd</code></a></small>
       <div class="d-none name"><code>jazzPanda.Rmd</code></div>
@@ -797,16 +797,16 @@ p-value for every pair of gene cluster and cluster vector.</p>
 <code class="sourceCode R"><span><span class="co"># permutation adjusted p-value for every pair of gene and cluster vector</span></span>
 <span><span class="va">perm_res</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">perm_p</span><span class="op">$</span><span class="va">perm.pval.adj</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">perm_res</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">##       c5         c8          c3         c2          c1          c4          c6</span></span>
-<span><span class="co">## LUM    1 0.02664003 0.006660007 1.00000000 1.000000000 0.011100011 0.002220002</span></span>
-<span><span class="co">## CD68   1 0.72927073 0.123876124 1.00000000 1.000000000 0.002854289 0.058403135</span></span>
-<span><span class="co">## ERBB2  1 1.00000000 1.000000000 0.00999001 0.003996004 1.000000000 1.000000000</span></span>
-<span><span class="co">## MZB1   1 0.78690540 0.731576116 1.00000000 1.000000000 0.011988012 0.002220002</span></span>
-<span><span class="co">## EPCAM  1 1.00000000 1.000000000 0.08391608 0.003996004 1.000000000 1.000000000</span></span>
-<span><span class="co">## PTPRC  1 0.66933067 0.731576116 1.00000000 1.000000000 0.002854289 0.002220002</span></span>
+<pre><code><span><span class="co">##       c5         c8          c3          c2          c1          c4          c6</span></span>
+<span><span class="co">## LUM    1 0.03996004 0.006660007 1.000000000 1.000000000 0.002220002 0.002220002</span></span>
+<span><span class="co">## CD68   1 0.73926074 0.199800200 1.000000000 1.000000000 0.002220002 0.059940060</span></span>
+<span><span class="co">## ERBB2  1 1.00000000 1.000000000 0.006660007 0.003996004 1.000000000 1.000000000</span></span>
+<span><span class="co">## MZB1   1 0.77922078 0.760777684 1.000000000 1.000000000 0.009990010 0.002220002</span></span>
+<span><span class="co">## EPCAM  1 1.00000000 1.000000000 0.087912088 0.003996004 1.000000000 1.000000000</span></span>
+<span><span class="co">## PTPRC  1 0.67732268 0.760777684 1.000000000 1.000000000 0.002220002 0.002220002</span></span>
 <span><span class="co">##                c7</span></span>
-<span><span class="co">## LUM   0.059940060</span></span>
-<span><span class="co">## CD68  0.266400266</span></span>
+<span><span class="co">## LUM   0.029970030</span></span>
+<span><span class="co">## CD68  0.247025702</span></span>
 <span><span class="co">## ERBB2 1.000000000</span></span>
 <span><span class="co">## MZB1  0.002854289</span></span>
 <span><span class="co">## EPCAM 1.000000000</span></span>
@@ -1370,7 +1370,7 @@ accounting for multiple samples and background noise</p>
 <span><span class="co">## [13] gridExtra_2.3          ggrepel_0.9.5          ggraph_2.2.1          </span></span>
 <span><span class="co">## [16] igraph_2.0.3           corrplot_0.94          caret_6.0-94          </span></span>
 <span><span class="co">## [19] lattice_0.22-6         glmnet_4.1-8           Matrix_1.7-0          </span></span>
-<span><span class="co">## [22] dplyr_1.1.4            data.table_1.15.4      jazzPanda_0.99.0      </span></span>
+<span><span class="co">## [22] dplyr_1.1.4            data.table_1.16.0      jazzPanda_0.99.0      </span></span>
 <span><span class="co">## [25] ggplot2_3.5.1          Seurat_5.1.0           SeuratObject_5.0.2    </span></span>
 <span><span class="co">## [28] sp_2.1-4              </span></span>
 <span><span class="co">## </span></span>
