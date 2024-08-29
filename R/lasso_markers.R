@@ -33,9 +33,13 @@ check_valid_input<- function(gene_mt,cluster_mt,sample_names, n_fold=10,
     if (is.null(colnames(cluster_mt)) ==TRUE){
         stop("Please provide valid column names for parameter cluster_mt ") }
     tryCatch({
-        ot <- as.numeric(colnames(cluster_mt))
-        if (all(is.na(ot))== FALSE){
-            stop("Column names for cluster_mt contain integers. ") } })
+        # Check if all column names are not numeric
+        non_numeric_cols <- !grepl("^-?\\d+(\\.\\d+)?$", colnames(cluster_mt))
+        
+        if (any(!non_numeric_cols)) {
+            stop("Column names for cluster_mt contain integers.")
+        }
+     })
     if (nrow(gene_mt) != nrow(cluster_mt)){
         stop("Number of rows of gene_mt and cluster_mt does not match.") }
     # every gene should have non-zero variance
