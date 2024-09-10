@@ -39,7 +39,7 @@ check_valid_input<- function(gene_mt,cluster_mt,sample_names, n_fold=10,
         if (any(!non_numeric_cols)) {
             stop("Column names for cluster_mt contain integers.")
         }
-     })
+    })
     if (nrow(gene_mt) != nrow(cluster_mt)){
         stop("Number of rows of gene_mt and cluster_mt does not match.") }
     # every gene should have non-zero variance

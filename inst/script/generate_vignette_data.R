@@ -31,7 +31,6 @@
 library(data.table)
 library(Seurat)
 # download the official cell types of both samples
-# Specify the URL of the file
 s1_url <- "https://raw.githubusercontent.com/phipsonlab/jazzPanda_vignette/main/Xenium_rep1_supervised_celltype.csv"
 s2_url <- "https://raw.githubusercontent.com/phipsonlab/jazzPanda_vignette/main/Xenium_rep2_supervised_celltype.csv"
 # Download the file
@@ -69,7 +68,6 @@ get_xenium_data<-function(path,mtx_name, trans_name="transcript_info.csv.gz",
 }
 
 rep1_path <- 'path/to/rep1/out/directory'
-rep1_path="/stornext/Bioinf/data/lab_phipson/data/xenium_human_breast_cancer/rep1/"
 rep1 = get_xenium_data(rep1_path,
                 mtx_name="cell_feature_matrix",
                 trans_name="transcripts.csv.gz",
@@ -181,7 +179,6 @@ rep1_neg = list(trans_info=trans_neg,
 
 # process the rep2 in the same way
 rep2_path <- 'path/to/rep2/out/directory'
-rep2_path="/stornext/Bioinf/data/lab_phipson/data/xenium_human_breast_cancer/rep2/"
 rep2 = get_xenium_data(rep2_path,
                 mtx_name="cell_feature_matrix",
                 trans_name="transcripts.csv.gz",

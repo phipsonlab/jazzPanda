@@ -16,7 +16,9 @@ A data frame with 1815 rows and and 6 variables:
 }
 }
 \source{
-\url{https://cf.10xgenomics.com/samples/xenium/1.0.1/Xenium_FFPE_Human_Breast_Cancer_Rep2/Xenium_FFPE_Human_Breast_Cancer_Rep2_outs.zip}
+\url{https://cf.10xgenomics.com/samples/xenium/1.0.1/
+Xenium_FFPE_Human_Breast_Cancer_Rep2/Xenium_FFPE_Human_
+Breast_Cancer_Rep2_outs.zip}
 }
 \usage{
 data(rep2_clusters)

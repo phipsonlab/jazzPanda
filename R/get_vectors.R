@@ -432,7 +432,7 @@ get_vectors<- function(data_lst, cluster_info,cm_lst=NULL, bin_type, bin_param,
             stop("Invalid input all_genes, should be a vector of character")}
         req_cols <- c("x", "y","feature_name")
         for (i in names(data_lst)){
-            rpp = data_lst[[i]]
+            rpp <- data_lst[[i]]
             if (length(setdiff(req_cols, colnames(rpp$trans_info))) > 0)
                 stop("Invalid column names detected in input data_lst.
                         Must contain columns 'x', 'y',
