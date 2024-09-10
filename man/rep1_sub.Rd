@@ -13,9 +13,9 @@ A list of named matrices:
 }
 }
 \source{
-\url{https://cf.10xgenomics.com/samples/xenium/1.0.1/
+<https://cf.10xgenomics.com/samples/xenium/1.0.1/
 Xenium_FFPE_Human_Breast_Cancer_Rep1/
-Xenium_FFPE_Human_Breast_Cancer_Rep1_outs.zip}
+Xenium_FFPE_Human_Breast_Cancer_Rep1_outs.zip>
 }
 \usage{
 data(rep1_sub)
