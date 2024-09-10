@@ -10,8 +10,8 @@
 #' }
 #' @usage data(rep1_sub)
 #' @return List
-#' @source \url{https://cf.10xgenomics.com/samples/xenium/1.0.1/\allowbreak 
-#' Xenium_FFPE_Human_Breast_Cancer_Rep1/Xenium_FFPE_Human_Breast\allowbreak
+#' @source \url{https://cf.10xgenomics.com/samples/xenium/1.0.1/
+#' Xenium_FFPE_Human_Breast_Cancer_Rep1/Xenium_FFPE_Human_Breast
 #' _Cancer_Rep1_outs.zip}
 "rep1_sub"
 
@@ -32,8 +32,8 @@
 #' }
 #' @usage data(rep1_clusters)
 #' @return  data frame
-#' @source \url{https://cf.10xgenomics.com/samples/xenium/1.0.1/\allowbreak
-#' Xenium_FFPE_Human_Breast_Cancer_Rep1/Xenium_FFPE_Human_Breast_\allowbreak
+#' @source \url{https://cf.10xgenomics.com/samples/xenium/1.0.1/
+#' Xenium_FFPE_Human_Breast_Cancer_Rep1/Xenium_FFPE_Human_Breast_
 #' Cancer_Rep1_outs.zip}
 "rep1_clusters"
 
@@ -51,8 +51,8 @@
 #' }
 #' @usage data(rep1_neg)
 #' @return List
-#' @source \url{https://cf.10xgenomics.com/samples/xenium/1.0.1/\allowbreak
-#' Xenium_FFPE_Human_Breast_Cancer_Rep1/Xenium_FFPE_Human_Breast_\allowbreak
+#' @source \url{https://cf.10xgenomics.com/samples/xenium/1.0.1/
+#' Xenium_FFPE_Human_Breast_Cancer_Rep1/Xenium_FFPE_Human_Breast_
 #' Cancer_Rep1_outs.zip}
 "rep1_neg"
 
@@ -69,8 +69,8 @@
 #' }
 #' @usage data(rep2_sub)
 #' @return List
-#' @source \url{https://cf.10xgenomics.com/samples/xenium/1.0.1/\allowbreak
-#' Xenium_FFPE_Human_Breast_Cancer_Rep2/Xenium_FFPE_Human_Breast_\allowbreak
+#' @source \url{https://cf.10xgenomics.com/samples/xenium/1.0.1/
+#' Xenium_FFPE_Human_Breast_Cancer_Rep2/Xenium_FFPE_Human_Breast_
 #' Cancer_Rep2_outs.zip}
 "rep2_sub"
 
@@ -91,8 +91,8 @@
 #' }
 #' @usage data(rep2_clusters)
 #' @return  data frame
-#' @source \url{https://cf.10xgenomics.com/samples/xenium/1.0.1/\allowbreak
-#' Xenium_FFPE_Human_Breast_Cancer_Rep2/Xenium_FFPE_Human_\allowbreak
+#' @source \url{https://cf.10xgenomics.com/samples/xenium/1.0.1/
+#' Xenium_FFPE_Human_Breast_Cancer_Rep2/Xenium_FFPE_Human_
 #' Breast_Cancer_Rep2_outs.zip}
 "rep2_clusters"
 
@@ -110,7 +110,7 @@
 #' }
 #' @usage data(rep2_neg)
 #' @return List
-#' @source \url{https://cf.10xgenomics.com/samples/xenium/1.0.1/\allowbreak
-#' Xenium_FFPE_Human_Breast_Cancer_Rep2/Xenium_FFPE_Human_Breast_\allowbreak
+#' @source \url{https://cf.10xgenomics.com/samples/xenium/1.0.1/
+#' Xenium_FFPE_Human_Breast_Cancer_Rep2/Xenium_FFPE_Human_Breast_
 #' Cancer_Rep2_outs.zip}
 "rep2_neg"
