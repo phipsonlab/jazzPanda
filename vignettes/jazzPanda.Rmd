@@ -173,7 +173,7 @@ If you have a Seurat object, you can build the required object as follows.
 The defined example_vectors_cm/example_vectors_tr can be passed 
 to `lasso_markers` to identify marker genes. 
 
-### from a SpatialExperiment object 
+### From a SpatialExperiment object 
 If you have a SpatialExperiment or SpatialFeatureExperiment object, 
 you can generate the required input for creating the spatial vectors by 
 calling `convert_data` function. 
@@ -254,7 +254,7 @@ example_vectors_tr <- get_vectors(trans_lst= example_lst$trans_lst,
 
 ```
 
-### from a SpatialFeatureExperiment object 
+### From a SpatialFeatureExperiment object 
 
 ```{r, eval=FALSE}
 sfe_example <- toSpatialFeatureExperiment(spe_example)
@@ -282,7 +282,7 @@ example_vectors_tr <- get_vectors(trans_lst= example_sfe_lst$trans_lst,
 
 
 ```
-### from a Seurat object 
+### From a Seurat object 
 ```{r eval=FALSE}
 # cm is the count matrix
 seu_obj =Seurat::CreateSeuratObject(counts = cm)
