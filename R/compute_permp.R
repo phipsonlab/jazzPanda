@@ -33,7 +33,8 @@ compute_observation<- function(data, cluster_info,
                                 correlation_method = "pearson",
                                 all_genes=all_genes,
                                 bin_type, bin_param, w_x, w_y){
-    vectors_lst <- get_vectors(data_lst=list(data),
+    
+    vectors_lst <- get_vectors(trans_lst=data,
                                 cluster_info = cluster_info,
                                 bin_type=bin_type,
                                 bin_param=bin_param,
@@ -137,7 +138,8 @@ compute_permutation<- function(cluster_info, perm.size = 1000,
 
 #' @description
 #' This function will run permutation framework to compute a p-value for the
-#' correlation between the vectorised genes and clusters each cluster.
+#' correlation between the vectorised genes and clusters each cluster for one 
+#' sample.
 #'
 #' @details
 #' To get a permutation p-value for the correlation between a gene
@@ -228,9 +230,8 @@ compute_permutation<- function(cluster_info, perm.size = 1000,
 #'          floor(min(clusters$y))),
 #'       max(ceiling(max(trans_info$y)),
 #'           ceiling(max(clusters$y))))
-
-#' rep1 = list(trans_info = trans_info)
-#' perm_res_lst = compute_permp(data=rep1,
+#'           
+#' perm_res_lst = compute_permp(data=list("sample1"=trans_info),
 #'                     cluster_info=clusters,
 #'                     perm.size=100,
 #'                     bin_type="square",

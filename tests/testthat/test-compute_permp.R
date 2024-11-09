@@ -32,7 +32,7 @@ w_y =  c(min(floor(min(trans_info$y)),
          max(ceiling(max(trans_info$y)),
              ceiling(max(clusters$y))))
 
-rep1 = list(trans_info = trans_info)
+rep1 = list(trans_info)
 
 
 test_that("Invaid input",{

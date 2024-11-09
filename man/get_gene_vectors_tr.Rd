@@ -5,7 +5,7 @@
 \title{Create spatial vectors for genes from transcript coordinates}
 \usage{
 get_gene_vectors_tr(
-  data_lst,
+  trans_lst,
   all_genes,
   bin_type,
   bin_param,
@@ -15,9 +15,9 @@ get_gene_vectors_tr(
 )
 }
 \arguments{
-\item{data_lst}{A list of list. Every nested list refers to one sample,
-which must contain at least one matrix with transcript coordinates.
-Optional parameter.}
+\item{trans_lst}{If specified, it is a list of named dataframes. 
+Each dataframe refers to one sample and shows the transcript detection 
+coordinates for each gene. Optional parameter.}
 
 \item{all_genes}{A vector of strings giving the name of the genes you want to
 test. This will be used as column names for one of the result matrix

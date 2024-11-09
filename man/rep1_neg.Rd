@@ -5,13 +5,12 @@
 \alias{rep1_neg}
 \title{Rep1 negative control genes within the selected region.}
 \format{
-A list of named matrices 
+A data frame with 237 rows and 4 variables:
 \describe{
-    \item{cm}{the count matrix for negative control genes}
-    \item{trans_info}{a data frame containing the coordinates 
-                         for every transcript}
-    \item{probe}{names of negative control probe genes}
-    \item{codeword}{names of negative control codeword genes}
+    \item{x}{x coordinates}
+    \item{y}{y coordiantes}
+    \item{feature_name}{negative control probe name}
+    \item{category}{negative control category}
 }
 }
 \source{
@@ -26,6 +25,7 @@ data(rep1_neg)
 List
 }
 \description{
-A list of named matrices
+A data frame containing the coordinates for every negative control detection
+for rep1
 }
 \keyword{datasets}

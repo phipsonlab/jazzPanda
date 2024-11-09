@@ -1,12 +1,12 @@
 #' A small section of Xenium human breast cancer rep1.
 #'
-#' A list of named matrices
+#' A data frame containing the coordinates for every transcript
 #'
-#' @format A list of named matrices:
+#' @format A data frame with 79576 rows and 3 variables:
 #' \describe{
-#'     \item{cm}{the count matrix}
-#'     \item{trans_info}{a data frame containing the coordinates for 
-#'                      every transcript}
+#'     \item{x}{x coordinates}
+#'     \item{y}{y coordiantes}
+#'     \item{feature_name}{transcript name}
 #' }
 #' @usage data(rep1_sub)
 #' @return List
@@ -39,15 +39,15 @@
 
 #' Rep1 negative control genes within the selected region.
 #'
-#' A list of named matrices
+#' A data frame containing the coordinates for every negative control detection
+#' for rep1  
 #'
-#' @format A list of named matrices 
+#' @format A data frame with 237 rows and 4 variables:
 #' \describe{
-#'     \item{cm}{the count matrix for negative control genes}
-#'     \item{trans_info}{a data frame containing the coordinates 
-#'                          for every transcript}
-#'     \item{probe}{names of negative control probe genes}
-#'     \item{codeword}{names of negative control codeword genes}
+#'     \item{x}{x coordinates}
+#'     \item{y}{y coordiantes}
+#'     \item{feature_name}{negative control probe name}
+#'     \item{category}{negative control category}
 #' }
 #' @usage data(rep1_neg)
 #' @return List
@@ -59,13 +59,11 @@
 
 #' A small section of Xenium human breast cancer rep2.
 #'
-#' A list of named matrices
-#'
-#' @format A list of named matrices 
+#' @format A data frame with 90375 rows and 3 variables:
 #' \describe{
-#'     \item{cm}{the count matrix}
-#'     \item{trans_info}{a data frame containing the coordiantes 
-#'                      for every transcript}
+#'     \item{x}{x coordinates}
+#'     \item{y}{y coordiantes}
+#'     \item{feature_name}{transcript name}
 #' }
 #' @usage data(rep2_sub)
 #' @return List
@@ -98,15 +96,15 @@
 
 #' Rep2 negative control genes within the selected region.
 #'
-#' A list of named matrices 
+#' A data frame containing the coordinates for every negative control detection 
+#' for rep2
 #'
-#' @format A list of named matrices:
+#' @format A data frame with 98 rows and 4 variables:
 #' \describe{
-#'     \item{cm}{the count matrix for negative control genes}
-#'     \item{trans_info}{a data frame containing the coordinates for 
-#'                      every transcript}
-#'     \item{probe}{names of negative control probe genes}
-#'     \item{codeword}{names of negative control codeword genes}
+#'     \item{x}{x coordinates}
+#'     \item{y}{y coordiantes}
+#'     \item{feature_name}{negative control probe name}
+#'.    \item{category}{negative control category}
 #' }
 #' @usage data(rep2_neg)
 #' @return List

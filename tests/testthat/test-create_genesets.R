@@ -10,54 +10,53 @@ trans = as.data.frame(rbind(cbind(x = runif(10, min=1, max=10),
 trans$x = as.numeric(trans$x)
 trans$y = as.numeric(trans$y)
 
-data=list(trans_info=trans)
-data_invalid = list(trans_info=trans, dummy_nme = list())
-data_invalid_noname = list(trans)
+data=trans
+
 invalid_trans_df = trans[,c("x","feature_name")]
-data_invalid_missing_trans_cols = list(trans_info=invalid_trans_df)
-geneset_res_A = create_genesets(data_lst=list("rep1"= data),
+#data_invalid_missing_trans_cols = list(trans_info=invalid_trans_df)
+geneset_res_A = create_genesets(data_lst=list("rep1"= trans),
                                 name_lst=list(dummy_W=c("A")),
                                 bin_type="square",
-                                bin_param=c(2,2),
+                                bin_param=c(2,2),cluster_info = NULL,
                                 w_x=c(0,25), w_y=c(0,25))
-geneset_res_A_hex = create_genesets(data_lst=list("rep1"= data),
+geneset_res_A_hex = create_genesets(data_lst=list("rep1"= trans),
                                 name_lst=list(dummy_W=c("A")),
                                 bin_type="hexagon",
-                                bin_param=c(10),
+                                bin_param=c(10),cluster_info = NULL,
                                 w_x=c(0,25), w_y=c(0,25))
 test_that("Invaid input",{
-expect_error(create_genesets(data_lst=list("rep1"= data),
+expect_error(create_genesets(data_lst=list("rep1"= trans),
                              name_lst=list(dummy_W=c("A")),
                              bin_type="hexagon",
-                             bin_param=c(2,2),
+                             bin_param=c(2,2),cluster_info = NULL,
                              w_x=c(0,25), w_y=c(0,25)))
-expect_error(create_genesets(data_lst=list("rep1"= data),
+expect_error(create_genesets(data_lst=list("rep1"= trans),
                              name_lst=list(dummy_W=c("A")),
                              bin_type="circle",
-                             bin_param=c(2,2),
+                             bin_param=c(2,2),cluster_info = NULL,
                              w_x=c(0,25), w_y=c(0,25)))
-expect_error(create_genesets(data_lst=list("rep1"= data),
+expect_error(create_genesets(data_lst=list("rep1"= trans),
                              name_lst=list(dummy_W=c("A")),
                              bin_type="square",
-                             bin_param=c(2),
+                             bin_param=c(2),cluster_info = NULL,
                              w_x=c(0,25), w_y=c(0,25)))
 # Line 47 
-expect_error(create_genesets(data_lst=data_invalid,
+expect_error(create_genesets(data_lst=list("a" = trans, "b" = list()),
                              name_lst=list(dummy_W=c("A")),
                              bin_type="square",
-                             bin_param=c(2,2),
+                             bin_param=c(2,2),cluster_info = NULL,
                              w_x=c(0,25), w_y=c(0,25)))
 
-expect_error(create_genesets(data_lst=list(data_invalid_noname),
+expect_error(create_genesets(data_lst= list(trans),
                              name_lst=list(dummy_W=c("A")),
                              bin_type="square",
-                             bin_param=c(2,2),
+                             bin_param=c(2,2),cluster_info = NULL,
                              w_x=c(0,25), w_y=c(0,25)))
 
-expect_error(create_genesets(data_lst=list("rep1"= data_invalid_missing_trans_cols),
+expect_error(create_genesets(data_lst=list("rep1"= invalid_trans_df),
                              name_lst=list(dummy_W=c("A")),
                              bin_type="square",
-                             bin_param=c(2,2),
+                             bin_param=c(2,2),cluster_info = NULL,
                              w_x=c(0,25), w_y=c(0,25)))
 
 })
@@ -69,7 +68,7 @@ test_that("Test can create vectors for a single gene set with a single element A
 geneset_res_C = create_genesets(data_lst=list("rep1"= data),
                                 name_lst=list(dummy_W=c("C")),
                                 bin_type="square",
-                                bin_param=c(2,2),
+                                bin_param=c(2,2),cluster_info = NULL,
                                 w_x=c(0,25), w_y=c(0,25))
 
 test_that("Test can create vectors for a single gene set with a single element C", {
@@ -80,7 +79,7 @@ test_that("Test can create vectors for a single gene set with a single element C
 geneset_res1 = create_genesets(data_lst=list("rep1"= data),
                                name_lst=list(dummy_W=c("A","B")),
                                bin_type="square",
-                               bin_param=c(2,2),
+                               bin_param=c(2,2),cluster_info = NULL,
                                w_x=c(0,25), w_y=c(0,25))
 
 test_that("Test can create vectors for a single gene set with multiple elements", {
@@ -92,7 +91,7 @@ geneset_res2 = create_genesets(data_lst=list("rep1"= data),
                                name_lst=list(dummy_A=c("A","C"),
                                              dummy_B=c("A","B","C")),
                                bin_type="square",
-                               bin_param=c(2,2),
+                               bin_param=c(2,2),cluster_info = NULL,
                                w_x=c(0,25), w_y=c(0,25))
 
 test_that("Test can create vectors for gene sets- output mathces", {
@@ -105,7 +104,7 @@ test_that("Test can create vectors for gene sets- output mathces", {
 geneset_res3 = create_genesets(data_lst=list("rep1"= data),
                                name_lst=list(dummy_A=c("A","B","C","C"),
                                              dummy_B=c("A","B","C")),
-                               bin_type="square",
+                               bin_type="square",cluster_info = NULL,
                                bin_param=c(2,2),
                                w_x=c(0,25), w_y=c(0,25))
 
@@ -119,7 +118,7 @@ geneset_res4 = create_genesets(data_lst=list("rep1"= data),
                                name_lst=list(dummy_A=c("F","G"),
                                              dummy_B=c("A","B","C")),
                                bin_type="square",
-                               bin_param=c(2,2),
+                               bin_param=c(2,2),cluster_info = NULL,
                                w_x=c(0,25), w_y=c(0,25))
 
 test_that("Test can create vectors for gene sets with non-overlapped genes", {
@@ -185,9 +184,8 @@ trans = as.data.frame(rbind(cbind(x = runif(10, min=1, max=10),
 trans$x = as.numeric(trans$x)
 trans$y = as.numeric(trans$y)
 
-data=list(trans_info=trans)
 
-check_res1 = check_geneset_input(data_lst=list("rep1"= data),
+check_res1 = check_geneset_input(data_lst=list("rep1"= trans),
                                  bin_type="square",
                                  bin_param=c(2,2),
                                  w_x=c(0,25), w_y=c(0,25),cluster_info=NULL)
@@ -198,7 +196,7 @@ test_that("Test can validate the correct input - square bins", {
 })
 
 
-check_res2 = check_geneset_input(data_lst=list("rep1"= data),
+check_res2 = check_geneset_input(data_lst=list("rep1"= trans),
                                  bin_type="hexagon",
                                  bin_param=c(2),
                                  w_x=c(0,25), w_y=c(0,25),
@@ -210,7 +208,7 @@ test_that("Test can validate the correct input - hex bins", {
 })
 
 
-check_res3 = check_geneset_input(data_lst=list("rep1"= data),
+check_res3 = check_geneset_input(data_lst=list("rep1"= trans),
                                  bin_type="hexagon",
                                  bin_param=c(5),
                                  w_x=c(0,25), w_y=c(0,25),

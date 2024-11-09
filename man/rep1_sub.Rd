@@ -5,11 +5,11 @@
 \alias{rep1_sub}
 \title{A small section of Xenium human breast cancer rep1.}
 \format{
-A list of named matrices:
+A data frame with 79576 rows and 3 variables:
 \describe{
-    \item{cm}{the count matrix}
-    \item{trans_info}{a data frame containing the coordinates for 
-                     every transcript}
+    \item{x}{x coordinates}
+    \item{y}{y coordiantes}
+    \item{feature_name}{transcript name}
 }
 }
 \source{
@@ -24,6 +24,6 @@ data(rep1_sub)
 List
 }
 \description{
-A list of named matrices
+A data frame containing the coordinates for every transcript
 }
 \keyword{datasets}

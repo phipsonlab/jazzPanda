@@ -1,3 +1,12 @@
+# jazzPanda 0.1.1
+* Add the `convert_data()` function to expand interoperability with 
+Bioconductor. Support input objects from 
+SingleCellExperiment/SpatialExperimentSpatialFeatureExperiment class 
+* Modify one input type for function `get_vectors()`. 
+Renamed input parameter `data_lst` as `trans_lst` specifically for storing
+transcript coordinates only. 
+
+
 # jazzPanda 0.0.1
 * This package is renamed as jazzPanda 
 

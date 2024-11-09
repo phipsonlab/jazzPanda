@@ -5,7 +5,7 @@ clusters$sample="rep1"
 
 w_x=c(0,25)
 w_y=c(0,25)
-vecs_lst = get_vectors(data_lst= NULL, cluster_info = clusters,
+vecs_lst = get_vectors(trans_lst= NULL, cluster_info = clusters,
                        bin_type = "square",
                        bin_param = c(2,2),
                        all_genes = NULL,
@@ -25,10 +25,9 @@ test_that("Test can only vectorise clusters - output vector matches", {
 trans = data.frame(x = c(1,2,20,21,22,23,24),
                    y = c(23, 24, 1,2,3,4,5),
                    feature_name="A")
-data=list(trans_info=trans)
 w_x=c(0,25)
 w_y=c(0,25)
-vecs_lst_gene = get_vectors(data_lst= list("rep1"=data),
+vecs_lst_gene = get_vectors(trans_lst= list("rep1"=trans),
                             cluster_info = NULL,
                             bin_type = "square",
                             bin_param = c(2,2),
@@ -56,11 +55,10 @@ clusters = data.frame(x = c(3, 5,11,21,2,23,19),
                       y = c(20, 24, 1,2,3,4,5), cluster="cluster_1")
 clusters$sample="rep1"
 invalid_cluster = clusters[, c("x","y")]
-data=list(trans_info=trans)
-invalid_data=list(trans_info=trans[, c("x","y")])
+invalid_data=trans[, c("x","y")]
 w_x=c(0,25)
 w_y=c(0,25)
-vecs_lst_gene = get_vectors(data_lst= list("rep1"= data),
+vecs_lst_gene = get_vectors(trans_lst= list("rep1"= trans),
                             cluster_info = clusters,
                             bin_type = "square",
                             bin_param = c(2,2),
@@ -75,37 +73,37 @@ test_that("Test can vectorise genes and clusters - output mathces", {
                                                      2, 0, 0, 5))
 })
 test_that("Invaid input",{
-    expect_error(get_vectors(data_lst=NULL, 
+    expect_error(get_vectors(trans_lst=NULL, 
                                 cluster_info = clusters,
                                 bin_type="hexagon",
                                 bin_param=c(2,2),
                                 w_x=c(0,25), w_y=c(0,25)))
-    expect_error(get_vectors(data_lst=NULL, 
+    expect_error(get_vectors(trans_lst=NULL, 
                                 cluster_info = clusters,
                                 bin_type="circle",
                                 bin_param=c(2,2),
                                 w_x=c(0,25), w_y=c(0,25)))
-    expect_error(get_vectors(data_lst=NULL, 
+    expect_error(get_vectors(trans_lst=NULL, 
                                 cluster_info = clusters,
                                 bin_type="square",
                                 bin_param=c(2),
                                 w_x=c(0,25), w_y=c(0,25)))
-    expect_error(get_vectors(data_lst=NULL, cluster_info = NULL,
+    expect_error(get_vectors(trans_lst=NULL, cluster_info = NULL,
                              bin_type="hexagon",
                              bin_param=c(2),
                              w_x=c(0,25), w_y=c(0,25)))
-    expect_error(get_vectors(data_lst=NULL, 
+    expect_error(get_vectors(trans_lst=NULL, 
                                  cluster_info=invalid_cluster,
                                  bin_type="square",
                                  bin_param=c(2,2),
                                  w_x=c(0,25), w_y=c(0,25)))
-    expect_error(get_vectors(data_lst= list("rep1"= data),, 
+    expect_error(get_vectors(trans_lst= list("rep1"= data),, 
                              all_genes = c(1,2,3),
                              cluster_info=clusters,
                              bin_type="square",
                              bin_param=c(2,2),
                              w_x=c(0,25), w_y=c(0,25)))
-    expect_error(get_vectors(data_lst= list("rep1"= invalid_data),, 
+    expect_error(get_vectors(trans_lst= list("rep1"=invalid_data),, 
                              all_genes = c("A","B","C"),
                              bin_type="square",cluster_info=NULL,
                              bin_param=c(2,2),
@@ -137,7 +135,7 @@ w_y=c(0,25)
 # cell_6 = (0,0,0,1)
 # cell_7 = (0,0,0,1)
 
-vecs_lst = get_vectors(data_lst= NULL, cluster_info = clusters,
+vecs_lst = get_vectors(trans_lst= NULL, cluster_info = clusters,
                        cm_lst=list(rep1=cm),
                        bin_type = "square",
                        bin_param = c(2,2),
@@ -153,7 +151,7 @@ test_that("Test can use count matrix (square) - output vector matches", {
     
 })
 test_that("Invaid input",{
-    expect_error(get_vectors(data_lst=NULL,
+    expect_error(get_vectors(trans_lst=NULL,
                                 cm_lst=list(rep1=cm),
                                 cluster_info = NULL,
                                 bin_type="square",
@@ -218,13 +216,13 @@ transcript_df = as.data.frame(rbind(cbind(x = runif(min=12, max=24, n = 4),
 
 transcript_df$x=as.numeric(transcript_df$x)
 transcript_df$y=as.numeric(transcript_df$y)
-vecs_lst_cm = get_vectors(data_lst= NULL, cluster_info = clusters,
+vecs_lst_cm = get_vectors(trans_lst= NULL, cluster_info = clusters,
                           cm_lst=list(rep1=cm),
                           bin_type = "square",
                           bin_param = c(2,2),
                           all_genes = row.names(cm),
                           w_x = w_x, w_y=w_y)
-vecs_lst_tr = get_vectors(data_lst= list("rep1" = list(trans_info = transcript_df)),
+vecs_lst_tr = get_vectors(trans_lst= list("rep1" =transcript_df),
                           cluster_info = clusters,
                           bin_type = "square",
                           bin_param = c(2,2),
@@ -241,7 +239,7 @@ test_that("Test count matrix vectors match with transcript vectors - cluster vec
     
 })
 # cell_1 = c()
-vecs_lst = get_vectors(data_lst= NULL, cluster_info = clusters,
+vecs_lst = get_vectors(trans_lst= NULL, cluster_info = clusters,
                        cm_lst=list(rep1=cm),
                        bin_type = "hexagon",
                        bin_param = c(10),
@@ -273,11 +271,9 @@ trans$y = as.numeric(trans$y)
 clusters = data.frame(x = c(3, 5,11,21,2,23,19),
                       y = c(20, 24, 1,2,3,4,5), cluster="cluster_1")
 clusters$sample="rep1"
-
-data=list(trans_info=trans)
 w_x=c(0,25)
 w_y=c(0,25)
-vecs_lst_gene = get_vectors(data_lst= list("rep1"= data),
+vecs_lst_gene = get_vectors(trans_lst= list("rep1"= trans),
                             cluster_info = clusters,
                             bin_type = "square",
                             bin_param = c(2,2),
@@ -309,10 +305,9 @@ clusters = data.frame(x = c(3, 5,11,21,2,23,19),
                       y = c(20, 24, 1,2,3,4,5), cluster="cluster_1")
 clusters$sample="rep1"
 
-data=list(trans_info=trans)
 w_x=c(0,25)
 w_y=c(0,25)
-vecs_lst_gene = get_vectors(data_lst= list("rep1"= data),
+vecs_lst_gene = get_vectors(trans_lst= list("rep1"= trans),
                             cluster_info = clusters,
                             bin_type = "square",
                             bin_param = c(2,2),
@@ -353,14 +348,14 @@ coords_data <- do.call(rbind, lapply(feature_names, generate_coords))
 
 head(coords_data)
 
-vector_lst_1core = get_vectors(data_lst= list(sample1 = list(trans_info=coords_data)),
+vector_lst_1core = get_vectors(trans_lst= list("sample1" = coords_data),
                                 cluster_info = NULL,
                                 bin_type="square",
                                 bin_param=c(50,50),
                                 all_genes = feature_names,
                                 w_x=c(0,10000), w_y=c(0,10000), n_cores = 1)
 
-vector_lst_5core = get_vectors(data_lst= list(sample1 =list(trans_info=coords_data)),
+vector_lst_5core = get_vectors(trans_lst= list("sample1"= coords_data),
                                cluster_info = NULL,
                                bin_type="square",
                                bin_param=c(50,50),

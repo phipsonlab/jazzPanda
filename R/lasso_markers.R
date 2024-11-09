@@ -298,8 +298,8 @@ get_lasso_coef <- function(i_gene, gene_mt,vec_cluster,cluster_names,n_fold=10,
 #'           floor(min(clusters$y))),
 #'       max(ceiling(max(trans_info$y)),
 #'           ceiling(max(clusters$y))))
-#' data = list(trans_info = trans_info)
-#' vecs_lst = get_vectors(data_lst=list(rep1=data), cluster_info = clusters,
+#' vecs_lst = get_vectors(trans_lst=list(rep1=trans_info), 
+#'                     cluster_info = clusters,
 #'                     bin_type = "square",
 #'                     bin_param = c(20,20),
 #'                     all_genes =c("gene_A1","gene_A2","gene_B1","gene_B2"),

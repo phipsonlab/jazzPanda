@@ -3,9 +3,9 @@
 #' @description
 #' This function will build gene vectors based on the transcript coordinates of
 #' every gene
-#' @param data_lst A list of list. Every nested list refers to one sample,
-#' which must contain at least one matrix with transcript coordinates.
-#' Optional parameter.
+#' @param trans_lst If specified, it is a list of named dataframes. 
+#' Each dataframe refers to one sample and shows the transcript detection 
+#' coordinates for each gene. Optional parameter.
 #' @param all_genes A vector of strings giving the name of the genes you want to
 #' test. This will be used as column names for one of the result matrix
 #' \code{gene_mt}.
@@ -24,10 +24,10 @@
 #' @importFrom BiocParallel bplapply
 #' @return a matrix contains the transcript count in each grid.
 #' Each row refers to a grid, and each column refers to a gene.
-get_gene_vectors_tr<- function(data_lst, all_genes, bin_type, bin_param,
+get_gene_vectors_tr<- function(trans_lst, all_genes, bin_type, bin_param,
                                 bin_length, w_x, w_y){
     n_genes <- length(all_genes)
-    n_samples <- length(data_lst)
+    n_samples <- length(trans_lst)
     vec_gene_mt <- as.data.frame(matrix(0, ncol=n_genes,
                                         nrow=bin_length*n_samples))
     colnames(vec_gene_mt) <- all_genes
@@ -37,8 +37,8 @@ get_gene_vectors_tr<- function(data_lst, all_genes, bin_type, bin_param,
     }
     calculate_one_gene <- function(i_gene){
         vec_gene <- c()
-        for (rpp in data_lst){
-            curr <- rpp$trans_info[rpp$trans_info$feature_name==i_gene,
+        for (rpp in trans_lst){
+            curr <- rpp[rpp$feature_name==i_gene,
                                     c("x","y")] %>% distinct()
             gene_ppp <- ppp(curr$x,curr$y,w_x, w_y)
             # create gene vector
@@ -306,12 +306,12 @@ check_binning<- function(bin_param, bin_type, w_x, w_y){
 #' sample information.
 #'
 #' Moreover, this function can vectorise genes and clusters separately based
-#' on the input. If \code{data_lst} is NULL, this function will
+#' on the input. If \code{trans_lst} is NULL, this function will
 #' return vectorised clusters based on \code{cluster_info}.
 #' If \code{cluster_info} is NULL, this function will return vectorised genes
-#' based on \code{data_lst}.
+#' based on \code{trans_lst}.
 #'
-#' @param data_lst A list of list. Every nested list refers to one sample,
+#' @param trans_lst A list of list. Every nested list refers to one sample,
 #' which must contain at least one matrix with transcript coordinates.
 #' Optional parameter.
 #' @param cluster_info A dataframe/matrix containing the centroid coordinates,
@@ -359,7 +359,7 @@ check_binning<- function(bin_param, bin_type, w_x, w_y){
 #' @importFrom BiocParallel SnowParam
 #' @export
 #' @examples
-#' # simulate coordiantes for genes
+#' # simulate coordinates for genes
 #' trans = as.data.frame(rbind(cbind(x = c(1,2,20,21,22,23,24),
 #'                                  y = c(23, 24, 1,2,3,4,5),
 #'                                  feature_name="A"),
@@ -374,8 +374,7 @@ check_binning<- function(bin_param, bin_type, w_x, w_y){
 #' clusters = data.frame(x = c(3, 5,11,21,2,23,19),
 #'                     y = c(20, 24, 1,2,3,4,5), cluster="cluster_1")
 #' clusters$sample="rep1"
-#' data=list(trans_info=trans)
-#' vecs_lst_gene = get_vectors(data_lst= list("rep1"= data),
+#' vecs_lst_gene = get_vectors(trans_lst= list("rep1"= trans),
 #'                             cluster_info = clusters,
 #'                             bin_type = "square",
 #'                             bin_param = c(2,2),
@@ -396,7 +395,7 @@ check_binning<- function(bin_param, bin_type, w_x, w_y){
 #' clusters$sample="rep1"
 #' clusters$cell_id= colnames(cm)
 
-#' vecs_lst = get_vectors(data_lst= NULL, cluster_info = clusters,
+#' vecs_lst = get_vectors(trans_lst= NULL, cluster_info = clusters,
 #'                         cm_lst=list(rep1=cm),
 #'                         bin_type = "square",
 #'                         bin_param = c(2,2),
@@ -405,10 +404,10 @@ check_binning<- function(bin_param, bin_type, w_x, w_y){
 #'
 #'
 #'
-get_vectors<- function(data_lst, cluster_info,cm_lst=NULL, bin_type, bin_param,
+get_vectors<- function(trans_lst, cluster_info,cm_lst=NULL, bin_type, bin_param,
                         all_genes, w_x, w_y, n_cores=1){
     # check input
-    if ((is.null(data_lst) ==TRUE) & 
+    if ((is.null(trans_lst) ==TRUE) & 
         (is.null(cluster_info) == TRUE) & (is.null(cm_lst) == TRUE)){
         stop("Invalid input, no coordinates information is specified") }
     if ((is.null(cluster_info) == FALSE)){
@@ -426,19 +425,19 @@ get_vectors<- function(data_lst, cluster_info,cm_lst=NULL, bin_type, bin_param,
                 stop("Invalid columns in input clusters. Input cluster_info
                     must contain columns 'x', 'y', 'cluster',
                     'sample','cell_id' for every cell") } } }
-    if ((is.null(data_lst) == FALSE) ){
+    if ((is.null(trans_lst) == FALSE) ){
         
         if ((is.vector(all_genes) == FALSE)){
             stop("Invalid input all_genes, should be a vector of character")}
         req_cols <- c("x", "y","feature_name")
-        for (i in names(data_lst)){
-            rpp <- data_lst[[i]]
-            if (length(setdiff(req_cols, colnames(rpp$trans_info))) > 0)
-                stop("Invalid column names detected in input data_lst.
+        for (i in names(trans_lst)){
+            rpp <- trans_lst[[i]]
+            if (length(setdiff(req_cols, colnames(rpp))) > 0)
+                stop("Invalid column names detected in input trans_lst.
                         Must contain columns 'x', 'y',
                         'feature_name' for every transcript") 
-            if(length(setdiff(all_genes,rpp$trans_info$feature_name)) >0){
-    stop("Invalid input all_genes, can not match all_genes from data_lst")} }} 
+            if(length(setdiff(all_genes,rpp$feature_name)) >0){
+    stop("Invalid input all_genes, can not match all_genes from trans_lst")} }} 
     # must provide cluster info if gene vectors are created from count matrix
     if ((is.null(cm_lst) == FALSE) & (is.null(cluster_info) == TRUE)){
         stop("Missing cluster information to build gene vector matrix.")}
@@ -452,11 +451,11 @@ get_vectors<- function(data_lst, cluster_info,cm_lst=NULL, bin_type, bin_param,
                                     bin_length=bin_length, bin_type=bin_type,
                                     bin_param=bin_param,w_x=w_x,w_y=w_y) }
     # with gene information
-    if (is.null(data_lst) == FALSE & is.null(cm_lst)== TRUE){
-        vec_gene_mt<-get_gene_vectors_tr(data_lst=data_lst,all_genes=all_genes,
-                                        bin_type=bin_type,bin_param=bin_param,
-                                        bin_length=bin_length,w_x=w_x,w_y=w_y)}
-    if (is.null(data_lst) == TRUE & is.null(cm_lst)==FALSE &
+    if (is.null(trans_lst) == FALSE & is.null(cm_lst)== TRUE){
+        vec_gene_mt<-get_gene_vectors_tr(trans_lst=trans_lst, 
+                    all_genes=all_genes,bin_type=bin_type, bin_param=bin_param,
+                    bin_length=bin_length,w_x=w_x,w_y=w_y)}
+    if (is.null(trans_lst) == TRUE & is.null(cm_lst)==FALSE &
         is.null(cluster_info)==FALSE){
         # use count matrix to build gene vector matrix
         vec_gene_mt<-get_gene_vectors_cm(cluster_info=cluster_info,
@@ -465,7 +464,7 @@ get_vectors<- function(data_lst, cluster_info,cm_lst=NULL, bin_type, bin_param,
     result <- list()
     if ((is.null(cluster_info) == FALSE) ){
         result$cluster_mt <- as.matrix(vec_cluster)}
-    if ((is.null(data_lst) == FALSE) | (is.null(cm_lst) == FALSE)){
+    if ((is.null(trans_lst) == FALSE) | (is.null(cm_lst) == FALSE)){
         result$gene_mt <- as.matrix(vec_gene_mt)}
     return (result)
 }

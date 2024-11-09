@@ -73,7 +73,8 @@ p-value. Each row refers to a gene, and each column refers to a cluster}
 }
 \description{
 This function will run permutation framework to compute a p-value for the
-correlation between the vectorised genes and clusters each cluster.
+correlation between the vectorised genes and clusters each cluster for one 
+sample.
 }
 \details{
 To get a permutation p-value for the correlation between a gene
@@ -116,8 +117,8 @@ w_y =  c(min(floor(min(trans_info$y)),
          floor(min(clusters$y))),
       max(ceiling(max(trans_info$y)),
           ceiling(max(clusters$y))))
-rep1 = list(trans_info = trans_info)
-perm_res_lst = compute_permp(data=rep1,
+          
+perm_res_lst = compute_permp(data=list("sample1"=trans_info),
                     cluster_info=clusters,
                     perm.size=100,
                     bin_type="square",

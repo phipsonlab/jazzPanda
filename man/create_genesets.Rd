@@ -62,12 +62,11 @@ trans = as.data.frame(rbind(cbind(x = runif(10, min=1, max=10),
                                feature_name="C")))
 trans$x = as.numeric(trans$x)
 trans$y = as.numeric(trans$y)
-data=list(trans_info=trans)
-geneset_res = create_genesets(data_lst=list("rep1"= data),
+geneset_res = create_genesets(data_lst=list("rep1"= trans),
                            name_lst=list(dummy_A=c("A","C"),
                                          dummy_B=c("A","B","C")),
                            bin_type="square",
                            bin_param=c(2,2),
-                           w_x=c(0,25), w_y=c(0,25))
+                           w_x=c(0,25), w_y=c(0,25), cluster_info=NULL)
 
 }

@@ -66,8 +66,8 @@ get_xenium_data<-function(path,mtx_name, trans_name="transcript_info.csv.gz",
                  codeword=row.names(r_codeword) ))
     
 }
-
 rep1_path <- 'path/to/rep1/out/directory'
+
 rep1 = get_xenium_data(rep1_path,
                 mtx_name="cell_feature_matrix",
                 trans_name="transcripts.csv.gz",
@@ -151,12 +151,9 @@ subset_genes = c("KRT7", "EPCAM", "FOXA1", # Tumor cells c1
                  )
 
 #rm_genes = row.names(rep1$cm[,keep_cells])[rowSums(rep1$cm[,keep_cells]!=0) <=10]
-trans_df = rep1$trans_info[rep1$trans_info$cell_id %in% keep_cells &
+rep1_sub = rep1$trans_info[rep1$trans_info$cell_id %in% keep_cells &
                               rep1$trans_info$feature_name %in% subset_genes ,
                            c("x","y","feature_name")]
-colnames(trans_df) = c("x","y","feature_name")
-rep1_sub = list(trans_info=trans_df)
-
 
 
 rep1_clusters_sub =  rep1_clusters[rep1_clusters$cells %in% keep_cells,]
@@ -165,20 +162,22 @@ rep1_clusters_sub$cluster=factor(rep1_clusters_sub$cluster,
                                  levels=paste("c", 1:8, sep=""))
 
 
-trans_neg = rep1$trans_info[rep1$trans_info$cell_id %in% keep_cells &
+rep1_neg = rep1$trans_info[rep1$trans_info$cell_id %in% keep_cells &
                                (rep1$trans_info$feature_name %in% c(rep1$probe, rep1$codeword)) ,
                            c("x","y","feature_name")]
-colnames(trans_df) = c("x","y","feature_name")
 # create another data object to store the negative control genes
-rep1_neg = list(trans_info=trans_neg,
-                probe=rep1$probe,
-                codeword=rep1$codeword
-)
+# rep1_neg = list(trans_info=trans_neg,
+#                 probe=rep1$probe,
+#                 codeword=rep1$codeword
+# )
+
+rep1_neg$category = "probe"
+rep1_neg[rep1_neg$feature_name %in% rep1$codeword, "category"] = "codeword"
 
 ###################
 
 # process the rep2 in the same way
-rep2_path <- 'path/to/rep2/out/directory'
+# rep2_path <- 'path/to/rep2/out/directory'
 rep2 = get_xenium_data(rep2_path,
                 mtx_name="cell_feature_matrix",
                 trans_name="transcripts.csv.gz",
@@ -228,26 +227,22 @@ keep_cells2=rep2_clusters[(rep2_clusters$x>=200 & rep2_clusters$x<=500) &
                         (rep2_clusters$y>=200 & rep2_clusters$y<=1000),
                           "cells"]
 
-trans_df = rep2$trans_info[rep2$trans_info$cell_id %in% keep_cells2 &
+rep2_sub = rep2$trans_info[rep2$trans_info$cell_id %in% keep_cells2 &
                              rep2$trans_info$feature_name %in% subset_genes ,
                            c("x","y","feature_name")]
-rep2_sub = list( trans_info=trans_df
-)
 
 rep2_clusters_sub =  rep2_clusters[rep2_clusters$cells %in% keep_cells2,]
 rep2_clusters_sub = rep2_clusters_sub[rep2_clusters_sub$cluster %in% paste("c", 1:8, sep=""),]
 rep2_clusters_sub$cluster=factor(rep2_clusters_sub$cluster,
                                  levels=paste("c", 1:8, sep=""))
 
-trans_df = rep2$trans_info[rep2$trans_info$cell_id %in% keep_cells2 &
+rep2_neg = rep2$trans_info[rep2$trans_info$cell_id %in% keep_cells2 &
                                (rep2$trans_info$feature_name %in% c(rep2$probe, rep2$codeword) ) ,
                            c("x","y","feature_name")]
 # create another data object to store the negative control genes
-rep2_neg = list(cm=rep2$cm_neg,
-                trans_info=trans_df,
-                probe=rep2$probe,
-                codeword=rep2$codeword
-)
+
+rep2_neg$category = "probe"
+rep2_neg[rep2_neg$feature_name %in% rep2$codeword, "category"] = "codeword"
 
 rep1_clusters = rep1_clusters_sub
 rep2_clusters = rep2_clusters_sub

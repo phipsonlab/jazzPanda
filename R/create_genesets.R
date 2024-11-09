@@ -1,7 +1,13 @@
 #' helper function to check the inputs passed to create geneset function
 #' 
 #' @param data_lst A list of named matrices containing the coordinates of 
-#' transcripts.
+#' transcripts or the count matrix. If the transcript coordinates are provided,
+#' the spatial vectors will be created directly from the transcript coordinates 
+#' for a given set of genes. In this case, every matrix must contain "x", "y", 
+#' "feature_name" columns. If the a list of count matrices is provided, 
+#' the spatial vectors will be defined with the cell coordinates and 
+#' the count matrix. In the second case, the parameter `cluster_info` must be 
+#' specified to provide cell coordinates.    
 #' @param bin_type A string indicating which bin shape is to be used for
 #' vectorization. One of "square" (default), "rectangle", or "hexagon".
 #' @param bin_param A numeric vector indicating the size of the bin. If the
@@ -13,7 +19,10 @@
 #' limits of enclosing box.
 #' @param w_y A numeric vector of length two specifying the y coordinate
 #' limits of enclosing box.
-#' @param cluster_info A dataframe/matrix containing the centroid coordinates,
+#' @param cluster_info If the `data_lst` contains the transcript coordinates, 
+#' this parameter must be set to NULL. 
+#' If the `data_lst` contains the count matrix, `cluster_info` should be 
+#' a dataframe/matrix containing the centroid coordinates,
 #' cluster sample label for each cell.The column names must include
 #' "x" (x coordinate), "y" (y coordinate),
 #' "cluster" (cluster label) and "sample" (sample).
@@ -26,9 +35,8 @@ check_geneset_input <- function(data_lst, bin_type, bin_param,
     if (bin_type == "hexagon"){
         if (length(bin_param) != 1){
             stop("Invalid input bin_param, bin_param should be a vector of 
-                length 2 for hexagon bins")
+length 2 for hexagon bins")
         }
-        
         w <- owin(xrange=w_x, yrange=w_y)
         H <- hextess(W=w, bin_param[1])
         bin_length <- length(H$tiles)
@@ -40,41 +48,45 @@ check_geneset_input <- function(data_lst, bin_type, bin_param,
         bin_length <- bin_param[1] * bin_param[2]
     }else{
         stop("Input bin_type is not supported. Supported bin_type is 
-                rectangle/square or hexagon.")
+rectangle/square or hexagon.")
     }
     
     if (length(unique(vapply(data_lst,class,FUN.VALUE = character(1)))) != 1) {
         stop("The input data_lst contains elements from multiple classes")
     }
-    
     if (length(names(data_lst)) == 0){
-        stop("data_lst should be a named list")
+        stop("The input data_lst should be a named list")
+    }
+    use_cm <- FALSE
+    # if the transcript coordinates are provided 
+    if (is.null(cluster_info) == TRUE){
+        req_cols_tr <- c('x', 'y', 'feature_name' )
+        req_test<-vapply(data_lst, 
+                    function(x) all(req_cols_tr %in% colnames(x)), logical(1))
+        if (all(req_test)){
+            return (list(bin_length = bin_length, use_cm=use_cm))
+        }else{
+            stop("Invalid column names detected in input data_lst. 
+To build spatial vectors from transcript coordinates, 
+each element must contain columns 'x', 'y', 
+'feature_name' for every transcript. \n 
+Please provide count matrix and specify input cluster_info 
+if want to create spatial vectors from count matrix and cell 
+coordinates")
+        }
+    }else{
+        # if the cell coordinates and the count matrix are provided 
+        req_cols_cm <- c("x","y","cluster","sample","cell_id")
+        if (length(setdiff(req_cols_cm, colnames(cluster_info))) ==0) {
+            use_cm <- TRUE
+        }else{
+            stop("Invalid columns in input cluster_info. To build spatial 
+vectors from count matrix and cell coordinates,
+input cluster_info must contain columns 'x', 'y', 'cluster', 
+'sample','cell_id' for every cell")
+        }
     }
     
-    use_cm <- FALSE
-    for (i in names(data_lst)){
-        rpp <- data_lst[[i]]
-        if (is(rpp,"list")){
-            req_cols <- c('x', 'y', 'feature_name' )
-            if (length(setdiff(req_cols, colnames(rpp$trans_info))) > 0){
-                stop("Invalid column names detected in input data_lst. 
-                Must contain columns 'x', 'y', 
-                'feature_name' for every transcript")}
-        }else if (is.matrix(rpp) ==TRUE | is.data.frame(rpp)==TRUE){
-            if (is.null(cluster_info)==TRUE){
-                stop("Missing cluster information to build gene vector matrix")
-            }
-            # must contain cell id
-            req_cols <- c("x","y","cluster","sample","cell_id")
-            if (length(setdiff(req_cols, colnames(cluster_info))) !=0){
-                stop("Invalid columns in input clusters. Input cluster_info 
-            must contain columns 'x', 'y', 'cluster', 
-            'sample','cell_id' for every cell")
-            }
-            use_cm <- TRUE
-        }
-        
-    }
     return (list(bin_length = bin_length, use_cm=use_cm))
 }
 
@@ -120,13 +132,12 @@ check_geneset_input <- function(data_lst, bin_type, bin_param,
 #'                                feature_name="C")))
 #' trans$x = as.numeric(trans$x)
 #' trans$y = as.numeric(trans$y)
-#' data=list(trans_info=trans)
-#' geneset_res = create_genesets(data_lst=list("rep1"= data),
+#' geneset_res = create_genesets(data_lst=list("rep1"= trans),
 #'                            name_lst=list(dummy_A=c("A","C"),
 #'                                          dummy_B=c("A","B","C")),
 #'                            bin_type="square",
 #'                            bin_param=c(2,2),
-#'                            w_x=c(0,25), w_y=c(0,25))
+#'                            w_x=c(0,25), w_y=c(0,25), cluster_info=NULL)
 #'
 create_genesets<-function(data_lst, name_lst, bin_type="square",
                             bin_param, w_x=w_x, w_y=w_y,
@@ -161,7 +172,7 @@ create_genesets<-function(data_lst, name_lst, bin_type="square",
                                             w_x=w_x, w_y=w_y)
                 vec_name <- c(vec_name, rowSums(vec_g))
             }else{
-                curr <- rpp$trans_info[rpp$trans_info$feature_name %in% 
+                curr <- rpp[rpp$feature_name %in% 
                                 name_lst[[nm]],
                                 c("x", "y")] %>% distinct()
                 gene_ppp <- ppp(curr$x,curr$y,w_x, w_y)

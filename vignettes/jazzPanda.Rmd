@@ -159,19 +159,18 @@ data(rep1_sub, rep1_clusters, rep1_neg)
 rep1_clusters$cluster=factor(rep1_clusters$cluster,
                             levels=paste("c",1:8, sep=""))
 # record all real genes in the data
-all_real_genes = unique(as.character(rep1_sub$trans_info$feature_name))
+all_real_genes = unique(as.character(rep1_sub$feature_name))
 all_celltypes = unique(rep1_clusters[,c("anno","cluster")])
 # nc_patterns = "^BLANK_|^NegControlProbe_|^NegControlCodeword_|^antisense_"
 # nc_targets = grep(pattern =nc_patterns , x = all_genes,value = TRUE)
-# all_real_genes = setdiff(all_genes, nc_targets)
 ```
 
 The required input data structure for the main function `lasso_markers()` 
 is a list of matrices. We will illustrate how to simply create the required 
 input data from the raw output of different technologies in the following 
 examples: 
-
-### 10x Xenium data
+### From direct platform output
+#### 10x Xenium data
 The constructed xenium_data can be used in function `get_vectors()`.
 The defined nc_lst can be used in function` create_genesets()`.
 ```{r xeium_example, eval=FALSE}
@@ -191,14 +190,14 @@ cm <- as.matrix(data$`Gene Expression`)
 r_codeword <- as.matrix(data$`Negative Control Codeword`)
 r_probe <- as.matrix(data$`Negative Control Probe`)
 
-xenium_data = list(cm = cm, trans_info=transcript_info )
+xenium_data = list("sample1" = transcript_info )
 
 # -----------------------------------------------------------------------------
 # cell label and coordinates 
-clusters_info =  read.csv("./cells_meta.csv")
+clusters_info <-  read.csv("./cells_meta.csv")
 # the cluster label, sample label and coordinates for each cell 
-cl_req_cols = c("x","y","cluster","sample")
-clusters_df = clusters_info[,cl_req_cols]
+cl_req_cols <- c("x","y","cluster","sample")
+clusters_df <- clusters_info[,cl_req_cols]
 
 # -----------------------------------------------------------------------------
 # define negative control objects if available, need to repeat for each sample
@@ -207,8 +206,8 @@ clusters_df = clusters_info[,cl_req_cols]
 # - "y": y coordinate 
 # - "target": negative control names 
 # - "sample": sample label 
-probe_target = row.names(r_probe)
-codeword=row.names(r_codeword)
+probe_target <- row.names(r_probe)
+codeword <- row.names(r_codeword)
 
 nc_coords = read.csv("./negative_controls_detections.csv")
 nc_names = unique(nc_coords$feature_name)
@@ -218,12 +217,10 @@ transcript_neg = transcript_info[transcript_info$feature_name %in%
                                 c("x_location","y_location","feature_name")]
 colnames(transcript_neg)[1:3]= c("x","y","feature_name")
 transcript_neg$sample = "sample1"
-nc_lst = list(trans_info = transcript_neg, 
-                probe=probe_target, 
-                codeword=codeword)
+nc_lst = list("sample1" = transcript_neg)
 ```
 
-### MERSCOPE data
+#### MERSCOPE data
 The constructed merscope_data can be used in function `get_vectors()`.
 The defined nc_lst can be used in function` create_genesets()`. 
 ```{r merscope example, eval=FALSE}
@@ -243,7 +240,7 @@ clusters_info =  read.csv("./cells_meta.csv")
 # - "feature_name": gene name 
 tr_req_cols = c("x", "y", "feature_name")
 transcript_df =  read.csv("./transcripts.csv")
-merscope_data = list(cm = cm, trans_info = transcript_df[,req_cols])
+merscope_data = list("sample1" = transcript_df[,req_cols])
 # the defined merscope_data can be used in function get_vectors() 
 
 # the cluster label, sample label and coordinates for each cell 
@@ -260,11 +257,11 @@ clusters_df = clusters_info[,cl_req_cols]
 nc_coords = read.csv("./negative_controls_detections.csv")
 nc_names = unique(nc_coords$feature_name)
 kpt_cols = c("x","y","feature_name","sample")
-nc_lst = list(trans_info = nc_coords[,kpt_cols])
+nc_lst = list("sample1"= nc_coords[,kpt_cols])
 
 ```
 
-### CosMx data
+#### CosMx data
 The constructed cosmx_data can be used in function `get_vectors()`.
 The defined nc_lst can be used in function` create_genesets()`. 
 ```{r cosmx example, eval=FALSE}
@@ -285,7 +282,7 @@ clusters_info <- tiledb_scdataset$somas$RNA$obs$to_dataframe()
 # - "y": y coordinate 
 # - "feature_name": gene name 
 req_cols = c("x","y","feature_name")
-cosmx_data = list(cm = cm, trans_info = transcript_df[,c(req_cols)])
+cosmx_data = list("sample1"= transcript_df[,c(req_cols)])
 # 
 
 # clusters and cell locations 
@@ -304,7 +301,7 @@ clusters_df = clusters_info[,cl_req_cols]
 nc_coords = read.csv("./negative_controls_detections.csv")
 nc_names = unique(nc_coords$feature_name)
 kpt_cols = c("x","y","feature_name","sample")
-nc_lst = list(trans_info = nc_coords[,kpt_cols])
+nc_lst = list("sample1"=nc_coords[,kpt_cols])
 
 ```
 
@@ -325,13 +322,13 @@ transcript_coords = rep1_sub$trans_info
 data_example = list(cm=seu_obj@assays$RNA$counts,
                     trans_info =transcript_coords)
 
-w_x =  c(min(floor(min(data$trans_info$x)), floor(min(clusters_info$x))), 
-        max(ceiling(max(data$trans_info$x)), ceiling(max(clusters_info$x))))
-w_y =  c(min(floor(min(data$trans_info$y)), floor(min(clusters_info$y))), 
-        max(ceiling(max(data$trans_info$y)), ceiling(max(clusters_info$y))))
+w_x =  c(min(floor(min(data$x)), floor(min(clusters_info$x))), 
+        max(ceiling(max(data$x)), ceiling(max(clusters_info$x))))
+w_y =  c(min(floor(min(data$y)), floor(min(clusters_info$y))), 
+        max(ceiling(max(data$y)), ceiling(max(clusters_info$y))))
 
 # build spatial vectors from transcript coordinates and cluster coordinates 
-example_vectors_tr = get_vectors(data_lst= list(data_example),
+example_vectors_tr = get_vectors(trans_lst= list("rep1"=transcript_coords),
                                 cluster_info = clusters_info,
                                 bin_type="square",
                                 bin_param=c(10,10), 
@@ -342,14 +339,124 @@ example_vectors_tr = get_vectors(data_lst= list(data_example),
 # make sure the cluster information contains column names: 
 # cluster, x, y, sample and cell_id
 colnames(clusters_info)[5] = "cell_id"
-example_vectors_cm = get_vectors(data_lst= NULL,
+example_vectors_cm = get_vectors(trans_lst= NULL,
                                 cm_lst=list(rep1=seu_obj@assays$RNA$counts),
                                 cluster_info = clusters_info,
                                 bin_type="square",
                                 bin_param=c(10,10), 
                                 all_genes = row.names(cm), 
                                 w_x=w_x, w_y=w_y)
-BiocCheck::.filter_data
+
+```
+
+### from a SpatialExperiment object 
+If you have a SpatialExperiment or SpatialFeatureExperiment object, 
+you can generate the required input for creating the spatial vectors by 
+calling `convert_data` function. 
+If the transcript coordinates are available, you can 
+use either transcript coordinates or the count matrix to define spatial vectors 
+for genes. 
+The defined example_vectors_cm/example_vectors_tr can be passed 
+to `lasso_markers` to identify marker genes. 
+```{r, eval=FALSE}
+library(SpatialFeatureExperiment)
+library(SingleCellExperiment)
+library(TENxXeniumData)
+library(ExperimentHub)
+eh <- ExperimentHub()
+q <- query(eh, "TENxXenium")
+spe_example <- q[["EH8547"]]
+
+# get the required input list 
+example_lst <- convert_data(x=spe_example, sample_names = "sample01")
+
+# -----------------------------------------------------------------------------
+# Example clustering 
+# get the count matrix 
+cm <- spe_example@assays@data$counts
+all_genes = row.names(cm)
+example_seu <- CreateSeuratObject(counts = cm, 
+                            min.cells = 2, min.features = 1)
+example_seu <- NormalizeData(example_seu, 
+                            normalization.method = "LogNormalize")
+all.genes <- rownames(example_seu)
+example_seu <- ScaleData(example_seu, features = all.genes)
+example_seu <- RunPCA(example_seu, features = all.genes)
+ElbowPlot(example_seu)
+example_seu <- FindNeighbors(example_seu, dims = 1:15)
+example_seu <- FindClusters(example_seu, resolution = 0.1)
+seu_clusters <- as.data.frame(example_seu$seurat_clusters,nm="cluster")
+seu_clusters$cell_id <- colnames(example_seu)
+
+# -----------------------------------------------------------------------------
+# combine cluster labels and the coordiantes 
+# make sure the cluster information contains column names: 
+# cluster, x, y, sample and cell_id
+clusters_info <- as.data.frame(spe_example@int_colData$spatialCoords)
+colnames(clusters_info) <- c("x","y")
+clusters_info$cell_id <- row.names(clusters_info)
+clusters_info$sample <- spe_example$sample_id
+clusters_info <- merge(clusters_info, seu_clusters, by="cell_id")
+
+w_x <- c(floor(min(clusters_info$x,
+                    example_lst$trans_lst$sample01$x)),
+        ceiling(max(clusters_info$x, 
+                    example_lst$trans_lst$sample01$x)))
+w_y <- c(floor(min(clusters_info$y, 
+                    example_lst$trans_lst$sample01$y)),
+        ceiling(max(clusters_info$y, 
+                    example_lst$trans_lst$sample01$y)))
+
+# -----------------------------------------------------------------------------
+# build spatial vectors from count matrix and cluster coordinates 
+example_vectors_cm <- get_vectors(trans_lst= NULL,
+                                cm_lst=example_lst$cm_lst,
+                                cluster_info = clusters_info,
+                                bin_type="square",
+                                bin_param=c(10,10), 
+                                all_genes = all_genes,
+                                w_x=w_x, w_y=w_y)
+
+
+# -----------------------------------------------------------------------------
+# build spatial vectors from transcript coordinates and cluster coordinates 
+example_vectors_tr <- get_vectors(trans_lst= example_lst$trans_lst,
+                                cluster_info = clusters_info,
+                                bin_type="square",
+                                bin_param=c(10,10), 
+                                all_genes = all_genes,
+                                w_x=w_x, w_y=w_y)
+
+
+```
+
+### from a SpatialFeatureExperiment object 
+
+```{r, eval=FALSE}
+sfe_example <- toSpatialFeatureExperiment(spe_example)
+example_sfe_lst <- convert_data(x=sfe_example,sample_names = "sample01")
+# -----------------------------------------------------------------------------
+# build spatial vectors from count matrix and cluster coordinates 
+# make sure the cluster information contains column names: 
+# cluster, x, y, sample and cell_id
+example_vectors_cm <- get_vectors(trans_lst= NULL,
+                                cm_lst=example_sfe_lst$cm_lst,
+                                cluster_info = clusters_info,
+                                bin_type="square",
+                                bin_param=c(10,10), 
+                                all_genes = all_genes,
+                                w_x=w_x, w_y=w_y)
+
+# -----------------------------------------------------------------------------
+# build spatial vectors from transcript coordinates and cluster coordinates 
+example_vectors_tr <- get_vectors(trans_lst= example_sfe_lst$trans_lst,
+                                cluster_info = clusters_info,
+                                bin_type="square",
+                                bin_param=c(10,10), 
+                                all_genes = all_genes,
+                                w_x=w_x, w_y=w_y)
+
+
 ```
 
 ## Visualise the clusters over the tissue space
@@ -422,18 +529,18 @@ original coordinates. Hex bins can capture more details than square bins.
 ### Example of gene vectors 
 ```{r plot spatial genes, fig.width=6, fig.height=4}
 
-w_x =  c(min(floor(min(rep1_sub$trans_info$x)),
+w_x =  c(min(floor(min(rep1_sub$x)),
         floor(min(rep1_clusters$x))), 
-        max(ceiling(max(rep1_sub$trans_info$x)),
+        max(ceiling(max(rep1_sub$x)),
         ceiling(max(rep1_clusters$x))))
-w_y =  c(min(floor(min(rep1_sub$trans_info$y)),
+w_y =  c(min(floor(min(rep1_sub$y)),
         floor(min(rep1_clusters$y))), 
-        max(ceiling(max(rep1_sub$trans_info$y)),
+        max(ceiling(max(rep1_sub$y)),
         ceiling(max(rep1_clusters$y))))
 
 # plot transcript detection coordinates
-selected_genes = rep1_sub$trans_info$feature_name == "EPCAM"
-loc_mt = as.data.frame(rep1_sub$trans_info[selected_genes,
+selected_genes = rep1_sub$feature_name == "EPCAM"
+loc_mt = as.data.frame(rep1_sub[selected_genes,
                         c("x","y","feature_name")]%>%distinct())
 colnames(loc_mt)=c("x","y","feature_name")
 layout(matrix(c(1, 2, 3), 1, 3, byrow = TRUE))
@@ -468,13 +575,13 @@ title(main = "hex binning", line = -2)
 
 ### Example of cluster vectors 
 ```{r plot spatial clusters, fig.width=6, fig.height=4}
-w_x =  c(min(floor(min(rep1_sub$trans_info$x)),
+w_x =  c(min(floor(min(rep1_sub$x)),
             floor(min(rep1_clusters$x))), 
-        max(ceiling(max(rep1_sub$trans_info$x)),
+        max(ceiling(max(rep1_sub$x)),
             ceiling(max(rep1_clusters$x))))
-w_y =  c(min(floor(min(rep1_sub$trans_info$y)),
+w_y =  c(min(floor(min(rep1_sub$y)),
             floor(min(rep1_clusters$y))), 
-        max(ceiling(max(rep1_sub$trans_info$y)),
+        max(ceiling(max(rep1_sub$y)),
             ceiling(max(rep1_clusters$y))))
 
 # plot cell coordinates
@@ -520,18 +627,18 @@ specified by the `bin_type` parameter.
 ```{r create rep1 all vectors}
 seed_number= 589
 
-w_x =  c(min(floor(min(rep1_sub$trans_info$x)),
+w_x =  c(min(floor(min(rep1_sub$x)),
             floor(min(rep1_clusters$x))), 
-        max(ceiling(max(rep1_sub$trans_info$x)),
+        max(ceiling(max(rep1_sub$x)),
             ceiling(max(rep1_clusters$x))))
-w_y =  c(min(floor(min(rep1_sub$trans_info$y)),
+w_y =  c(min(floor(min(rep1_sub$y)),
             floor(min(rep1_clusters$y))), 
-        max(ceiling(max(rep1_sub$trans_info$y)),
+        max(ceiling(max(rep1_sub$y)),
             ceiling(max(rep1_clusters$y))))
 
 grid_length = 10
 # get spatial vectors
-rep1_sq10_vectors = get_vectors(data_lst= list(rep1_sub),
+rep1_sq10_vectors = get_vectors(trans_lst= list(rep1_sub),
                                 cluster_info = rep1_clusters,
                                 bin_type="square",
                                 bin_param=c(grid_length,grid_length), 
@@ -605,7 +712,7 @@ vector_graph= igraph::graph_from_adjacency_matrix(cor_gene_mt,
                                                 weighted = TRUE, 
                                                 diag = FALSE)
 
-vector_graph=igraph::simplify(igraph::delete.edges(vector_graph, 
+vector_graph=igraph::simplify(igraph::delete_edges(vector_graph, 
                         E(vector_graph)[abs(E(vector_graph)$weight) <= 0.7]))
 
 layout=igraph::layout_with_kk(vector_graph)
@@ -685,16 +792,16 @@ cluster and cluster vector.
 
 ```{r rep1 permutation}
 
-w_x =  c(min(floor(min(rep1_sub$trans_info$x)),
+w_x =  c(min(floor(min(rep1_sub$x)),
             floor(min(rep1_clusters$x))), 
-        max(ceiling(max(rep1_sub$trans_info$x)),
+        max(ceiling(max(rep1_sub$x)),
             ceiling(max(rep1_clusters$x))))
-w_y =  c(min(floor(min(rep1_sub$trans_info$y)),
+w_y =  c(min(floor(min(rep1_sub$y)),
             floor(min(rep1_clusters$y))), 
-        max(ceiling(max(rep1_sub$trans_info$y)),
+        max(ceiling(max(rep1_sub$y)),
             ceiling(max(rep1_clusters$y))))
 set.seed(seed_number)
-perm_p = compute_permp(data=rep1_sub,
+perm_p = compute_permp(data=list(rep1_sub),
                         cluster_info=rep1_clusters, 
                         perm.size=1000,
                         bin_type="square",
@@ -737,8 +844,8 @@ for (cl in cluster_names){
     inters_df=inters_df[order(inters_df$value, decreasing = TRUE),]
     inters_df = inters_df[1:min(nrow(inters_df),2),]
     inters_df$text= paste(inters_df$gene,inters_df$value,sep=": ")
-    curr_genes = rep1_sub$trans_info$feature_name %in% inters_df$gene
-    data_vis =rep1_sub$trans_info[curr_genes, c("x","y","feature_name")]
+    curr_genes = rep1_sub$feature_name %in% inters_df$gene
+    data_vis =rep1_sub[curr_genes, c("x","y","feature_name")]
     data_vis$text = inters_df[match(data_vis$feature_name,inters_df$gene),
                                 "text"]
     data_vis$text = factor(data_vis$text, levels=inters_df$text)
@@ -836,13 +943,15 @@ function to get the most relevant cluster label for every gene.
 We can create spatial vectors for negative control genes and include
 them as background noise "clusters".
 ```{r rep1 lasso_markers with background}
-
+probe_nm = unique(rep1_neg[rep1_neg$category=="probe","feature_name"])
+codeword_nm = unique(rep1_neg[rep1_neg$category=="codeword","feature_name"])
 rep1_nc_vectors = create_genesets(data_lst=list("rep1"= rep1_neg),
-                                    name_lst=list(probe=rep1_neg$probe, 
-                                                codeword=rep1_neg$codeword), 
+                                    name_lst=list(probe=probe_nm, 
+                                                codeword=codeword_nm), 
                                     bin_type="square",
                                     bin_param=c(10, 10), 
-                                    w_x=w_x, w_y=w_y)
+                                    w_x=w_x, w_y=w_y,
+                                    cluster_info = NULL)
 
 set.seed(seed_number)
 
@@ -882,8 +991,8 @@ for (cl in setdiff(cluster_names,"NoSig")){
     if (length(inters > 0)){
         inters_df = inters_df[1:min(2, nrow(inters_df)),]
         inters = inters_df$gene
-        iters_rep1= rep1_sub$trans_info$feature_name %in% inters
-        vis_r1 =rep1_sub$trans_info[iters_rep1,
+        iters_rep1= rep1_sub$feature_name %in% inters
+        vis_r1 =rep1_sub[iters_rep1,
                                 c("x","y","feature_name")]
         vis_r1$value = inters_df[match(vis_r1$feature_name,inters_df$gene),
                                 "value"]
@@ -1031,34 +1140,37 @@ genes by providing additional sample information as the input for the function
 
 ### Linear modeling approach to detect marker genes 
 ```{r tworep no background}
-w_x =  c(min(floor(min(rep1_sub$trans_info$x)),
-            floor(min(rep2_sub$trans_info$x)),
+w_x =  c(min(floor(min(rep1_sub$x)),
+            floor(min(rep2_sub$x)),
             floor(min(rep_clusters$x))), 
-        max(ceiling(max(rep1_sub$trans_info$x)),
-            ceiling(max(rep2_sub$trans_info$x)),
+        max(ceiling(max(rep1_sub$x)),
+            ceiling(max(rep2_sub$x)),
             ceiling(max(rep_clusters$x))))
-w_y =  c(min(floor(min(rep1_sub$trans_info$y)),
-            floor(min(rep2_sub$trans_info$y)),
+w_y =  c(min(floor(min(rep1_sub$y)),
+            floor(min(rep2_sub$y)),
             floor(min(rep_clusters$y))), 
-        max(ceiling(max(rep1_sub$trans_info$y)),
-            ceiling(max(rep2_sub$trans_info$y)),
+        max(ceiling(max(rep1_sub$y)),
+            ceiling(max(rep2_sub$y)),
             ceiling(max(rep_clusters$y))))
 grid_length=10
 # get spatial vectors
-two_rep_vectors = get_vectors(data_lst= list("rep1"=rep1_sub, 
+two_rep_vectors = get_vectors(trans_lst= list("rep1"=rep1_sub, 
                                             "rep2" = rep2_sub),
                             cluster_info = rep_clusters, bin_type="square",
                             bin_param=c(grid_length, grid_length),
                             all_genes = all_real_genes , 
                             w_x=w_x, w_y=w_y)
+probe_nm = unique(rep1_neg[rep1_neg$category=="probe","feature_name"])
+codeword_nm = unique(rep1_neg[rep1_neg$category=="probe","feature_name"])
 
 two_rep_nc_vectors = create_genesets(data_lst=list("rep1" = rep1_neg, 
                                                     "rep2" = rep2_neg),
-                                        name_lst=list(probe=rep1_neg$probe, 
-                                                    codeword=rep1_neg$codeword),
+                                        name_lst=list(probe=probe_nm, 
+                                                    codeword=codeword_nm),
                                         bin_type="square",
                                         bin_param=c(10,10), 
-                                        w_x=w_x, w_y=w_y)
+                                        w_x=w_x, w_y=w_y,
+                                        cluster_info = NULL)
 set.seed(seed_number)
 two_rep_lasso_with_nc = lasso_markers(gene_mt=two_rep_vectors$gene_mt,
                                     cluster_mt = two_rep_vectors$cluster_mt,
@@ -1087,8 +1199,8 @@ for (cl in all_celltypes$anno){
     if (length(inters > 0)){
         inters_df = inters_df[1:min(2, nrow(inters_df)),]
         inters = inters_df$gene
-        iters_rep1= rep1_sub$trans_info$feature_name %in% inters
-        vis_r1 =rep1_sub$trans_info[iters_rep1,
+        iters_rep1= rep1_sub$feature_name %in% inters
+        vis_r1 =rep1_sub[iters_rep1,
                                 c("x","y","feature_name")]
         vis_r1$value = inters_df[match(vis_r1$feature_name,inters_df$gene),
                                 "value"]
@@ -1097,8 +1209,8 @@ for (cl in all_celltypes$anno){
                                     vis_r1$value,sep=": ")
         vis_r1$text_label=factor(vis_r1$text_label)
         vis_r1$sample="rep1"
-        iters_rep2= rep2_sub$trans_info$feature_name %in% inters
-        vis_r2 =rep2_sub$trans_info[iters_rep2,
+        iters_rep2= rep2_sub$feature_name %in% inters
+        vis_r2 =rep2_sub[iters_rep2,
                                 c("x","y","feature_name")]
         vis_r2$value = inters_df[match(vis_r2$feature_name,inters_df$gene),
                                 "value"]

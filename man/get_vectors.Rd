@@ -5,7 +5,7 @@
 \title{Vectorise the spatial coordinates}
 \usage{
 get_vectors(
-  data_lst,
+  trans_lst,
   cluster_info,
   cm_lst = NULL,
   bin_type,
@@ -17,7 +17,7 @@ get_vectors(
 )
 }
 \arguments{
-\item{data_lst}{A list of list. Every nested list refers to one sample,
+\item{trans_lst}{A list of list. Every nested list refers to one sample,
 which must contain at least one matrix with transcript coordinates.
 Optional parameter.}
 
@@ -88,13 +88,13 @@ returned \code{cluster_mt}, which is the one-hot encoding of the
 sample information.
 
 Moreover, this function can vectorise genes and clusters separately based
-on the input. If \code{data_lst} is NULL, this function will
+on the input. If \code{trans_lst} is NULL, this function will
 return vectorised clusters based on \code{cluster_info}.
 If \code{cluster_info} is NULL, this function will return vectorised genes
-based on \code{data_lst}.
+based on \code{trans_lst}.
 }
 \examples{
-# simulate coordiantes for genes
+# simulate coordinates for genes
 trans = as.data.frame(rbind(cbind(x = c(1,2,20,21,22,23,24),
                                  y = c(23, 24, 1,2,3,4,5),
                                  feature_name="A"),
@@ -109,8 +109,7 @@ trans$y = as.numeric(trans$y)
 clusters = data.frame(x = c(3, 5,11,21,2,23,19),
                     y = c(20, 24, 1,2,3,4,5), cluster="cluster_1")
 clusters$sample="rep1"
-data=list(trans_info=trans)
-vecs_lst_gene = get_vectors(data_lst= list("rep1"= data),
+vecs_lst_gene = get_vectors(trans_lst= list("rep1"= trans),
                             cluster_info = clusters,
                             bin_type = "square",
                             bin_param = c(2,2),
@@ -129,7 +128,7 @@ clusters = data.frame(x = c(1, 2,20,21,22,23,24),
             y = c(23, 24, 1,2,3,4,5), cluster="A")
 clusters$sample="rep1"
 clusters$cell_id= colnames(cm)
-vecs_lst = get_vectors(data_lst= NULL, cluster_info = clusters,
+vecs_lst = get_vectors(trans_lst= NULL, cluster_info = clusters,
                         cm_lst=list(rep1=cm),
                         bin_type = "square",
                         bin_param = c(2,2),

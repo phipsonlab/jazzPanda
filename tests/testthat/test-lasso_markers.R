@@ -32,19 +32,19 @@ w_y =  c(min(floor(min(trans_info$y)),
          max(ceiling(max(trans_info$y)),
              ceiling(max(clusters$y))))
 
-data = list(trans_info = trans_info)
-vecs_lst = get_vectors(data_lst=list(rep1=data), cluster_info = clusters,
+data = trans_info
+vecs_lst = get_vectors(trans_lst=list(rep1=data), cluster_info = clusters,
                        bin_type = "square",
                        bin_param = c(20,20),
                        all_genes =c("gene_A1","gene_A2","gene_B1","gene_B2"),
                        w_x = w_x, w_y=w_y)
 #### background
 
-background_sv = create_genesets(data_lst=list("rep1"= data),
+background_sv = create_genesets(data_lst =list("rep1"= data),
                                 name_lst=list(dummy_W=c("gene_A1","gene_B1")),
                                 bin_type="square",
                                 bin_param = c(20,20),
-                                w_x = w_x, w_y=w_y)
+                                w_x = w_x, w_y=w_y,cluster_info = NULL)
 set.seed(100)
 lasso_res1 = lasso_markers(gene_mt=vecs_lst$gene_mt,
                            cluster_mt = vecs_lst$cluster_mt,
@@ -321,7 +321,7 @@ trans_info_sp2$x=as.numeric(trans_info_sp2$x)
 trans_info_sp2$y=as.numeric(trans_info_sp2$y)
 
 
-data_sp2 = list(trans_info = trans_info_sp2)
+data_sp2 =trans_info_sp2
 w_x =  c(min(floor(min(trans_info$x)),floor(min(trans_info_sp2$x)),
              floor(min(clusters$x))),
          max(ceiling(max(trans_info$x)),ceiling(max(trans_info_sp2$x)),
@@ -331,7 +331,7 @@ w_y =  c(min(floor(min(trans_info$y)),floor(min(trans_info_sp2$y)),
          max(ceiling(max(trans_info$y)),ceiling(max(trans_info_sp2$y)),
              ceiling(max(clusters$y))))
 
-vecs_lst = get_vectors(data_lst=list(sample1=data,sample2=data_sp2), 
+vecs_lst = get_vectors(trans_lst=list(sample1=data,sample2=data_sp2), 
                        cluster_info = clusters,
                        bin_type = "square",
                        bin_param = c(20,20),
@@ -344,7 +344,7 @@ background_sv = create_genesets(data_lst=list("sample1"= data,
                                 name_lst=list(dummy_W=c("gene_A1","gene_B1")),
                                 bin_type="square",
                                 bin_param = c(20,20),
-                                w_x = w_x, w_y=w_y)
+                                w_x = w_x, w_y=w_y,cluster_info = NULL)
 set.seed(100)
 lasso_res_background = lasso_markers(gene_mt=vecs_lst$gene_mt,
                                      cluster_mt = vecs_lst$cluster_mt,
@@ -374,7 +374,8 @@ background_sv_all = create_genesets(data_lst=list("sample1"= data,
                                               dummy_B2=c("gene_B2")),
                                 bin_type="square",
                                 bin_param = c(20,20),
-                                w_x = w_x, w_y=w_y)
+                                w_x = w_x, w_y=w_y,
+                                cluster_info = NULL)
 lasso_nosig_bg = lasso_markers(gene_mt=vecs_lst$gene_mt,
                                      cluster_mt = vecs_lst$cluster_mt,
                                      sample_names=c("sample1","sample2"),
