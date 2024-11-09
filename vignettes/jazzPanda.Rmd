@@ -169,6 +169,159 @@ The required input data structure for the main function `lasso_markers()`
 is a list of matrices. We will illustrate how to simply create the required 
 input data from the raw output of different technologies in the following 
 examples: 
+If you have a Seurat object, you can build the required object as follows.
+The defined example_vectors_cm/example_vectors_tr can be passed 
+to `lasso_markers` to identify marker genes. 
+
+### from a SpatialExperiment object 
+If you have a SpatialExperiment or SpatialFeatureExperiment object, 
+you can generate the required input for creating the spatial vectors by 
+calling `convert_data` function. 
+If the transcript coordinates are available, you can 
+use either transcript coordinates or the count matrix to define spatial vectors 
+for genes. 
+The defined example_vectors_cm/example_vectors_tr can be passed 
+to `lasso_markers` to identify marker genes. 
+```{r, eval=FALSE}
+library(SpatialFeatureExperiment)
+library(SingleCellExperiment)
+library(TENxXeniumData)
+library(ExperimentHub)
+eh <- ExperimentHub()
+q <- query(eh, "TENxXenium")
+spe_example <- q[["EH8547"]]
+
+# get the required input list 
+example_lst <- convert_data(x=spe_example, sample_names = "sample01")
+
+# -----------------------------------------------------------------------------
+# Example clustering 
+# get the count matrix 
+cm <- spe_example@assays@data$counts
+all_genes = row.names(cm)
+example_seu <- CreateSeuratObject(counts = cm, 
+                            min.cells = 2, min.features = 1)
+example_seu <- NormalizeData(example_seu, 
+                            normalization.method = "LogNormalize")
+all.genes <- rownames(example_seu)
+example_seu <- ScaleData(example_seu, features = all.genes)
+example_seu <- RunPCA(example_seu, features = all.genes)
+ElbowPlot(example_seu)
+example_seu <- FindNeighbors(example_seu, dims = 1:15)
+example_seu <- FindClusters(example_seu, resolution = 0.1)
+seu_clusters <- as.data.frame(example_seu$seurat_clusters,nm="cluster")
+seu_clusters$cell_id <- colnames(example_seu)
+
+# -----------------------------------------------------------------------------
+# combine cluster labels and the coordiantes 
+# make sure the cluster information contains column names: 
+# cluster, x, y, sample and cell_id
+clusters_info <- as.data.frame(spe_example@int_colData$spatialCoords)
+colnames(clusters_info) <- c("x","y")
+clusters_info$cell_id <- row.names(clusters_info)
+clusters_info$sample <- spe_example$sample_id
+clusters_info <- merge(clusters_info, seu_clusters, by="cell_id")
+
+w_x <- c(floor(min(clusters_info$x,
+                    example_lst$trans_lst$sample01$x)),
+        ceiling(max(clusters_info$x, 
+                    example_lst$trans_lst$sample01$x)))
+w_y <- c(floor(min(clusters_info$y, 
+                    example_lst$trans_lst$sample01$y)),
+        ceiling(max(clusters_info$y, 
+                    example_lst$trans_lst$sample01$y)))
+
+# -----------------------------------------------------------------------------
+# build spatial vectors from count matrix and cluster coordinates 
+example_vectors_cm <- get_vectors(trans_lst= NULL,
+                                cm_lst=example_lst$cm_lst,
+                                cluster_info = clusters_info,
+                                bin_type="square",
+                                bin_param=c(10,10), 
+                                all_genes = all_genes,
+                                w_x=w_x, w_y=w_y)
+
+
+# -----------------------------------------------------------------------------
+# build spatial vectors from transcript coordinates and cluster coordinates 
+example_vectors_tr <- get_vectors(trans_lst= example_lst$trans_lst,
+                                cluster_info = clusters_info,
+                                bin_type="square",
+                                bin_param=c(10,10), 
+                                all_genes = all_genes,
+                                w_x=w_x, w_y=w_y)
+
+
+```
+
+### from a SpatialFeatureExperiment object 
+
+```{r, eval=FALSE}
+sfe_example <- toSpatialFeatureExperiment(spe_example)
+example_sfe_lst <- convert_data(x=sfe_example,sample_names = "sample01")
+# -----------------------------------------------------------------------------
+# build spatial vectors from count matrix and cluster coordinates 
+# make sure the cluster information contains column names: 
+# cluster, x, y, sample and cell_id
+example_vectors_cm <- get_vectors(trans_lst= NULL,
+                                cm_lst=example_sfe_lst$cm_lst,
+                                cluster_info = clusters_info,
+                                bin_type="square",
+                                bin_param=c(10,10), 
+                                all_genes = all_genes,
+                                w_x=w_x, w_y=w_y)
+
+# -----------------------------------------------------------------------------
+# build spatial vectors from transcript coordinates and cluster coordinates 
+example_vectors_tr <- get_vectors(trans_lst= example_sfe_lst$trans_lst,
+                                cluster_info = clusters_info,
+                                bin_type="square",
+                                bin_param=c(10,10), 
+                                all_genes = all_genes,
+                                w_x=w_x, w_y=w_y)
+
+
+```
+### from a Seurat object 
+```{r eval=FALSE}
+# cm is the count matrix
+seu_obj =Seurat::CreateSeuratObject(counts = cm)
+# make sure the clusters information contains column names: 
+# cluster, x, y and sample
+clusters_info = rep1_clusters
+# make sure the transcript information contains column names: 
+# feature_name, x, y
+transcript_coords = rep1_sub$trans_info
+data_example = list(cm=seu_obj@assays$RNA$counts,
+                    trans_info =transcript_coords)
+
+w_x =  c(min(floor(min(data$x)), floor(min(clusters_info$x))), 
+        max(ceiling(max(data$x)), ceiling(max(clusters_info$x))))
+w_y =  c(min(floor(min(data$y)), floor(min(clusters_info$y))), 
+        max(ceiling(max(data$y)), ceiling(max(clusters_info$y))))
+
+# build spatial vectors from transcript coordinates and cluster coordinates 
+example_vectors_tr = get_vectors(trans_lst= list("rep1"=transcript_coords),
+                                cluster_info = clusters_info,
+                                bin_type="square",
+                                bin_param=c(10,10), 
+                                all_genes = row.names(cm), 
+                                w_x=w_x, w_y=w_y)
+# -----------------------------------------------------------------------------
+# build spatial vectors from count matrix and cluster coordinates 
+# make sure the cluster information contains column names: 
+# cluster, x, y, sample and cell_id
+colnames(clusters_info)[5] = "cell_id"
+example_vectors_cm = get_vectors(trans_lst= NULL,
+                                cm_lst=list(rep1=seu_obj@assays$RNA$counts),
+                                cluster_info = clusters_info,
+                                bin_type="square",
+                                bin_param=c(10,10), 
+                                all_genes = row.names(cm), 
+                                w_x=w_x, w_y=w_y)
+
+```
+
 ### From direct platform output
 #### 10x Xenium data
 The constructed xenium_data can be used in function `get_vectors()`.
@@ -305,159 +458,6 @@ nc_lst = list("sample1"=nc_coords[,kpt_cols])
 
 ```
 
-If you have a Seurat object, you can build the required object as follows.
-The defined example_vectors_cm/example_vectors_tr can be passed 
-to `lasso_markers` to identify marker genes. 
-
-### from a Seurat object 
-```{r eval=FALSE}
-# cm is the count matrix
-seu_obj =Seurat::CreateSeuratObject(counts = cm)
-# make sure the clusters information contains column names: 
-# cluster, x, y and sample
-clusters_info = rep1_clusters
-# make sure the transcript information contains column names: 
-# feature_name, x, y
-transcript_coords = rep1_sub$trans_info
-data_example = list(cm=seu_obj@assays$RNA$counts,
-                    trans_info =transcript_coords)
-
-w_x =  c(min(floor(min(data$x)), floor(min(clusters_info$x))), 
-        max(ceiling(max(data$x)), ceiling(max(clusters_info$x))))
-w_y =  c(min(floor(min(data$y)), floor(min(clusters_info$y))), 
-        max(ceiling(max(data$y)), ceiling(max(clusters_info$y))))
-
-# build spatial vectors from transcript coordinates and cluster coordinates 
-example_vectors_tr = get_vectors(trans_lst= list("rep1"=transcript_coords),
-                                cluster_info = clusters_info,
-                                bin_type="square",
-                                bin_param=c(10,10), 
-                                all_genes = row.names(cm), 
-                                w_x=w_x, w_y=w_y)
-# -----------------------------------------------------------------------------
-# build spatial vectors from count matrix and cluster coordinates 
-# make sure the cluster information contains column names: 
-# cluster, x, y, sample and cell_id
-colnames(clusters_info)[5] = "cell_id"
-example_vectors_cm = get_vectors(trans_lst= NULL,
-                                cm_lst=list(rep1=seu_obj@assays$RNA$counts),
-                                cluster_info = clusters_info,
-                                bin_type="square",
-                                bin_param=c(10,10), 
-                                all_genes = row.names(cm), 
-                                w_x=w_x, w_y=w_y)
-
-```
-
-### from a SpatialExperiment object 
-If you have a SpatialExperiment or SpatialFeatureExperiment object, 
-you can generate the required input for creating the spatial vectors by 
-calling `convert_data` function. 
-If the transcript coordinates are available, you can 
-use either transcript coordinates or the count matrix to define spatial vectors 
-for genes. 
-The defined example_vectors_cm/example_vectors_tr can be passed 
-to `lasso_markers` to identify marker genes. 
-```{r, eval=FALSE}
-library(SpatialFeatureExperiment)
-library(SingleCellExperiment)
-library(TENxXeniumData)
-library(ExperimentHub)
-eh <- ExperimentHub()
-q <- query(eh, "TENxXenium")
-spe_example <- q[["EH8547"]]
-
-# get the required input list 
-example_lst <- convert_data(x=spe_example, sample_names = "sample01")
-
-# -----------------------------------------------------------------------------
-# Example clustering 
-# get the count matrix 
-cm <- spe_example@assays@data$counts
-all_genes = row.names(cm)
-example_seu <- CreateSeuratObject(counts = cm, 
-                            min.cells = 2, min.features = 1)
-example_seu <- NormalizeData(example_seu, 
-                            normalization.method = "LogNormalize")
-all.genes <- rownames(example_seu)
-example_seu <- ScaleData(example_seu, features = all.genes)
-example_seu <- RunPCA(example_seu, features = all.genes)
-ElbowPlot(example_seu)
-example_seu <- FindNeighbors(example_seu, dims = 1:15)
-example_seu <- FindClusters(example_seu, resolution = 0.1)
-seu_clusters <- as.data.frame(example_seu$seurat_clusters,nm="cluster")
-seu_clusters$cell_id <- colnames(example_seu)
-
-# -----------------------------------------------------------------------------
-# combine cluster labels and the coordiantes 
-# make sure the cluster information contains column names: 
-# cluster, x, y, sample and cell_id
-clusters_info <- as.data.frame(spe_example@int_colData$spatialCoords)
-colnames(clusters_info) <- c("x","y")
-clusters_info$cell_id <- row.names(clusters_info)
-clusters_info$sample <- spe_example$sample_id
-clusters_info <- merge(clusters_info, seu_clusters, by="cell_id")
-
-w_x <- c(floor(min(clusters_info$x,
-                    example_lst$trans_lst$sample01$x)),
-        ceiling(max(clusters_info$x, 
-                    example_lst$trans_lst$sample01$x)))
-w_y <- c(floor(min(clusters_info$y, 
-                    example_lst$trans_lst$sample01$y)),
-        ceiling(max(clusters_info$y, 
-                    example_lst$trans_lst$sample01$y)))
-
-# -----------------------------------------------------------------------------
-# build spatial vectors from count matrix and cluster coordinates 
-example_vectors_cm <- get_vectors(trans_lst= NULL,
-                                cm_lst=example_lst$cm_lst,
-                                cluster_info = clusters_info,
-                                bin_type="square",
-                                bin_param=c(10,10), 
-                                all_genes = all_genes,
-                                w_x=w_x, w_y=w_y)
-
-
-# -----------------------------------------------------------------------------
-# build spatial vectors from transcript coordinates and cluster coordinates 
-example_vectors_tr <- get_vectors(trans_lst= example_lst$trans_lst,
-                                cluster_info = clusters_info,
-                                bin_type="square",
-                                bin_param=c(10,10), 
-                                all_genes = all_genes,
-                                w_x=w_x, w_y=w_y)
-
-
-```
-
-### from a SpatialFeatureExperiment object 
-
-```{r, eval=FALSE}
-sfe_example <- toSpatialFeatureExperiment(spe_example)
-example_sfe_lst <- convert_data(x=sfe_example,sample_names = "sample01")
-# -----------------------------------------------------------------------------
-# build spatial vectors from count matrix and cluster coordinates 
-# make sure the cluster information contains column names: 
-# cluster, x, y, sample and cell_id
-example_vectors_cm <- get_vectors(trans_lst= NULL,
-                                cm_lst=example_sfe_lst$cm_lst,
-                                cluster_info = clusters_info,
-                                bin_type="square",
-                                bin_param=c(10,10), 
-                                all_genes = all_genes,
-                                w_x=w_x, w_y=w_y)
-
-# -----------------------------------------------------------------------------
-# build spatial vectors from transcript coordinates and cluster coordinates 
-example_vectors_tr <- get_vectors(trans_lst= example_sfe_lst$trans_lst,
-                                cluster_info = clusters_info,
-                                bin_type="square",
-                                bin_param=c(10,10), 
-                                all_genes = all_genes,
-                                w_x=w_x, w_y=w_y)
-
-
-```
 
 ## Visualise the clusters over the tissue space
 We can plot the cells coordinates for each cluster of Replicate 1 subset
