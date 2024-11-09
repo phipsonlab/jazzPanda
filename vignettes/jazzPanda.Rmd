@@ -213,7 +213,7 @@ seu_clusters <- as.data.frame(example_seu$seurat_clusters,nm="cluster")
 seu_clusters$cell_id <- colnames(example_seu)
 
 # -----------------------------------------------------------------------------
-# combine cluster labels and the coordiantes 
+# combine cluster labels and the coordinates 
 # make sure the cluster information contains column names: 
 # cluster, x, y, sample and cell_id
 clusters_info <- as.data.frame(spe_example@int_colData$spatialCoords)
@@ -282,6 +282,25 @@ example_vectors_tr <- get_vectors(trans_lst= example_sfe_lst$trans_lst,
 
 
 ```
+
+### From a SingleCellExperiment object
+```{r, eval=FALSE}
+sce_example <- SingleCellExperiment(list(sample01 = cm))
+example_sce_lst <- convert_data(x=sce_example,sample_names = "sample01")
+# -----------------------------------------------------------------------------
+# build spatial vectors from count matrix and cluster coordinates 
+# make sure the cluster information contains column names: 
+# cluster, x, y, sample and cell_id
+example_vectors_cm <- get_vectors(trans_lst= NULL,
+                                cm_lst=example_sce_lst$cm_lst,
+                                cluster_info = clusters_info,
+                                bin_type="square",
+                                bin_param=c(10,10), 
+                                all_genes = all_genes,
+                                w_x=w_x, w_y=w_y)
+
+```
+
 ### From a Seurat object 
 ```{r eval=FALSE}
 # cm is the count matrix
