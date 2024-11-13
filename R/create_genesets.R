@@ -50,8 +50,8 @@ length 2 for hexagon bins")
         stop("Input bin_type is not supported. Supported bin_type is 
 rectangle/square or hexagon.")
     }
-    
-    if (length(unique(vapply(data_lst,class,FUN.VALUE = character(1)))) != 1) {
+    if (length(unique(vapply(data_lst, function(x) class(x)[1],
+                FUN.VALUE = character(1)))) != 1) {
         stop("The input data_lst contains elements from multiple classes")
     }
     if (length(names(data_lst)) == 0){

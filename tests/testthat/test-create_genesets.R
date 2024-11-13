@@ -47,6 +47,12 @@ expect_error(create_genesets(data_lst=list("a" = trans, "b" = list()),
                              bin_param=c(2,2),cluster_info = NULL,
                              w_x=c(0,25), w_y=c(0,25)))
 
+expect_error(create_genesets(data_lst=list("a" = as.matrix(trans), 
+                                           "b" = as.data.frame(trans)),
+                             name_lst=list(dummy_W=c("A")),
+                             bin_type="square",
+                             bin_param=c(2,2),cluster_info = NULL,
+                             w_x=c(0,25), w_y=c(0,25)))
 expect_error(create_genesets(data_lst= list(trans),
                              name_lst=list(dummy_W=c("A")),
                              bin_type="square",
