@@ -53,7 +53,7 @@
 
       <h1>jazzPanda example</h1>
             
-            <h4 data-toc-skip class="date">09 Nov 2024</h4>
+            <h4 data-toc-skip class="date">13 Nov 2024</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/phipsonlab/jazzPanda/blob/main/vignettes/jazzPanda.Rmd" class="external-link"><code>vignettes/jazzPanda.Rmd</code></a></small>
       <div class="d-none name"><code>jazzPanda.Rmd</code></div>
@@ -922,19 +922,19 @@ p-value for every pair of gene cluster and cluster vector.</p>
 <span><span class="va">perm_res</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">perm_p</span><span class="op">$</span><span class="va">perm.pval.adj</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">perm_res</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##       c5         c8          c3         c2          c1          c4          c6</span></span>
-<span><span class="co">## LUM    1 0.04329004 0.006660007 1.00000000 1.000000000 0.004995005 0.003996004</span></span>
-<span><span class="co">## CD68   1 0.72261072 0.167832168 1.00000000 1.000000000 0.003330003 0.061476985</span></span>
+<span><span class="co">## LUM    1 0.05661006 0.006660007 1.00000000 1.000000000 0.002854289 0.003996004</span></span>
+<span><span class="co">## CD68   1 0.74592075 0.199800200 1.00000000 1.000000000 0.002854289 0.064550834</span></span>
 <span><span class="co">## ERBB2  1 1.00000000 1.000000000 0.00999001 0.003996004 1.000000000 1.000000000</span></span>
-<span><span class="co">## MZB1   1 0.78492936 0.773073081 1.00000000 1.000000000 0.007992008 0.002497502</span></span>
-<span><span class="co">## EPCAM  1 1.00000000 1.000000000 0.09990010 0.003996004 1.000000000 1.000000000</span></span>
-<span><span class="co">## PTPRC  1 0.61338661 0.773073081 1.00000000 1.000000000 0.003330003 0.002497502</span></span>
+<span><span class="co">## MZB1   1 0.82346225 0.736186890 1.00000000 1.000000000 0.007992008 0.002497502</span></span>
+<span><span class="co">## EPCAM  1 1.00000000 1.000000000 0.10389610 0.003996004 1.000000000 1.000000000</span></span>
+<span><span class="co">## PTPRC  1 0.66533467 0.736186890 1.00000000 1.000000000 0.002854289 0.002497502</span></span>
 <span><span class="co">##                c7</span></span>
-<span><span class="co">## LUM   0.054945055</span></span>
-<span><span class="co">## CD68  0.267005722</span></span>
+<span><span class="co">## LUM   0.047452547</span></span>
+<span><span class="co">## CD68  0.263372991</span></span>
 <span><span class="co">## ERBB2 1.000000000</span></span>
-<span><span class="co">## MZB1  0.002854289</span></span>
+<span><span class="co">## MZB1  0.003330003</span></span>
 <span><span class="co">## EPCAM 1.000000000</span></span>
-<span><span class="co">## PTPRC 0.002854289</span></span></code></pre>
+<span><span class="co">## PTPRC 0.003330003</span></span></code></pre>
 <div class="section level5">
 <h5 id="visualise-top-marker-genes-detected-by-correlation-approach">Visualise top marker genes detected by correlation approach<a class="anchor" aria-label="anchor" href="#visualise-top-marker-genes-detected-by-correlation-approach"></a>
 </h5>
@@ -1538,7 +1538,7 @@ accounting for multiple samples and background noise</p>
 <span><span class="co">##  [91] pkgconfig_2.0.3       gtable_0.3.6          timeDate_4041.110    </span></span>
 <span><span class="co">##  [94] lmtest_0.9-40         htmltools_0.5.8.1     carData_3.0-5        </span></span>
 <span><span class="co">##  [97] dotCall64_1.2         scales_1.3.0          png_0.1-8            </span></span>
-<span><span class="co">## [100] gower_1.0.1           knitr_1.48            reshape2_1.4.4       </span></span>
+<span><span class="co">## [100] gower_1.0.1           knitr_1.49            reshape2_1.4.4       </span></span>
 <span><span class="co">## [103] cachem_1.1.0          zoo_1.8-12            stringr_1.5.1        </span></span>
 <span><span class="co">## [106] KernSmooth_2.23-24    parallel_4.4.2        miniUI_0.1.1.1       </span></span>
 <span><span class="co">## [109] desc_1.4.3            pillar_1.9.0          grid_4.4.2           </span></span>
@@ -1550,8 +1550,8 @@ accounting for multiple samples and background noise</p>
 <span><span class="co">## [127] stringi_1.8.4         viridisLite_0.4.2     deldir_2.0-4         </span></span>
 <span><span class="co">## [130] BiocParallel_1.40.0   munsell_0.5.1         lazyeval_0.2.2       </span></span>
 <span><span class="co">## [133] RcppHNSW_0.6.0        patchwork_1.3.0       future_1.34.0        </span></span>
-<span><span class="co">## [136] shiny_1.9.1           highr_0.11            ROCR_1.0-11          </span></span>
-<span><span class="co">## [139] broom_1.0.7           memoise_2.0.1         bslib_0.8.0</span></span></code></pre>
+<span><span class="co">## [136] shiny_1.9.1           ROCR_1.0-11           broom_1.0.7          </span></span>
+<span><span class="co">## [139] memoise_2.0.1         bslib_0.8.0</span></span></code></pre>
 </div>
 </div>
 </div>
