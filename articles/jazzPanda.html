@@ -857,15 +857,15 @@ p-value for every pair of gene cluster and cluster vector.</p>
 <code class="sourceCode R"><span><span class="co"># permutation adjusted p-value for every pair of gene and cluster vector</span></span>
 <span><span class="va">perm_res</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">perm_p</span><span class="op">$</span><span class="va">perm.pval.adj</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">perm_res</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">##                c5        c8        c3         c2          c1          c4</span></span>
-<span><span class="co">## CD68  1.000000000 0.6943057 0.1558442 1.00000000 1.000000000 0.003330003</span></span>
-<span><span class="co">## DST   0.006660007 1.0000000 1.0000000 0.01498501 0.003996004 1.000000000</span></span>
-<span><span class="co">## EPCAM 1.000000000 1.0000000 1.0000000 0.12787213 0.003996004 1.000000000</span></span>
-<span><span class="co">## ERBB2 1.000000000 1.0000000 1.0000000 0.00999001 0.003996004 1.000000000</span></span>
-<span><span class="co">## FOXA1 1.000000000 1.0000000 1.0000000 0.38628039 0.003996004 1.000000000</span></span>
-<span><span class="co">## KRT7  1.000000000 1.0000000 1.0000000 1.00000000 0.003996004 1.000000000</span></span>
+<pre><code><span><span class="co">##                c5        c8        c3          c2          c1          c4</span></span>
+<span><span class="co">## CD68  1.000000000 0.7459207 0.1838162 1.000000000 1.000000000 0.003330003</span></span>
+<span><span class="co">## DST   0.006660007 1.0000000 1.0000000 0.006660007 0.003996004 1.000000000</span></span>
+<span><span class="co">## EPCAM 1.000000000 1.0000000 1.0000000 0.107892108 0.003996004 1.000000000</span></span>
+<span><span class="co">## ERBB2 1.000000000 1.0000000 1.0000000 0.006660007 0.003996004 1.000000000</span></span>
+<span><span class="co">## FOXA1 1.000000000 1.0000000 1.0000000 0.472860473 0.003996004 1.000000000</span></span>
+<span><span class="co">## KRT7  1.000000000 1.0000000 1.0000000 1.000000000 0.003996004 1.000000000</span></span>
 <span><span class="co">##               c6        c7</span></span>
-<span><span class="co">## CD68  0.07223546 0.2877123</span></span>
+<span><span class="co">## CD68  0.05840314 0.2688221</span></span>
 <span><span class="co">## DST   1.00000000 1.0000000</span></span>
 <span><span class="co">## EPCAM 1.00000000 1.0000000</span></span>
 <span><span class="co">## ERBB2 1.00000000 1.0000000</span></span>
