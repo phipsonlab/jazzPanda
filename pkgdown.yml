@@ -3,7 +3,7 @@ pkgdown: 2.1.1
 pkgdown_sha: ~
 articles:
   jazzPanda: jazzPanda.html
-last_built: 2024-11-17T14:06Z
+last_built: 2024-11-17T22:01Z
 urls:
   reference: https://phipsonlab.github.io/jazzPanda/reference
   article: https://phipsonlab.github.io/jazzPanda/articles
