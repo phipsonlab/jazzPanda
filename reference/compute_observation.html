@@ -41,14 +41,16 @@
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">compute_observation</span><span class="op">(</span></span>
-<span>  <span class="va">data</span>,</span>
+<span>  <span class="va">x</span>,</span>
 <span>  <span class="va">cluster_info</span>,</span>
-<span>  correlation_method <span class="op">=</span> <span class="st">"pearson"</span>,</span>
-<span>  all_genes <span class="op">=</span> <span class="va">all_genes</span>,</span>
+<span>  <span class="va">correlation_method</span>,</span>
+<span>  <span class="va">n_cores</span>,</span>
+<span>  <span class="va">test_genes</span>,</span>
 <span>  <span class="va">bin_type</span>,</span>
 <span>  <span class="va">bin_param</span>,</span>
 <span>  <span class="va">w_x</span>,</span>
-<span>  <span class="va">w_y</span></span>
+<span>  <span class="va">w_y</span>,</span>
+<span>  <span class="va">use_cm</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -56,8 +58,9 @@
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
 
 
-<dl><dt id="arg-data">data<a class="anchor" aria-label="anchor" href="#arg-data"></a></dt>
-<dd><p>A list of matrices containing the coordinates of transcripts.</p></dd>
+<dl><dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
+<dd><p>a SingleCellExperiment or SpatialExperiment or
+SpatialFeatureExperiment object</p></dd>
 
 
 <dt id="arg-cluster-info">cluster_info<a class="anchor" aria-label="anchor" href="#arg-cluster-info"></a></dt>
@@ -73,9 +76,15 @@ indicating which correlation coefficient is to be computed.
 One of "pearson" (default), "kendall", or "spearman": can be abbreviated.</p></dd>
 
 
-<dt id="arg-all-genes">all_genes<a class="anchor" aria-label="anchor" href="#arg-all-genes"></a></dt>
-<dd><p>A vector of strings giving the name of the genes you want to
-test correlation for.</p></dd>
+<dt id="arg-n-cores">n_cores<a class="anchor" aria-label="anchor" href="#arg-n-cores"></a></dt>
+<dd><p>A positive number specifying number of cores used for
+parallelizing permutation testing. Default is one core
+(sequential processing).</p></dd>
+
+
+<dt id="arg-test-genes">test_genes<a class="anchor" aria-label="anchor" href="#arg-test-genes"></a></dt>
+<dd><p>A vector of strings giving the name of the genes you
+want to test correlation for.</p></dd>
 
 
 <dt id="arg-bin-type">bin_type<a class="anchor" aria-label="anchor" href="#arg-bin-type"></a></dt>
@@ -99,6 +108,13 @@ limits of enclosing box.</p></dd>
 <dt id="arg-w-y">w_y<a class="anchor" aria-label="anchor" href="#arg-w-y"></a></dt>
 <dd><p>a numeric vector of length two specifying the y coordinate
 limits of enclosing box.</p></dd>
+
+
+<dt id="arg-use-cm">use_cm<a class="anchor" aria-label="anchor" href="#arg-use-cm"></a></dt>
+<dd><p>A boolean value that specifies whether to create spatial
+vectors for genes using the count matrix and cell coordinates instead of
+the transcript coordinates when both types of information are available.
+The default setting is FALSE.</p></dd>
 
 </dl></div>
     <div class="section level2">

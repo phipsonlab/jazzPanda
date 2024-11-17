@@ -48,7 +48,11 @@ for rep2</p>
 
     <div class="section level2">
     <h2 id="format">Format<a class="anchor" aria-label="anchor" href="#format"></a></h2>
-    <p>A data frame with 98 rows and 4 variables:</p><dl><dt>x</dt>
+    <p>A SpatialExperiment object.
+The molecules assay slot is a BumpyDataFrameMatrix obejct.
+Can retrieve DataFrame version by calling
+`BumpyMatrix::unsplitAsDataFrame(molecules(rep2_neg))`.
+The molecules slot contains:</p><dl><dt>x</dt>
 <dd><p>x coordinates</p></dd>
 
     <dt>y</dt>
@@ -70,7 +74,7 @@ Xenium_FFPE_Human_Breast_Cancer_Rep2_outs.zip&gt;</p>
     </div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>List</p>
+    <p>SpatialExperiment</p>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

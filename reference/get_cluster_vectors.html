@@ -40,7 +40,15 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">get_cluster_vectors</span><span class="op">(</span><span class="va">cluster_info</span>, <span class="va">bin_length</span>, <span class="va">bin_type</span>, <span class="va">bin_param</span>, <span class="va">w_x</span>, <span class="va">w_y</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">get_cluster_vectors</span><span class="op">(</span></span>
+<span>  <span class="va">cluster_info</span>,</span>
+<span>  <span class="va">bin_length</span>,</span>
+<span>  <span class="va">bin_type</span>,</span>
+<span>  <span class="va">bin_param</span>,</span>
+<span>  <span class="va">w_x</span>,</span>
+<span>  <span class="va">w_y</span>,</span>
+<span>  <span class="va">sample_names</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -79,6 +87,10 @@ limits of enclosing box.</p></dd>
 <dt id="arg-w-y">w_y<a class="anchor" aria-label="anchor" href="#arg-w-y"></a></dt>
 <dd><p>A numeric vector of length two specifying the y coordinate
 limits of enclosing box.</p></dd>
+
+
+<dt id="arg-sample-names">sample_names<a class="anchor" aria-label="anchor" href="#arg-sample-names"></a></dt>
+<dd><p>a vector of strings giving the sample names</p></dd>
 
 </dl></div>
     <div class="section level2">

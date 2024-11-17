@@ -34,7 +34,40 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.2.0" id="jazzpanda-020">jazzPanda 0.2.0<a class="anchor" aria-label="anchor" href="#jazzpanda-020"></a></h2>
+<p><em>Updated on November 16, 2024</em></p>
+<p>To enhance interoperability with Bioconductor, the jazzPanda package has been updated to depend on the following data classes: SingleCellExperiment, SpatialExperiment, or SpatialFeatureExperiment.</p>
+<p>Changes to the package include:</p>
+<ul><li>
+<strong>Removed Function</strong>:
+<ul><li>The <code><a href="../reference/convert_data.html">convert_data()</a></code> function has been removed from the export list.</li>
+</ul></li>
+<li>
+<strong>function <code><a href="../reference/get_vectors.html">get_vectors()</a></code></strong>:
+<ul><li>Input <code>trans_lst</code> is renamed to <code>x</code>.</li>
+<li>Input <code>cm_lst</code> is removed.</li>
+<li>
+<code>x</code> must be a <code>SingleCellExperiment</code>, <code>SpatialExperiment</code>, or <code>SpatialFeatureExperiment</code> object.</li>
+<li>Renamed <code>all_genes</code> to <code>test_genes</code> to store genes for building spatial vectors.</li>
+</ul></li>
+<li>
+<strong>function <code><a href="../reference/compute_permp.html">compute_permp()</a></code></strong>:
+<ul><li>Input <code>data</code> is renamed to <code>x</code>.</li>
+<li>
+<code>n.cores</code> is renamed to <code>n_cores</code>.</li>
+<li>
+<code>x</code> must be a <code>SingleCellExperiment</code>, <code>SpatialExperiment</code>, or <code>SpatialFeatureExperiment</code> object.</li>
+</ul></li>
+<li>
+<strong>function <code><a href="../reference/create_genesets.html">create_genesets()</a></code></strong>:
+<ul><li>Input <code>data_lst</code> is renamed to <code>x</code>.</li>
+<li>
+<code>x</code> must be a <code>SingleCellExperiment</code>, <code>SpatialExperiment</code>, or <code>SpatialFeatureExperiment</code> object.</li>
+</ul></li>
+</ul></div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.1" id="jazzpanda-011">jazzPanda 0.1.1<a class="anchor" aria-label="anchor" href="#jazzpanda-011"></a></h2>
+<p><em>Updated on November 12, 2024</em></p>
 <ul><li>Add the <code><a href="../reference/convert_data.html">convert_data()</a></code> function to expand interoperability with Bioconductor. Support input objects from SingleCellExperiment/SpatialExperimentSpatialFeatureExperiment class</li>
 <li>Modify one input type for function <code><a href="../reference/get_vectors.html">get_vectors()</a></code>. Renamed input parameter <code>data_lst</code> as <code>trans_lst</code> specifically for storing transcript coordinates only.</li>
 </ul></div>
