@@ -34,7 +34,7 @@ spe_rep1 <- SpatialExperiment(
 spe_rep2 <- SpatialExperiment(
     assays = list(molecules = mol),sample_id ="rep2" )
 
-invalid_spe_rep1 <- BiocGenerics::cbind(spe_rep1,spe_rep2)
+invalid_spe_rep1 <-  SingleCellExperiment::cbind(spe_rep1,spe_rep2)
 
 w_x =  c(min(floor(min(trans_info$x)),
              floor(min(clusters$x))),

@@ -346,7 +346,7 @@ w_y =  c(min(floor(min(trans_info$y)),floor(min(trans_info_sp2$y)),
          max(ceiling(max(trans_info$y)),ceiling(max(trans_info_sp2$y)),
              ceiling(max(clusters$y))))
 
-twosample = BiocGenerics::cbind(spe,spe_sp2)
+twosample = SingleCellExperiment::cbind(spe,spe_sp2)
 vecs_lst = get_vectors(x=twosample, sample_names = c("sample1","sample2"),
                        cluster_info = clusters,
                        bin_type = "square",

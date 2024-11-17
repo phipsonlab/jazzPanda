@@ -219,7 +219,7 @@ s2_mol <- BumpyMatrix::splitAsBumpyMatrix(
 s2_spe<- SpatialExperiment(
     assays = list(molecules = s2_mol),sample_id ="sample2")
 
-combined_spe = BiocGenerics::cbind(s1_spe, s2_spe)
+combined_spe = SingleCellExperiment::cbind(s1_spe, s2_spe)
 
 vecs_lst = get_vectors(x=combined_spe,sample_names=c("sample1","sample2"), 
             bin_type="square",test_genes = c("A","B","C","E","F","G"),
