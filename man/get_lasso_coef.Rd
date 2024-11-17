@@ -27,8 +27,8 @@ output from the function \code{\link{get_vectors}}.}
 \item{cluster_names}{A vector of strings giving the name of clusters}
 
 \item{n_fold}{Optional. A positive number giving the number of folds used
-for cross validation. This parameter will pass to \code{\link{cv.glmnet}}
-to calculate a penalty term for every gene.}
+for cross validation. This parameter will pass to 
+\code{\link[glmnet]{cv.glmnet}} to calculate a penalty term for every gene.}
 
 \item{n_samples}{A positive number giving the number samples}
 

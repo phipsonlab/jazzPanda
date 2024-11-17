@@ -12,8 +12,8 @@
 #' This can be the output from the function \code{\link{get_vectors}}.
 #' @param sample_names  A vector specifying the names for the samples.
 #' @param n_fold Optional. A positive number giving the number of folds used
-#' for cross validation. This parameter will pass to \code{\link{cv.glmnet}}
-#' to calculate a penalty term for every gene.
+#' for cross validation. This parameter will pass to 
+#' \code{\link[glmnet]{cv.glmnet}} to calculate a penalty term for every gene.
 #' @param background Optional. A matrix providing the
 #' background information. Each row refers to a grid, and each column refers to
 #' one category of background information. Number of rows must equal to the
@@ -89,8 +89,8 @@ check_valid_input<- function(gene_mt,cluster_mt,sample_names, n_fold=10,
 #' @param cluster_names  A vector of strings giving the name of clusters
 
 #' @param n_fold Optional. A positive number giving the number of folds used
-#' for cross validation. This parameter will pass to \code{\link{cv.glmnet}}
-#' to calculate a penalty term for every gene.
+#' for cross validation. This parameter will pass to 
+#' \code{\link[glmnet]{cv.glmnet}} to calculate a penalty term for every gene.
 #' @param n_samples A positive number giving the number samples
 #' @param sample_names  A vector specifying the names for the sample
 #'
@@ -214,8 +214,8 @@ get_lasso_coef <- function(i_gene, gene_mt,vec_cluster,cluster_names,n_fold=10,
 #' Can be obtained by only providing coordinates matrices \code{cluster_info}.
 #' to function \code{get_vectors}.
 #' @param n_fold Optional. A positive number giving the number of folds used
-#' for cross validation. This parameter will pass to \code{\link{cv.glmnet}}
-#' to calculate a penalty term for every gene.
+#' for cross validation. This parameter will pass to 
+#' \code{\link[glmnet]{cv.glmnet}} to calculate a penalty term for every gene.
 
 #' @return a list of two matrices with the following components
 #' \item{\code{lasso_top_result}  }{A matrix with detailed information for

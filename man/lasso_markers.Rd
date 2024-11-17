@@ -43,8 +43,8 @@ Can be obtained by only providing coordinates matrices \code{cluster_info}.
 to function \code{get_vectors}.}
 
 \item{n_fold}{Optional. A positive number giving the number of folds used
-for cross validation. This parameter will pass to \code{\link{cv.glmnet}}
-to calculate a penalty term for every gene.}
+for cross validation. This parameter will pass to 
+\code{\link[glmnet]{cv.glmnet}} to calculate a penalty term for every gene.}
 }
 \value{
 a list of two matrices with the following components

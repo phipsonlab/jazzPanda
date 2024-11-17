@@ -27,8 +27,8 @@ This can be the output from the function \code{\link{get_vectors}}.}
 \item{sample_names}{A vector specifying the names for the samples.}
 
 \item{n_fold}{Optional. A positive number giving the number of folds used
-for cross validation. This parameter will pass to \code{\link{cv.glmnet}}
-to calculate a penalty term for every gene.}
+for cross validation. This parameter will pass to 
+\code{\link[glmnet]{cv.glmnet}} to calculate a penalty term for every gene.}
 
 \item{background}{Optional. A matrix providing the
 background information. Each row refers to a grid, and each column refers to
