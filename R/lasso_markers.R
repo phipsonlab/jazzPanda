@@ -264,7 +264,7 @@ get_lasso_coef <- function(i_gene, gene_mt,vec_cluster,cluster_names,n_fold=10,
 #'
 #' @seealso \code{\link{get_vectors}}
 #' @examples
-#'
+#' library(SpatialExperiment)
 #' set.seed(100)
 #' #  simulate coordinates for clusters
 #' df_clA = data.frame(x = rnorm(n=100, mean=20, sd=5),
@@ -273,7 +273,7 @@ get_lasso_coef <- function(i_gene, gene_mt,vec_cluster,cluster_names,n_fold=10,
 #'                 y = rnorm(n=100, mean=100, sd=5), cluster="B")
 #'
 #' clusters = rbind(df_clA, df_clB)
-#' clusters$sample="rep1"
+#' clusters$sample="sample1"
 #'
 #' # simulate coordinates for genes
 #' trans_info = data.frame(rbind(cbind(x = rnorm(n=100, mean=20,sd=5),
@@ -290,6 +290,13 @@ get_lasso_coef <- function(i_gene, gene_mt,vec_cluster,cluster_names,n_fold=10,
 #'                                  feature_name="gene_B2")))
 #' trans_info$x=as.numeric(trans_info$x)
 #' trans_info$y=as.numeric(trans_info$y)
+#' trans_info$cell = sample(c("cell1","cell2","cell2"),replace=TRUE,
+#'                         size=nrow(trans_info))
+#' trans_mol <- BumpyMatrix::splitAsBumpyMatrix(
+#'     trans_info[, c("x", "y")], 
+#'     row = trans_info$feature_name, col = trans_info$cell )
+#' spe<- SpatialExperiment(
+#'      assays = list(molecules = trans_mol),sample_id ="sample1" )
 #' w_x =  c(min(floor(min(trans_info$x)),
 #'          floor(min(clusters$x))),
 #'       max(ceiling(max(trans_info$x)),
@@ -298,15 +305,15 @@ get_lasso_coef <- function(i_gene, gene_mt,vec_cluster,cluster_names,n_fold=10,
 #'           floor(min(clusters$y))),
 #'       max(ceiling(max(trans_info$y)),
 #'           ceiling(max(clusters$y))))
-#' vecs_lst = get_vectors(trans_lst=list(rep1=trans_info), 
+#' vecs_lst = get_vectors(x=spe,sample_names=c("sample1"),
 #'                     cluster_info = clusters,
 #'                     bin_type = "square",
 #'                     bin_param = c(20,20),
-#'                     all_genes =c("gene_A1","gene_A2","gene_B1","gene_B2"),
+#'                     test_genes =c("gene_A1","gene_A2","gene_B1","gene_B2"),
 #'                     w_x = w_x, w_y=w_y)
 #' lasso_res = lasso_markers(gene_mt=vecs_lst$gene_mt,
 #'                         cluster_mt = vecs_lst$cluster_mt,
-#'                         sample_names=c("rep1"),
+#'                         sample_names=c("sample1"),
 #'                         keep_positive=TRUE,
 #'                         coef_cutoff=0.05,
 #'                         background=NULL)

@@ -5,7 +5,11 @@
 \alias{rep1_sub}
 \title{A small section of Xenium human breast cancer rep1.}
 \format{
-A data frame with 79576 rows and 3 variables:
+A SpatialExperiment object with 20 genes and 1713 cells. 
+The molecules assay slot is a BumpyDataFrameMatrix obejct. 
+Can retrieve DataFrame version by calling
+`BumpyMatrix::unsplitAsDataFrame(molecules(rep2_sub))`.
+The molecules assay contains 79576 rows and 3 variables:
 \describe{
     \item{x}{x coordinates}
     \item{y}{y coordiantes}
@@ -21,9 +25,9 @@ Xenium_FFPE_Human_Breast_Cancer_Rep1_outs.zip>
 data(rep1_sub)
 }
 \value{
-List
+SpatialExperiment
 }
 \description{
-A data frame containing the coordinates for every transcript
+A SpatialExperiment object containing the coordinates for every transcript
 }
 \keyword{datasets}

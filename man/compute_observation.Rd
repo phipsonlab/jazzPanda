@@ -5,18 +5,21 @@
 \title{Compute observation statistic for permutation framework}
 \usage{
 compute_observation(
-  data,
+  x,
   cluster_info,
-  correlation_method = "pearson",
-  all_genes = all_genes,
+  correlation_method,
+  n_cores,
+  test_genes,
   bin_type,
   bin_param,
   w_x,
-  w_y
+  w_y,
+  use_cm
 )
 }
 \arguments{
-\item{data}{A list of matrices containing the coordinates of transcripts.}
+\item{x}{a SingleCellExperiment or SpatialExperiment or 
+SpatialFeatureExperiment object}
 
 \item{cluster_info}{A dataframe/matrix containing the centroid
 coordinates and cluster label for each cell.The column names should
@@ -27,8 +30,12 @@ and "cluster" (cluster label).}
 indicating which correlation coefficient is to be computed.
 One of "pearson" (default), "kendall", or "spearman": can be abbreviated.}
 
-\item{all_genes}{A vector of strings giving the name of the genes you want to
-test correlation for.}
+\item{n_cores}{A positive number specifying number of cores used for
+parallelizing permutation testing. Default is one core
+(sequential processing).}
+
+\item{test_genes}{A vector of strings giving the name of the genes you 
+want to test correlation for.}
 
 \item{bin_type}{A string indicating which bin shape is to be used for
 vectorization. One of "square" (default), "rectangle", or "hexagon".}
@@ -44,6 +51,11 @@ limits of enclosing box.}
 
 \item{w_y}{a numeric vector of length two specifying the y coordinate
 limits of enclosing box.}
+
+\item{use_cm}{A boolean value that specifies whether to create spatial 
+vectors for genes using the count matrix and cell coordinates instead of 
+the transcript coordinates when both types of information are available. 
+The default setting is FALSE.}
 }
 \value{
 A named list with the following components

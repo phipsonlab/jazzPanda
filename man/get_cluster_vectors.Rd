@@ -4,7 +4,15 @@
 \alias{get_cluster_vectors}
 \title{Create spatial vectors for clusters}
 \usage{
-get_cluster_vectors(cluster_info, bin_length, bin_type, bin_param, w_x, w_y)
+get_cluster_vectors(
+  cluster_info,
+  bin_length,
+  bin_type,
+  bin_param,
+  w_x,
+  w_y,
+  sample_names
+)
 }
 \arguments{
 \item{cluster_info}{A dataframe/matrix containing the centroid coordinates,
@@ -28,6 +36,8 @@ limits of enclosing box.}
 
 \item{w_y}{A numeric vector of length two specifying the y coordinate
 limits of enclosing box.}
+
+\item{sample_names}{a vector of strings giving the sample names}
 }
 \value{
 a matrix contains the cell count in each grid.

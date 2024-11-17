@@ -9,7 +9,7 @@ get_gene_vectors_cm(
   cm_lst,
   bin_type,
   bin_param,
-  all_genes,
+  test_genes,
   w_x,
   w_y
 )
@@ -35,8 +35,8 @@ two giving the numbers of rectangular quadrats in the x and y directions. If
 the \code{bin_type} is "hexagonal", this will be a number giving the side
 length of hexagons. Positive numbers only.}
 
-\item{all_genes}{A vector of strings giving the name of the genes you want to
-test. This will be used as column names for one of the result matrix
+\item{test_genes}{A vector of strings giving the name of the genes you 
+want to test. This will be used as column names for one of the result matrix
 \code{gene_mt}.}
 
 \item{w_x}{A numeric vector of length two specifying the x coordinate

@@ -1,15 +1,19 @@
 #' A small section of Xenium human breast cancer rep1.
 #'
-#' A data frame containing the coordinates for every transcript
+#' A SpatialExperiment object containing the coordinates for every transcript
 #'
-#' @format A data frame with 79576 rows and 3 variables:
+#' @format A SpatialExperiment object with 20 genes and 1713 cells. 
+#' The molecules assay slot is a BumpyDataFrameMatrix obejct. 
+#' Can retrieve DataFrame version by calling
+#' `BumpyMatrix::unsplitAsDataFrame(molecules(rep2_sub))`.
+#' The molecules assay contains 79576 rows and 3 variables:
 #' \describe{
 #'     \item{x}{x coordinates}
 #'     \item{y}{y coordiantes}
 #'     \item{feature_name}{transcript name}
 #' }
 #' @usage data(rep1_sub)
-#' @return List
+#' @return SpatialExperiment
 #' @source <https://cf.10xgenomics.com/samples/xenium/1.0.1/
 #' Xenium_FFPE_Human_Breast_Cancer_Rep1/
 #' Xenium_FFPE_Human_Breast_Cancer_Rep1_outs.zip>
@@ -18,8 +22,8 @@
 
 #' Rep1 selected cells
 #'
-#' A csv file containing the coordinates and cluster label for each cell of the
-#' selected subset of rep1.
+#' A data frame file containing the coordinates and cluster label for 
+#' each cell of the selected subset of rep1.
 #'
 #' @format A data frame with 1705 rows and 6 variables:
 #' \describe{
@@ -39,10 +43,14 @@
 
 #' Rep1 negative control genes within the selected region.
 #'
-#' A data frame containing the coordinates for every negative control detection
-#' for rep1  
+#' A SpatialExperiment object containing the coordinates for every negative 
+#' control detection for rep1_sub  
 #'
-#' @format A data frame with 237 rows and 4 variables:
+#' @format A SpatialExperiment object. 
+#' The molecules assay slot is a BumpyDataFrameMatrix obejct. 
+#' Can retrieve DataFrame version by calling
+#' `BumpyMatrix::unsplitAsDataFrame(molecules(rep1_neg))`. 
+#' The molecules slot contains: 
 #' \describe{
 #'     \item{x}{x coordinates}
 #'     \item{y}{y coordiantes}
@@ -50,7 +58,7 @@
 #'     \item{category}{negative control category}
 #' }
 #' @usage data(rep1_neg)
-#' @return List
+#' @return SpatialExperiment 
 #' @source <https://cf.10xgenomics.com/samples/xenium/1.0.1/
 #' Xenium_FFPE_Human_Breast_Cancer_Rep1/Xenium_FFPE_Human_Breast_
 #' Cancer_Rep1_outs.zip>
@@ -58,15 +66,21 @@
 
 
 #' A small section of Xenium human breast cancer rep2.
-#'
-#' @format A data frame with 90375 rows and 3 variables:
+#' 
+#' A SpatialExperiment object containing the coordinates for every negative 
+#' control detection for rep2_sub  
+#' @format A SpatialExperiment object with 20 genes and 1829 cells.
+#' The molecules assay slot is a BumpyDataFrameMatrix obejct. 
+#' Can retrieve DataFrame version by calling
+#' `BumpyMatrix::unsplitAsDataFrame(molecules(rep2_sub))`.
+#' The molecules slot contains:
 #' \describe{
 #'     \item{x}{x coordinates}
 #'     \item{y}{y coordiantes}
 #'     \item{feature_name}{transcript name}
 #' }
 #' @usage data(rep2_sub)
-#' @return List
+#' @return SpatialExperiment
 #' @source <https://cf.10xgenomics.com/samples/xenium/1.0.1/
 #' Xenium_FFPE_Human_Breast_Cancer_Rep2/
 #' Xenium_FFPE_Human_Breast_Cancer_Rep2_outs.zip>
@@ -98,8 +112,11 @@
 #'
 #' A data frame containing the coordinates for every negative control detection 
 #' for rep2
-#'
-#' @format A data frame with 98 rows and 4 variables:
+#' @format A SpatialExperiment object. 
+#' The molecules assay slot is a BumpyDataFrameMatrix obejct. 
+#' Can retrieve DataFrame version by calling
+#' `BumpyMatrix::unsplitAsDataFrame(molecules(rep2_neg))`.
+#' The molecules slot contains:
 #' \describe{
 #'     \item{x}{x coordinates}
 #'     \item{y}{y coordiantes}
@@ -107,7 +124,7 @@
 #'.    \item{category}{negative control category}
 #' }
 #' @usage data(rep2_neg)
-#' @return List
+#' @return SpatialExperiment
 #' @source <https://cf.10xgenomics.com/samples/xenium/1.0.1/
 #' Xenium_FFPE_Human_Breast_Cancer_Rep2/
 #' Xenium_FFPE_Human_Breast_Cancer_Rep2_outs.zip>

@@ -5,7 +5,11 @@
 \alias{rep1_neg}
 \title{Rep1 negative control genes within the selected region.}
 \format{
-A data frame with 237 rows and 4 variables:
+A SpatialExperiment object. 
+The molecules assay slot is a BumpyDataFrameMatrix obejct. 
+Can retrieve DataFrame version by calling
+`BumpyMatrix::unsplitAsDataFrame(molecules(rep1_neg))`. 
+The molecules slot contains: 
 \describe{
     \item{x}{x coordinates}
     \item{y}{y coordiantes}
@@ -22,10 +26,10 @@ Cancer_Rep1_outs.zip>
 data(rep1_neg)
 }
 \value{
-List
+SpatialExperiment
 }
 \description{
-A data frame containing the coordinates for every negative control detection
-for rep1
+A SpatialExperiment object containing the coordinates for every negative 
+control detection for rep1_sub
 }
 \keyword{datasets}

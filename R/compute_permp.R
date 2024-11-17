@@ -1,6 +1,7 @@
 #' Compute observation statistic for permutation framework
 #'
-#' @param data A list of matrices containing the coordinates of transcripts.
+#' @param x a SingleCellExperiment or SpatialExperiment or 
+#' SpatialFeatureExperiment object
 #' @param cluster_info A dataframe/matrix containing the centroid
 #' coordinates and cluster label for each cell.The column names should
 #' include "x" (x coordinate), "y" (y coordinate),
@@ -8,8 +9,8 @@
 #' @param correlation_method A parameter pass to \code{\link{cor}},
 #' indicating which correlation coefficient is to be computed.
 #' One of "pearson" (default), "kendall", or "spearman": can be abbreviated.
-#' @param all_genes A vector of strings giving the name of the genes you want to
-#' test correlation for.
+#' @param test_genes A vector of strings giving the name of the genes you 
+#' want to test correlation for.
 #' @param bin_type A string indicating which bin shape is to be used for
 #' vectorization. One of "square" (default), "rectangle", or "hexagon".
 #' @param bin_param A numeric vector indicating the size of the bin. If the
@@ -21,7 +22,13 @@
 #' limits of enclosing box.
 #' @param w_y a numeric vector of length two specifying the y coordinate
 #' limits of enclosing box.
-#'
+#' @param use_cm A boolean value that specifies whether to create spatial 
+#' vectors for genes using the count matrix and cell coordinates instead of 
+#' the transcript coordinates when both types of information are available. 
+#' The default setting is FALSE.
+#' @param n_cores A positive number specifying number of cores used for
+#' parallelizing permutation testing. Default is one core
+#' (sequential processing).
 #' @importFrom stats cor
 #' @return A named list with the following components
 #' \item{\code{obs.stat}  }{ A matrix contains the observation statistic for
@@ -29,17 +36,40 @@
 #' refers to a cluster}
 #' \item{\code{gene_mt}  }{ contains the transcript count in each grid.
 #' Each row refers to a grid, and each column refers to a gene.}
-compute_observation<- function(data, cluster_info,
-                                correlation_method = "pearson",
-                                all_genes=all_genes,
-                                bin_type, bin_param, w_x, w_y){
-    
-    vectors_lst <- get_vectors(trans_lst=data,
+compute_observation<- function(x, cluster_info, correlation_method, n_cores,
+                            test_genes,bin_type, bin_param, w_x, w_y,use_cm){
+    primary_class <- class(x)[1]
+    if (primary_class == "SpatialExperiment" | 
+        primary_class ==  "SpatialFeatureExperiment"){
+        if (is.null(x$sample_id) == FALSE){
+            if (length(unique(x$sample_id))>1){
+stop("Input x has multiple samples")
+            }
+            cluster_info$sample <- unique(x$sample_id)
+        }else{
+            cluster_info$sample <- "sample1"
+            x$sample_id <- "sample1"
+        }
+    }else if (primary_class == "SingleCellExperiment"){
+        if (length(names(x@assays@data@listData)) == 1){
+            cluster_info$sample <- names(x@assays@data@listData)
+        }else if (length(names(x@assays@data@listData)) > 1){
+            stop("Input x has multiple samples")
+        }else {
+            cluster_info$sample <- "sample1"
+            names(x@assays@data@listData) <- "sample1"
+        }
+    }else{
+        stop("The input class of 'x' is not supported. 
+Please convert 'x' to one of the following supported types: 
+SingleCellExperiment, SpatialExperiment, or SpatialFeatureExperiment.")
+    }
+    vectors_lst <- get_vectors(x=x,sample_names=unique(cluster_info$sample),
                                 cluster_info = cluster_info,
                                 bin_type=bin_type,
                                 bin_param=bin_param,
-                                all_genes=all_genes,
-                                w_x=w_x, w_y=w_y)
+                                test_genes=test_genes, n_cores=n_cores,
+                                w_x=w_x, w_y=w_y,use_cm =use_cm)
 
     # calculate correation of permuted clusters and gene
     obs.stat <- cor(x=vectors_lst$gene_mt, y=vectors_lst$cluster_mt,
@@ -64,7 +94,7 @@ compute_observation<- function(data, cluster_info,
 #' two giving the numbers of rectangular quadrats in the x and y directions. If
 #' the \code{bin_type} is "hexagonal", this will be a number giving the side
 #' length of hexagons. Positive numbers only.
-#' @param n.cores A positive number specifying number of cores used for
+#' @param n_cores A positive number specifying number of cores used for
 #' parallelizing permutation testing. Default is one core
 #' (sequential processing).
 #' @param w_x a numeric vector of length two specifying the x coordinate
@@ -82,27 +112,21 @@ compute_observation<- function(data, cluster_info,
 #'
 compute_permutation<- function(cluster_info, perm.size = 1000,
                                 correlation_method = "pearson",  bin_type,
-                                bin_param, n.cores=1, w_x,w_y, gene_mt,
+                                bin_param, n_cores=1, w_x,w_y, gene_mt,
                                 cluster_names){
     n_clusters <- length(unique(cluster_info$cluster))
     t.perm.array<- array(0, dim = c(ncol(gene_mt),
                             length(cluster_names),perm.size))
     if (bin_type == "hexagon"){
-        if (length(bin_param) != 1){
-            stop("Invalid input bin_param, bin_param should be a
-                    vector of length 2 for hexagon bins") }
         w <-owin(xrange=w_x, yrange=w_y)
         H <-hextess(W=w, bin_param[1])
         bin_length <- length(H$tiles)
     }else if (bin_type == "square" | bin_type == "rectangle"){
-    if (length(bin_param) != 2){
-        stop("Invalid input bin_param, bin_param should be
-                a vector of length 2 for rectangle/square bins") }
     bin_length <- bin_param[1] * bin_param[2]
     }else{
         stop("Input bin_type is not supported.
                 Supported bin_type is rectangle/square or hexagon.") }
-    my.cluster <- parallel::makeCluster(n.cores, type = "PSOCK" )
+    my.cluster <- parallel::makeCluster(n_cores, type = "PSOCK" )
     doParallel::registerDoParallel(cl = my.cluster)
     i <- NULL
     t.perm.array<-foreach (i = seq_len(perm.size)) %dopar% {
@@ -148,8 +172,9 @@ compute_permutation<- function(cluster_info, perm.size = 1000,
 #' permuted clusters. This process will be repeated for \code{perm.size}
 #' times, and permutation p-value is calculated as the probability of
 #' permuted correlations larger than the observation correlation.
-#'
-#' @param data A list of matrices containing the coordinates of transcripts.
+#' 
+#' @param x a SingleCellExperiment or SpatialExperiment or 
+#' SpatialFeatureExperiment object
 #' @param cluster_info A dataframe/matrix containing the centroid coordinates
 #' and cluster label for each cell.The column names should include "x"
 #' (x coordinate), "y" (y coordinate), and "cluster" (cluster label).
@@ -161,13 +186,13 @@ compute_permutation<- function(cluster_info, perm.size = 1000,
 #' two giving the numbers of rectangular quadrats in the x and y directions. If
 #' the \code{bin_type} is "hexagonal", this will be a number giving the side
 #' length of hexagons. Positive numbers only.
-#' @param all_genes A vector of strings giving the name of the genes you
+#' @param test_genes A vector of strings giving the name of the genes you
 #' want to test correlation for.
 #' \code{gene_mt}.
 #' @param correlation_method A parameter pass to \code{\link{cor}} indicating
 #' which correlation coefficient is to be computed.
 #' One of "pearson" (default), "kendall", or "spearman": can be abbreviated.
-#' @param n.cores A positive number specifying number of cores used for
+#' @param n_cores A positive number specifying number of cores used for
 #' parallelizing permutation testing. Default is one core
 #' (sequential processing).
 #' @param w_x a numeric vector of length two specifying the x coordinate
@@ -177,7 +202,10 @@ compute_permutation<- function(cluster_info, perm.size = 1000,
 #'
 #' @param correction_method A character string pass to \code{\link{p.adjust}}
 #' specifying the correction method for multiple testing .
-#'
+#' @param use_cm A boolean value that specifies whether to create spatial 
+#' vectors for genes using the count matrix and cell coordinates instead of 
+#' the transcript coordinates when both types of information are available. 
+#' The default setting is FALSE.
 #' @return A named list with the following components
 #' \item{\code{obs.stat}  }{ A matrix contains the observation statistic for
 #' every gene and every cluster. Each row refers to a gene, and each column
@@ -196,71 +224,49 @@ compute_permutation<- function(cluster_info, perm.size = 1000,
 #' @importFrom foreach `%dopar%`
 #' @export
 #' @examples
-#'
+#' library(SFEData)
+#' library(SpatialFeatureExperiment)
+#' sfe1 <- McKellarMuscleData(dataset = "small")
+#' cm <- as.matrix(counts(sfe1))
+#' keep_genes <- row.names(cm)[rowSums(cm)>10]
+#' # get coordinates for clusters and simulate cluster labels
+#' clusters <- as.data.frame(spatialCoords(sfe1))
+#' colnames(clusters) <- c("x","y")
+#' clusters$sample<-sfe1$sample_id
 #' set.seed(100)
-#' # simulate coordinates for clusters
-#' df_clA = data.frame(x = rnorm(n=100, mean=20, sd=5),
-#'                    y = rnorm(n=100, mean=20, sd=5), cluster="A")
-#' df_clB = data.frame(x = rnorm(n=100, mean=100, sd=5),
-#'                   y = rnorm(n=100, mean=100, sd=5), cluster="B")
-
-#' clusters = rbind(df_clA, df_clB)
-#' clusters$sample="rep1"
-#' # simulate coordinates for genes
-#' trans_info = data.frame(rbind(cbind(x = rnorm(n=100, mean=20, sd=5),
-#'                                     y = rnorm(n=100, mean=20, sd=5),
-#'                                  feature_name="gene_A1"),
-#'                            cbind(x = rnorm(n=100, mean=20, sd=5),
-#'                                  y = rnorm(n=100, mean=20, sd=5),
-#'                                  feature_name="gene_A2"),
-#'                            cbind(x = rnorm(n=100, mean=100, sd=5),
-#'                                  y = rnorm(n=100, mean=100, sd=5),
-#'                                  feature_name="gene_B1"),
-#'                            cbind(x = rnorm(n=100, mean=100, sd=5),
-#'                                  y = rnorm(n=100, mean=100, sd=5),
-#'                                  feature_name="gene_B2")))
-#' trans_info$x=as.numeric(trans_info$x)
-#' trans_info$y=as.numeric(trans_info$y)
-
-#' w_x =  c(min(floor(min(trans_info$x)),
-#'             floor(min(clusters$x))),
-#'         max(ceiling(max(trans_info$x)),
-#'             ceiling(max(clusters$x))))
-#' w_y =  c(min(floor(min(trans_info$y)),
-#'          floor(min(clusters$y))),
-#'       max(ceiling(max(trans_info$y)),
-#'           ceiling(max(clusters$y))))
-#'           
-#' perm_res_lst = compute_permp(data=list("sample1"=trans_info),
-#'                     cluster_info=clusters,
-#'                     perm.size=100,
-#'                     bin_type="square",
-#'                     bin_param=c(2,2),
-#'                     all_genes=unique(trans_info$feature_name),
-#'                     correlation_method = "pearson",
-#'                     n.cores=2,
-#'                     correction_method="BH",
-#'                     w_x=w_x ,
-#'                     w_y=w_y)
-#' perm_pvalue = perm_res_lst$perm.pval.adj
-compute_permp<-function(data, cluster_info, perm.size, bin_type,
-                        bin_param,all_genes,
-                        correlation_method = "pearson", n.cores=1,
-                        correction_method="BH",w_x ,w_y){
+#' clusters$cluster<- sample(c("A","B","C","D","E"),
+#'                             size = ncol(sfe1), replace = TRUE)
+#' clusters$cell_id<- sfe1$barcode
+#' w_x <- c(floor(min(clusters$x)),ceiling(max(clusters$x)))
+#' w_y <- c(floor(min(clusters$y)),ceiling(max(clusters$y)))
+#' perm_res <- compute_permp(x= sfe1, cluster_info=clusters, 
+#'                             perm.size=100, bin_type="square",
+#'                             bin_param=c(5, 5),test_genes=keep_genes,
+#'                             correlation_method = "spearman", 
+#'                             n_cores=1,
+#'                             correction_method="BH",
+#'                             w_x=w_x ,w_y=w_y,
+#'                             use_cm = TRUE)
+#' perm_pvalue <- perm_res$perm.pval.adj
+compute_permp<-function(x, cluster_info, perm.size, bin_type,
+                        bin_param,test_genes,
+                        correlation_method = "pearson", n_cores=1,
+                        correction_method="BH",w_x ,w_y,use_cm = FALSE){
     message(sprintf("Correlation Method = %s", correlation_method))
 
     tm1 <- system.time(
     {
-        obs_res<- compute_observation(data=data, cluster_info=cluster_info,
-                                        correlation_method = correlation_method,
-                                        bin_type=bin_type,all_genes=all_genes,
-                                        bin_param=bin_param, w_x=w_x, w_y = w_y)
+        obs_res<- compute_observation(x=x, cluster_info=cluster_info,
+                                    n_cores=n_cores,use_cm =use_cm,
+                                    correlation_method = correlation_method,
+                                    bin_type=bin_type,test_genes=test_genes,
+                                    bin_param=bin_param, w_x=w_x, w_y = w_y)
     })
 
     obs.stat<- obs_res$obs.stat
-    if (n.cores>1 ){
+    if (n_cores>1 ){
         message(sprintf("Running %s permutation with %s cores in parallel",
-                        perm.size, n.cores))
+                        perm.size, n_cores))
     }else{
         message(sprintf("Running %s permutation in sequential", perm.size))
     }
@@ -271,7 +277,7 @@ compute_permp<-function(data, cluster_info, perm.size, bin_type,
                                         perm.size = perm.size,
                                         correlation_method = correlation_method,
                                         bin_type=bin_type,
-                                        bin_param=bin_param, n.cores=n.cores,
+                                        bin_param=bin_param, n_cores=n_cores,
                                         w_x=w_x, w_y = w_y,
                                         gene_mt = obs_res$gene_mt,
                                         cluster_names =colnames(obs.stat) )

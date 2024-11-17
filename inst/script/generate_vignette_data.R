@@ -30,6 +30,7 @@
 
 library(data.table)
 library(Seurat)
+library(SpatialExperiment)
 # download the official cell types of both samples
 s1_url <- "https://raw.githubusercontent.com/phipsonlab/jazzPanda_vignette/main/Xenium_rep1_supervised_celltype.csv"
 s2_url <- "https://raw.githubusercontent.com/phipsonlab/jazzPanda_vignette/main/Xenium_rep2_supervised_celltype.csv"
@@ -67,6 +68,7 @@ get_xenium_data<-function(path,mtx_name, trans_name="transcript_info.csv.gz",
     
 }
 rep1_path <- 'path/to/rep1/out/directory'
+rep1_path <- '/stornext/Bioinf/data/lab_phipson/data/xenium_human_breast_cancer/rep1/'
 
 rep1 = get_xenium_data(rep1_path,
                 mtx_name="cell_feature_matrix",
@@ -151,9 +153,9 @@ subset_genes = c("KRT7", "EPCAM", "FOXA1", # Tumor cells c1
                  )
 
 #rm_genes = row.names(rep1$cm[,keep_cells])[rowSums(rep1$cm[,keep_cells]!=0) <=10]
-rep1_sub = rep1$trans_info[rep1$trans_info$cell_id %in% keep_cells &
+rep1_sub_coord= rep1$trans_info[rep1$trans_info$cell_id %in% keep_cells &
                               rep1$trans_info$feature_name %in% subset_genes ,
-                           c("x","y","feature_name")]
+                           c("x","y","feature_name","cell_id")]
 
 
 rep1_clusters_sub =  rep1_clusters[rep1_clusters$cells %in% keep_cells,]
@@ -162,22 +164,21 @@ rep1_clusters_sub$cluster=factor(rep1_clusters_sub$cluster,
                                  levels=paste("c", 1:8, sep=""))
 
 
-rep1_neg = rep1$trans_info[rep1$trans_info$cell_id %in% keep_cells &
-                               (rep1$trans_info$feature_name %in% c(rep1$probe, rep1$codeword)) ,
-                           c("x","y","feature_name")]
-# create another data object to store the negative control genes
-# rep1_neg = list(trans_info=trans_neg,
-#                 probe=rep1$probe,
-#                 codeword=rep1$codeword
-# )
 
-rep1_neg$category = "probe"
-rep1_neg[rep1_neg$feature_name %in% rep1$codeword, "category"] = "codeword"
+
+# create SpatialExperiment object
+rep1_mol <- BumpyMatrix::splitAsBumpyMatrix(
+    rep1_sub_coord[, c("x", "y")], 
+    row = rep1_sub_coord$feature_name, col = rep1_sub_coord$cell_id )
+
+rep1_sub<- SpatialExperiment(
+    assays = list(molecules = rep1_mol),sample_id ="rep1" )
 
 ###################
 
 # process the rep2 in the same way
-# rep2_path <- 'path/to/rep2/out/directory'
+rep2_path <- 'path/to/rep2/out/directory'
+#rep2_path <- "/stornext/Bioinf/data/lab_phipson/data/xenium_human_breast_cancer/rep2/"
 rep2 = get_xenium_data(rep2_path,
                 mtx_name="cell_feature_matrix",
                 trans_name="transcripts.csv.gz",
@@ -227,22 +228,67 @@ keep_cells2=rep2_clusters[(rep2_clusters$x>=200 & rep2_clusters$x<=500) &
                         (rep2_clusters$y>=200 & rep2_clusters$y<=1000),
                           "cells"]
 
-rep2_sub = rep2$trans_info[rep2$trans_info$cell_id %in% keep_cells2 &
+rep2_sub_coord = rep2$trans_info[rep2$trans_info$cell_id %in% keep_cells2 &
                              rep2$trans_info$feature_name %in% subset_genes ,
-                           c("x","y","feature_name")]
+                           c("x","y","feature_name","cell_id")]
 
 rep2_clusters_sub =  rep2_clusters[rep2_clusters$cells %in% keep_cells2,]
 rep2_clusters_sub = rep2_clusters_sub[rep2_clusters_sub$cluster %in% paste("c", 1:8, sep=""),]
 rep2_clusters_sub$cluster=factor(rep2_clusters_sub$cluster,
                                  levels=paste("c", 1:8, sep=""))
 
-rep2_neg = rep2$trans_info[rep2$trans_info$cell_id %in% keep_cells2 &
-                               (rep2$trans_info$feature_name %in% c(rep2$probe, rep2$codeword) ) ,
-                           c("x","y","feature_name")]
-# create another data object to store the negative control genes
 
-rep2_neg$category = "probe"
-rep2_neg[rep2_neg$feature_name %in% rep2$codeword, "category"] = "codeword"
+# create SpatialExperiment object
+rep2_mol <- BumpyMatrix::splitAsBumpyMatrix(
+    rep2_sub_coord[, c("x", "y")], 
+    row = rep2_sub_coord$feature_name, col = rep2_sub_coord$cell_id )
+
+rep2_sub<- SpatialExperiment(
+    assays = list(molecules = rep2_mol),sample_id ="rep2" )
+
+
+########
+# negative control detections
+rep1_neg_coord = rep1$trans_info[rep1$trans_info$cell_id %in% keep_cells &
+                                     (rep1$trans_info$feature_name %in% c(rep1$probe, rep1$codeword)) ,
+                                 c("x","y","feature_name","cell_id")]
+
+rep2_neg_coord = rep2$trans_info[rep2$trans_info$cell_id %in% keep_cells2 &
+                                     (rep2$trans_info$feature_name %in% c(rep2$probe, rep2$codeword) ) ,
+                                 c("x","y","feature_name","cell_id")]
+
+shared_nc =  intersect(rep1_neg_coord$feature_name,rep2_neg_coord$feature_name)
+
+rep1_added = cbind(x=NA, y=NA, 
+                   feature_name=setdiff(rep2_neg_coord$feature_name,shared_nc),
+                   cell_id = NA)
+rep2_added = cbind(x=NA, y=NA, 
+                   feature_name=setdiff(rep1_neg_coord$feature_name,shared_nc),
+                   cell_id = NA)
+
+rep1_neg_coord = rbind(rep1_neg_coord,rep1_added)
+rep2_neg_coord = rbind(rep2_neg_coord,rep2_added)
+
+rep1_neg_coord$category = "probe"
+rep1_neg_coord[rep1_neg_coord$feature_name %in% c(rep1$codeword,rep2$codeword), "category"] = "codeword"
+
+rep2_neg_coord$category = "probe"
+rep2_neg_coord[rep2_neg_coord$feature_name %in% c(rep1$codeword,rep2$codeword), "category"] = "codeword"
+
+rep1_neg_mol <- BumpyMatrix::splitAsBumpyMatrix(
+    rep1_neg_coord[, c("x", "y","category")], 
+    row = rep1_neg_coord$feature_name, col = rep1_neg_coord$cell_id )
+
+rep1_neg<- SpatialExperiment(
+    assays = list(molecules = rep1_neg_mol),sample_id ="rep1")
+
+rep2_neg_mol <- BumpyMatrix::splitAsBumpyMatrix(
+    rep2_neg_coord[, c("x", "y","category")], 
+    row = rep2_neg_coord$feature_name, col = rep2_neg_coord$cell_id )
+
+rep2_neg<- SpatialExperiment(
+    assays = list(molecules = rep2_neg_mol),sample_id ="rep2")
+
 
 rep1_clusters = rep1_clusters_sub
 rep2_clusters = rep2_clusters_sub
@@ -264,8 +310,3 @@ usethis::use_data(rep2_neg, overwrite = TRUE)
 usethis::use_data(rep2_sub, overwrite = TRUE)
 usethis::use_data(rep2_clusters, overwrite = TRUE)
 
-# export gene_info
-# 
-# gene_info = read.table(file ="./inst/extdata/Xenium_FFPE_Human_Breast_Cancer_Rep1_panel.tsv",
-#                        sep = '\t', header = TRUE)
-# usethis::use_data(gene_info, overwrite = TRUE)

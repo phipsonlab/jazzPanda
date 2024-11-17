@@ -10,7 +10,7 @@ compute_permutation(
   correlation_method = "pearson",
   bin_type,
   bin_param,
-  n.cores = 1,
+  n_cores = 1,
   w_x,
   w_y,
   gene_mt,
@@ -38,7 +38,7 @@ two giving the numbers of rectangular quadrats in the x and y directions. If
 the \code{bin_type} is "hexagonal", this will be a number giving the side
 length of hexagons. Positive numbers only.}
 
-\item{n.cores}{A positive number specifying number of cores used for
+\item{n_cores}{A positive number specifying number of cores used for
 parallelizing permutation testing. Default is one core
 (sequential processing).}
 

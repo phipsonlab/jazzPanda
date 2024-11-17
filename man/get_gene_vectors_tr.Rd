@@ -6,7 +6,7 @@
 \usage{
 get_gene_vectors_tr(
   trans_lst,
-  all_genes,
+  test_genes,
   bin_type,
   bin_param,
   bin_length,
@@ -19,8 +19,8 @@ get_gene_vectors_tr(
 Each dataframe refers to one sample and shows the transcript detection 
 coordinates for each gene. Optional parameter.}
 
-\item{all_genes}{A vector of strings giving the name of the genes you want to
-test. This will be used as column names for one of the result matrix
+\item{test_genes}{A vector of strings giving the name of the genes you 
+want to test. This will be used as column names for one of the result matrix
 \code{gene_mt}.}
 
 \item{bin_type}{A string indicating which bin shape is to be used for

@@ -1,3 +1,4 @@
+library(SpatialExperiment)
 set.seed(12)
 # simulate coordiantes for clusters
 df_clA = data.frame(x = rnorm(n=100, mean=20, sd=5),
@@ -6,7 +7,7 @@ df_clB = data.frame(x = rnorm(n=100, mean=100, sd=5),
                     y = rnorm(n=100, mean=100, sd=5), cluster="B")
 
 clusters = rbind(df_clA, df_clB)
-clusters$sample="rep1"
+clusters$sample="sample1"
 # simulate coordiantes for genes
 trans_info = data.frame(rbind(cbind(x = rnorm(n=100, mean=20, sd=5),
                                     y = rnorm(n=100, mean=20, sd=5),
@@ -22,6 +23,14 @@ trans_info = data.frame(rbind(cbind(x = rnorm(n=100, mean=20, sd=5),
                                     feature_name="gene_B2")))
 trans_info$x=as.numeric(trans_info$x)
 trans_info$y=as.numeric(trans_info$y)
+trans_info$cell_id = paste("cell", 1:nrow(trans_info), sep="")
+# create SpatialExperiment object
+trans_mol <- BumpyMatrix::splitAsBumpyMatrix(
+    trans_info[, c("x", "y")], 
+    row = trans_info$feature_name, col = trans_info$cell_id )
+
+spe<- SpatialExperiment(
+    assays = list(molecules = trans_mol),sample_id ="sample1" )
 
 w_x =  c(min(floor(min(trans_info$x)),
              floor(min(clusters$x))),
@@ -32,15 +41,14 @@ w_y =  c(min(floor(min(trans_info$y)),
          max(ceiling(max(trans_info$y)),
              ceiling(max(clusters$y))))
 
-data = trans_info
-vecs_lst = get_vectors(trans_lst=list(rep1=data), cluster_info = clusters,
-                       bin_type = "square",
+vecs_lst = get_vectors(x=spe, cluster_info = clusters,
+                       bin_type = "square",sample_names = "sample1",
                        bin_param = c(20,20),
-                       all_genes =c("gene_A1","gene_A2","gene_B1","gene_B2"),
+                       test_genes =c("gene_A1","gene_A2","gene_B1","gene_B2"),
                        w_x = w_x, w_y=w_y)
 #### background
 
-background_sv = create_genesets(data_lst =list("rep1"= data),
+background_sv = create_genesets(x =spe,sample_names = "sample1",
                                 name_lst=list(dummy_W=c("gene_A1","gene_B1")),
                                 bin_type="square",
                                 bin_param = c(20,20),
@@ -320,8 +328,15 @@ trans_info_sp2 = data.frame(rbind(cbind(x = rnorm(n=100, mean=20, sd=5),
 trans_info_sp2$x=as.numeric(trans_info_sp2$x)
 trans_info_sp2$y=as.numeric(trans_info_sp2$y)
 
+trans_info_sp2$cell_id = paste("cell", 1:nrow(trans_info_sp2), sep="")
+# create SpatialExperiment object
+sp2_trans_mol <- BumpyMatrix::splitAsBumpyMatrix(
+    trans_info_sp2[, c("x", "y")], 
+    row = trans_info_sp2$feature_name, col = trans_info_sp2$cell_id )
 
-data_sp2 =trans_info_sp2
+spe_sp2<- SpatialExperiment(
+    assays = list(molecules = sp2_trans_mol),sample_id ="sample2" )
+
 w_x =  c(min(floor(min(trans_info$x)),floor(min(trans_info_sp2$x)),
              floor(min(clusters$x))),
          max(ceiling(max(trans_info$x)),ceiling(max(trans_info_sp2$x)),
@@ -331,16 +346,16 @@ w_y =  c(min(floor(min(trans_info$y)),floor(min(trans_info_sp2$y)),
          max(ceiling(max(trans_info$y)),ceiling(max(trans_info_sp2$y)),
              ceiling(max(clusters$y))))
 
-vecs_lst = get_vectors(trans_lst=list(sample1=data,sample2=data_sp2), 
+twosample = BiocGenerics::cbind(spe,spe_sp2)
+vecs_lst = get_vectors(x=twosample, sample_names = c("sample1","sample2"),
                        cluster_info = clusters,
                        bin_type = "square",
                        bin_param = c(20,20),
-                       all_genes =c("gene_A1","gene_A2","gene_B1","gene_B2"),
+                       test_genes =c("gene_A1","gene_A2","gene_B1","gene_B2"),
                        w_x = w_x, w_y=w_y)
 #### background
 
-background_sv = create_genesets(data_lst=list("sample1"= data,
-                                              "sample2"= data_sp2),
+background_sv = create_genesets(x=twosample, sample_names = c("sample1","sample2"),
                                 name_lst=list(dummy_W=c("gene_A1","gene_B1")),
                                 bin_type="square",
                                 bin_param = c(20,20),
@@ -366,8 +381,8 @@ test_that("lasso-two sample with background", {
 
 
 #######
-background_sv_all = create_genesets(data_lst=list("sample1"= data,
-                                              "sample2"= data_sp2),
+background_sv_all = create_genesets(x=twosample, 
+                                    sample_names = c("sample1","sample2"),
                                 name_lst=list(dummy_A1=c("gene_A1"),
                                               dummy_B1=c("gene_B1"),
                                               dummy_A2=c("gene_A2"),

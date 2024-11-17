@@ -5,33 +5,28 @@
 \title{Vectorise the spatial coordinates}
 \usage{
 get_vectors(
-  trans_lst,
+  x,
   cluster_info,
-  cm_lst = NULL,
+  sample_names,
   bin_type,
   bin_param,
-  all_genes,
+  test_genes,
   w_x,
   w_y,
+  use_cm = FALSE,
   n_cores = 1
 )
 }
 \arguments{
-\item{trans_lst}{A list of list. Every nested list refers to one sample,
-which must contain at least one matrix with transcript coordinates.
-Optional parameter.}
+\item{x}{a SingleCellExperiment or SpatialExperiment or 
+SpatialFeatureExperiment object}
 
 \item{cluster_info}{A dataframe/matrix containing the centroid coordinates,
 cluster label and sample for each cell.The column names must include
 "x" (x coordinate), "y" (y coordinate),
 "cluster" (cluster label) and "sample" (sample).}
 
-\item{cm_lst}{A list of named matrices containing the count matrix for
-each sample
-The name must match the sample column in \code{cluster_info}. If this input
-is provided, the \code{cluster_info} must be specified and contain an
-additional column "cell_id" to link cell location and count matrix.
-Default is NULL.}
+\item{sample_names}{a vector of strings giving the sample names}
 
 \item{bin_type}{A string indicating which bin shape is to be used for
 vectorization. One of "square" (default), "rectangle", or "hexagon".}
@@ -42,15 +37,20 @@ two giving the numbers of rectangular quadrats in the x and y directions. If
 the \code{bin_type} is "hexagonal", this will be a number giving the side
 length of hexagons. Positive numbers only.}
 
-\item{all_genes}{A vector of strings giving the name of the genes you want
-to test. This will be used as column names for one of the result matrix
-\code{gene_mt}.}
+\item{test_genes}{A vector of strings giving the name of the genes you want
+to create gene vector. This will be used as column names for one of the 
+result matrix \code{gene_mt}.}
 
 \item{w_x}{A numeric vector of length two specifying the x coordinate
 limits of enclosing box.}
 
 \item{w_y}{A numeric vector of length two specifying the y coordinate
 limits of enclosing box.}
+
+\item{use_cm}{A boolean value that specifies whether to create spatial 
+vectors for genes using the count matrix and cell coordinates instead of 
+the transcript coordinates when both types of information are available. 
+The default setting is FALSE.}
 
 \item{n_cores}{A positive number specifying number of cores used for
 parallelizing permutation testing. Default is one core
@@ -88,53 +88,56 @@ returned \code{cluster_mt}, which is the one-hot encoding of the
 sample information.
 
 Moreover, this function can vectorise genes and clusters separately based
-on the input. If \code{trans_lst} is NULL, this function will
+on the input. If \code{x} is NULL, this function will
 return vectorised clusters based on \code{cluster_info}.
 If \code{cluster_info} is NULL, this function will return vectorised genes
-based on \code{trans_lst}.
+based on \code{x}.
 }
 \examples{
-# simulate coordinates for genes
-trans = as.data.frame(rbind(cbind(x = c(1,2,20,21,22,23,24),
-                                 y = c(23, 24, 1,2,3,4,5),
-                                 feature_name="A"),
-                         cbind(x = c(1,20),
-                               y = c(15, 10),
-                               feature_name="B"),
-                         cbind(x = c(1,2,20,21,22,23,24),
-                               y = c(23, 24, 1,2,3,4,5),
-                               feature_name="C")))
-trans$x = as.numeric(trans$x)
-trans$y = as.numeric(trans$y)
-clusters = data.frame(x = c(3, 5,11,21,2,23,19),
-                    y = c(20, 24, 1,2,3,4,5), cluster="cluster_1")
-clusters$sample="rep1"
-vecs_lst_gene = get_vectors(trans_lst= list("rep1"= trans),
-                            cluster_info = clusters,
-                            bin_type = "square",
-                            bin_param = c(2,2),
-                            all_genes = c("A","B","C"),
-                            w_x = c(0,25), w_y=c(0,25))
-
-
-# generate gene vector from count matrix
-cm <- data.frame(rbind("gene_A"=c(0,0,2,0,0,0,2),
-                     "gene_B"=c(5,3,3,13,0,1,14),
-                     "gene_C"=c(5,0,1,5,1,0,7),
-                     "gene_D"=c(0,1,1,2,0,0,2)))
-colnames(cm)= paste("cell_", 1:7, sep="")
-# simulate coordiantes for clusters
-clusters = data.frame(x = c(1, 2,20,21,22,23,24),
-            y = c(23, 24, 1,2,3,4,5), cluster="A")
-clusters$sample="rep1"
-clusters$cell_id= colnames(cm)
-vecs_lst = get_vectors(trans_lst= NULL, cluster_info = clusters,
-                        cm_lst=list(rep1=cm),
+library(SpatialFeatureExperiment)
+library(TENxXeniumData)
+library(ExperimentHub)
+eh <- ExperimentHub()
+q <- query(eh, "TENxXenium")
+spe_example <- q[["EH8547"]]
+w_x <- c(0, 6000)
+w_y <- c(0, 4000)
+# define spatial vectors for genes from transcript coordinates
+vecs_gene_lst <- get_vectors(x= spe_example, 
+                        sample_names=unique(spe_example$sample_id), 
+                        cluster_info = NULL,
                         bin_type = "square",
-                        bin_param = c(2,2),
-                        all_genes = row.names(cm),
-                        w_x = c(0,25), w_y=c(0,25))
+                        bin_param = c(5,5),
+                        test_genes = row.names(spe_example),
+                        w_x = w_x, w_y=w_y)
 
+library(SFEData)
+sfe1 <- McKellarMuscleData(dataset = "small")
 
+# get coordinates for clusters and simulate cluster labels
+clusters <- as.data.frame(spatialCoords(sfe1))
+colnames(clusters) <- c("x","y")
+clusters$sample <- sfe1$sample_id
+set.seed(100)
+clusters$cluster<- sample(c("A","B","C"),size = ncol(sfe1), replace = TRUE)
+clusters$cell_id<- sfe1$barcode
+w_x <- c(floor(min(clusters$x)),ceiling(max(clusters$x)))
+w_y <- c(floor(min(clusters$y)),ceiling(max(clusters$y)))
+# define spatial vectors for clusters only
+vecs_cluster_lst <- get_vectors(x= NULL, 
+                        sample_names=unique(clusters$sample), 
+                        cluster_info = clusters,
+                        bin_type = "square",
+                        bin_param = c(5,5),
+                        test_genes = NULL,
+                        w_x = w_x, w_y=w_y)
+# define spatial vectors from count matrix and cell coordinates 
+vecs_lst <- get_vectors(x= sfe1, 
+                        sample_names=unique(clusters$sample), 
+                        cluster_info = clusters,
+                        bin_type = "square",
+                        bin_param = c(5,5),
+                        test_genes = row.names(sfe1),
+                        w_x = w_x, w_y=w_y)
 
 }

@@ -27,7 +27,7 @@ data(rep1_clusters)
 data frame
 }
 \description{
-A csv file containing the coordinates and cluster label for each cell of the
-selected subset of rep1.
+A data frame file containing the coordinates and cluster label for 
+each cell of the selected subset of rep1.
 }
 \keyword{datasets}
