@@ -164,7 +164,7 @@ rep1_transcripts <-BumpyMatrix::unsplitAsDataFrame(molecules(rep1_sub))
 rep1_transcripts <- as.data.frame(rep1_transcripts)
 colnames(rep1_transcripts) <- c("feature_name","cell_id","x","y")
 # record the negative control transcript coordinates for rep1
-rep1_nc_data <-BumpyMatrix::unsplitAsDataFrame(molecules(rep1_neg))
+rep1_nc_data <- BumpyMatrix::unsplitAsDataFrame(molecules(rep1_neg))
 rep1_nc_data <- as.data.frame(rep1_nc_data)
 colnames(rep1_nc_data) <- c("feature_name","cell_id","x","y","category")
 
@@ -174,19 +174,13 @@ all_celltypes = unique(rep1_clusters[,c("anno","cluster")])
 # nc_patterns = "^BLANK_|^NegControlProbe_|^NegControlCodeword_|^antisense_"
 # nc_targets = grep(pattern =nc_patterns , x = test_genes,value = TRUE)
 ```
-
-The required input data structure for the main function `lasso_markers()` 
-is a list of matrices. We will illustrate how to simply create the required 
-input data from the raw output of different technologies in the following 
-examples: 
-If you have a Seurat object, you can build the required object as follows.
-The defined example_vectors_cm/example_vectors_tr can be passed 
-to `lasso_markers` to identify marker genes. 
+The main function `lasso_markers()` requires spatial vectors for each 
+cluster and gene. These vectors can be conveniently generated using the 
+`get_vectors()` function. Currently, the get_vectors() function supports 
+inputs of type `SingleCellExperiment`, `SpatialExperiment`, or 
+`SpatialFeatureExperiment`
 
 ### From a SpatialExperiment object 
-If you have a SpatialExperiment or SpatialFeatureExperiment object, 
-you can generate the required input for creating the spatial vectors by 
-calling `convert_data` function. 
 If the transcript coordinates are available, you can 
 use either transcript coordinates or the count matrix to define spatial vectors 
 for genes. 
@@ -224,12 +218,12 @@ seu_clusters$cell_id <- colnames(example_seu)
 # combine cluster labels and the coordinates 
 # make sure the cluster information contains column names: 
 # cluster, x, y, sample and cell_id
-clusters_info <- spatialCoords(spe_example)
+clusters_info <- as.data.frame(spatialCoords(spe_example))
 colnames(clusters_info) <- c("x","y")
 clusters_info$cell_id <- row.names(clusters_info)
 clusters_info$sample <- spe_example$sample_id
 clusters_info <- merge(clusters_info, seu_clusters, by="cell_id")
-
+clusters_info$cluster <- paste("c",clusters_info$cluster, sep="")
 w_x <- c(0, 10000)
 w_y <- c(0, 10000)
 
@@ -243,6 +237,11 @@ example_vectors_cm <- get_vectors(x= spe_example,
                                 test_genes = test_genes,
                                 use_cm=TRUE,
                                 w_x=w_x, w_y=w_y)
+# spatial vector for every cluster 
+example_vectors_cm$cluster_mt
+
+# spatial vector for every gene 
+example_vectors_cm$gene_mt
 # -----------------------------------------------------------------------------
 # build spatial vectors from transcript coordinates and cluster coordinates 
 example_vectors_tr <- get_vectors(x= spe_example,
@@ -253,8 +252,11 @@ example_vectors_tr <- get_vectors(x= spe_example,
                                 test_genes = test_genes,
                                 use_cm=FALSE,
                                 w_x=w_x, w_y=w_y)
+# spatial vector for every cluster 
+example_vectors_tr$cluster_mt
 
-
+# spatial vector for every gene 
+example_vectors_tr$gene_mt
 ```
 
 ### From a SpatialFeatureExperiment object 
@@ -274,6 +276,11 @@ example_vectors_cm <- get_vectors(x= sfe_example,
                                 w_x=w_x, w_y=w_y, 
                                 use_cm = TRUE)
 
+# spatial vector for every cluster 
+example_vectors_cm$cluster_mt
+
+# spatial vector for every gene 
+example_vectors_cm$gene_mt
 # -----------------------------------------------------------------------------
 # build spatial vectors from transcript coordinates and cluster coordinates 
 example_vectors_tr <- get_vectors(x= sfe_example,
@@ -285,10 +292,21 @@ example_vectors_tr <- get_vectors(x= sfe_example,
                                 w_x=w_x, w_y=w_y, 
                                 use_cm = FALSE)
 
+# spatial vector for every cluster 
+example_vectors_tr$cluster_mt
 
+# spatial vector for every gene 
+example_vectors_tr$gene_mt
 ```
 
 ### From a SingleCellExperiment object
+If the input is a SingleCellExperiment object, the spatial vectors for the 
+genes can only be computed using the count matrix and the cell coordinates
+The defined example_vectors_cm can be passed to `lasso_markers` to identify 
+marker genes. \\
+If transcript coordinate information is available, you can alternatively 
+create a SpatialExperiment object and compute the spatial vectors 
+using the transcript coordinates.
 ```{r, eval=FALSE}
 sce_example <- SingleCellExperiment(list(sample01 = cm))
 # -----------------------------------------------------------------------------
@@ -304,47 +322,94 @@ example_vectors_cm <- get_vectors(x= sce_example,
                                 w_x=w_x, w_y=w_y, 
                                 use_cm=TRUE)
 
-```
+# spatial vector for every cluster 
+example_vectors_cm$cluster_mt
 
-### From a Seurat object 
-```{r eval=FALSE}
-# cm is the count matrix
-seu_obj =Seurat::CreateSeuratObject(counts = cm)
-sce <- as.SingleCellExperiment(seu_obj)
-# make sure the clusters information contains column names: 
-# cluster, x, y and sample
-clusters_info = rep1_clusters
+# spatial vector for every gene 
+example_vectors_cm$gene_mt
+
+# -----------------------------------------------------------------------------
+# If the transcript coordinate information is available
 # make sure the transcript information contains column names: 
 # feature_name, x, y
-transcript_coords = rep1_sub$trans_info
-data_example = list(cm=seu_obj@assays$RNA$counts,
-                    trans_info =transcript_coords)
-
-w_x =  c(min(floor(min(data$x)), floor(min(clusters_info$x))), 
-        max(ceiling(max(data$x)), ceiling(max(clusters_info$x))))
-w_y =  c(min(floor(min(data$y)), floor(min(clusters_info$y))), 
-        max(ceiling(max(data$y)), ceiling(max(clusters_info$y))))
+spe <- SpatialExperiment(
+    assays = list(
+        molecules = molecules(sfe_example)),
+    sample_id ="sample01" )
 
 # build spatial vectors from transcript coordinates and cluster coordinates 
-example_vectors_tr = get_vectors(x= sce, sample_names = "sample01",
+example_vectors_tr = get_vectors(x= spe, sample_names = "sample01",
                                 cluster_info = clusters_info,
                                 bin_type="square",
                                 bin_param=c(10,10), 
-                                test_genes = row.names(cm), 
+                                test_genes = test_genes,
                                 w_x=w_x, w_y=w_y)
+# spatial vector for every cluster 
+example_vectors_tr$cluster_mt
+
+# spatial vector for every gene 
+example_vectors_tr$gene_mt
+
+```
+
+### From a Seurat object 
+If you have a Seurat object, the spatial vectors for the 
+genes can only be computed using the count matrix and the cell coordinates
+The defined example_vectors_cm can be passed to `lasso_markers` to identify 
+marker genes. \\ 
+If transcript coordinate information is available, you can alternatively 
+create a SpatialExperiment object and compute the spatial vectors 
+using the transcript coordinates.
+```{r eval=FALSE}
+# cm is the count matrix
+seu_obj <- Seurat::CreateSeuratObject(counts = cm)
+sce <- SingleCellExperiment(list(sample01 =seu_obj@assays$RNA$counts ))
+# we will use the previously defined cluster_info for illustration here
+# make sure the clusters information contains column names: 
+# cluster, x, y and sample
+clusters_info = clusters_info
+
+w_x <- c(0, 10000)
+w_y <- c(0, 10000)
+
 # -----------------------------------------------------------------------------
 # build spatial vectors from count matrix and cluster coordinates 
 # make sure the cluster information contains column names: 
 # cluster, x, y, sample and cell_id
-colnames(clusters_info)[5] = "cell_id"
-example_vectors_cm = get_vectors(x=  sce, sample_names = "sample01",
+example_vectors_cm = get_vectors(x= sce, sample_names = "sample01",
                                 cluster_info = clusters_info,
                                 bin_type="square",
                                 bin_param=c(10,10), 
-                                test_genes = row.names(cm), 
+                                test_genes = test_genes,
                                 w_x=w_x, w_y=w_y,
                                 use_cm=TRUE)
+# spatial vector for every cluster 
+example_vectors_cm$cluster_mt
 
+# spatial vector for every gene 
+example_vectors_cm$gene_mt
+
+# -----------------------------------------------------------------------------
+# If the transcript coordinate information is available
+# make sure the transcript information contains column names: 
+# feature_name, x, y
+spe <- SpatialExperiment(
+    assays = list(
+        molecules = molecules(sfe_example)),
+    sample_id ="sample01" )
+
+# build spatial vectors from transcript coordinates and cluster coordinates 
+example_vectors_tr = get_vectors(x= spe, sample_names = "sample01",
+                                cluster_info = clusters_info,
+                                bin_type="square",
+                                bin_param=c(10,10), 
+                                test_genes = test_genes,
+                                w_x=w_x, w_y=w_y)
+# spatial vector for every cluster 
+example_vectors_tr$cluster_mt
+
+# spatial vector for every gene 
+example_vectors_tr$gene_mt
 ```
 
 ## Visualise the clusters over the tissue space
