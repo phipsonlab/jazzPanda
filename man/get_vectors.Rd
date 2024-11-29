@@ -94,50 +94,52 @@ If \code{cluster_info} is NULL, this function will return vectorised genes
 based on \code{x}.
 }
 \examples{
-library(SpatialFeatureExperiment)
-library(TENxXeniumData)
-library(ExperimentHub)
-eh <- ExperimentHub()
-q <- query(eh, "TENxXenium")
-spe_example <- q[["EH8547"]]
-w_x <- c(0, 6000)
-w_y <- c(0, 4000)
-# define spatial vectors for genes from transcript coordinates
-vecs_gene_lst <- get_vectors(x= spe_example, 
-                        sample_names=unique(spe_example$sample_id), 
-                        cluster_info = NULL,
-                        bin_type = "square",
-                        bin_param = c(5,5),
-                        test_genes = row.names(spe_example),
-                        w_x = w_x, w_y=w_y)
-
-library(SFEData)
-sfe1 <- McKellarMuscleData(dataset = "small")
-
-# get coordinates for clusters and simulate cluster labels
-clusters <- as.data.frame(spatialCoords(sfe1))
-colnames(clusters) <- c("x","y")
-clusters$sample <- sfe1$sample_id
+library(SpatialExperiment)
 set.seed(100)
-clusters$cluster<- sample(c("A","B","C"),size = ncol(sfe1), replace = TRUE)
-clusters$cell_id<- sfe1$barcode
-w_x <- c(floor(min(clusters$x)),ceiling(max(clusters$x)))
-w_y <- c(floor(min(clusters$y)),ceiling(max(clusters$y)))
-# define spatial vectors for clusters only
-vecs_cluster_lst <- get_vectors(x= NULL, 
-                        sample_names=unique(clusters$sample), 
-                        cluster_info = clusters,
-                        bin_type = "square",
-                        bin_param = c(5,5),
-                        test_genes = NULL,
-                        w_x = w_x, w_y=w_y)
-# define spatial vectors from count matrix and cell coordinates 
-vecs_lst <- get_vectors(x= sfe1, 
-                        sample_names=unique(clusters$sample), 
-                        cluster_info = clusters,
-                        bin_type = "square",
-                        bin_param = c(5,5),
-                        test_genes = row.names(sfe1),
-                        w_x = w_x, w_y=w_y)
+#  simulate coordinates for clusters
+df_clA = data.frame(x = rnorm(n=100, mean=20, sd=5),
+                 y = rnorm(n=100, mean=20, sd=5), cluster="A")
+df_clB = data.frame(x = rnorm(n=100, mean=100, sd=5),
+                y = rnorm(n=100, mean=100, sd=5), cluster="B")
+
+clusters = rbind(df_clA, df_clB)
+clusters$sample="sample1"
+
+# simulate coordinates for genes
+trans_info = data.frame(rbind(cbind(x = rnorm(n=10, mean=20,sd=5),
+                                y = rnorm(n=10, mean=20, sd=5),
+                                 feature_name="gene_A1"),
+                           cbind(x = rnorm(n=10, mean=20, sd=5),
+                                 y = rnorm(n=10, mean=20, sd=5),
+                                 feature_name="gene_A2"),
+                           cbind(x = rnorm(n=10, mean=100, sd=5),
+                                 y = rnorm(n=10, mean=100, sd=5),
+                                 feature_name="gene_B1"),
+                           cbind(x = rnorm(n=10, mean=100, sd=5),
+                                 y = rnorm(n=10, mean=100, sd=5),
+                                 feature_name="gene_B2")))
+trans_info$x=as.numeric(trans_info$x)
+trans_info$y=as.numeric(trans_info$y)
+trans_info$cell = sample(c("cell1","cell2","cell2"),replace=TRUE,
+                        size=nrow(trans_info))
+trans_mol <- BumpyMatrix::splitAsBumpyMatrix(
+    trans_info[, c("x", "y")], 
+    row = trans_info$feature_name, col = trans_info$cell )
+spe<- SpatialExperiment(
+     assays = list(molecules = trans_mol),sample_id ="sample1" )
+w_x =  c(min(floor(min(trans_info$x)),
+         floor(min(clusters$x))),
+      max(ceiling(max(trans_info$x)),
+          ceiling(max(clusters$x))))
+w_y =  c(min(floor(min(trans_info$y)),
+          floor(min(clusters$y))),
+      max(ceiling(max(trans_info$y)),
+          ceiling(max(clusters$y))))
+vecs_lst = get_vectors(x=spe,sample_names=c("sample1"),
+                    cluster_info = clusters,
+                    bin_type = "square",
+                    bin_param = c(5,5),
+                    test_genes =c("gene_A1","gene_A2","gene_B1","gene_B2"),
+                    w_x = w_x, w_y=w_y)
 
 }

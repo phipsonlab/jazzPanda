@@ -96,7 +96,8 @@ library(SFEData)
 library(SpatialFeatureExperiment)
 sfe1 <- McKellarMuscleData(dataset = "small")
 cm <- as.matrix(counts(sfe1))
-keep_genes <- row.names(cm)[rowSums(cm)>10]
+# take a subset of genes for illustration
+keep_genes <- row.names(cm)[rowSums(cm)>100]
 # get coordinates for clusters and simulate cluster labels
 clusters <- as.data.frame(spatialCoords(sfe1))
 colnames(clusters) <- c("x","y")
@@ -108,10 +109,10 @@ clusters$cell_id<- sfe1$barcode
 w_x <- c(floor(min(clusters$x)),ceiling(max(clusters$x)))
 w_y <- c(floor(min(clusters$y)),ceiling(max(clusters$y)))
 perm_res <- compute_permp(x= sfe1, cluster_info=clusters, 
-                            perm.size=100, bin_type="square",
+                            perm.size=10, bin_type="square",
                             bin_param=c(5, 5),test_genes=keep_genes,
                             correlation_method = "spearman", 
-                            n_cores=1,
+                            n_cores=2,
                             correction_method="BH",
                             w_x=w_x ,w_y=w_y,
                             use_cm = TRUE)

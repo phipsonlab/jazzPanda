@@ -48,7 +48,7 @@ w_y =  c(min(floor(min(trans_info$y)),
 test_that("Invaid input",{
     expect_error(compute_permp(x=trans_info,
                                cluster_info=clusters,
-                               perm.size=100,
+                               perm.size=10,
                                bin_type="square",
                                bin_param=c(2),
                                test_genes=unique(trans_info$feature_name),
@@ -107,7 +107,7 @@ test_that("Invaid input",{
 set.seed(100)
 perm_p_lst = compute_permp(x=spe_rep1,
                        cluster_info=clusters,
-                       perm.size=100,
+                       perm.size=10,
                        bin_type="square",
                        bin_param=c(2,2),
                        test_genes=unique(trans_info$feature_name),
@@ -118,7 +118,7 @@ perm_p_lst = compute_permp(x=spe_rep1,
                        w_y=w_y)
 perm_p_s = compute_permp(x=spe_rep1,
                            cluster_info=clusters,
-                           perm.size=100,
+                         perm.size=10,
                            bin_type="square",
                            bin_param=c(2,2),
                            test_genes=unique(trans_info$feature_name),
@@ -129,7 +129,7 @@ perm_p_s = compute_permp(x=spe_rep1,
                            w_y=w_y)
 test_that("Test permutation result - output dimension matches", {
   expect_equal(length(perm_p_lst), 4)
-  expect_equal(dim(perm_p_lst$perm.arrays), c(4,2,100))
+  expect_equal(dim(perm_p_lst$perm.arrays), c(4,2,10))
   expect_equal(dim(perm_p_lst$obs.stat), c(4,2))
   expect_equal(dim(perm_p_lst$perm.pval.adj), c(4,2))
   expect_equal(dim(perm_p_lst$perm.pval), c(4,2))
@@ -146,7 +146,7 @@ test_that("Test permutation result - observed stat matches", {
 
 perm_p_s = compute_permp(x=spe_rep1,
                          cluster_info=clusters,
-                         perm.size=100,
+                         perm.size=10,
                          bin_type="square",
                          bin_param=c(2,2),
                          test_genes=unique(trans_info$feature_name),
@@ -157,7 +157,7 @@ perm_p_s = compute_permp(x=spe_rep1,
                          w_y=w_y)
 test_that("Test permutation result - sequential calculation works", {
     expect_equal(length(perm_p_s), 4)
-    expect_equal(dim(perm_p_s$perm.arrays), c(4,2,100))
+    expect_equal(dim(perm_p_s$perm.arrays), c(4,2,10))
     expect_equal(dim(perm_p_s$obs.stat), c(4,2))
     expect_equal(dim(perm_p_s$perm.pval.adj), c(4,2))
     expect_equal(dim(perm_p_s$perm.pval), c(4,2))
@@ -173,7 +173,7 @@ test_that("Test permutation result - sequential calculation works", {
 set.seed(100)
 perm_hex_lst = compute_permp(x=spe_rep1,
                            cluster_info=clusters,
-                           perm.size=100,
+                           perm.size=10,
                            bin_type="hexagon",
                            bin_param=c(5),
                            test_genes=unique(trans_info$feature_name),
@@ -184,7 +184,7 @@ perm_hex_lst = compute_permp(x=spe_rep1,
                            w_y=w_y)
 test_that("Test permutation result - output dimension matches", {
     expect_equal(length(perm_hex_lst), 4)
-    expect_equal(dim(perm_hex_lst$perm.arrays), c(4,2,100))
+    expect_equal(dim(perm_hex_lst$perm.arrays), c(4,2,10))
     expect_equal(dim(perm_hex_lst$obs.stat), c(4,2))
     expect_equal(dim(perm_hex_lst$perm.pval.adj), c(4,2))
     expect_equal(dim(perm_hex_lst$perm.pval), c(4,2))
@@ -222,7 +222,7 @@ noname_sce<- SingleCellExperiment(cm)
 invalid_sce <- SingleCellExperiment(list(rep1=cm, rep2=cm))
 perm_p_s = compute_permp(x=sce,
                          cluster_info=clusters,
-                         perm.size=100,
+                         perm.size=10,
                          bin_type="square",
                          bin_param=c(2,2),
                          test_genes=row.names(cm),
@@ -233,7 +233,7 @@ perm_p_s = compute_permp(x=sce,
                          w_y=w_y)
 perm_noname= compute_permp(x=noname_sce,
                          cluster_info=clusters,
-                         perm.size=100,
+                         perm.size=10,
                          bin_type="square",
                          bin_param=c(2,2),
                          test_genes=row.names(cm),
@@ -244,7 +244,7 @@ perm_noname= compute_permp(x=noname_sce,
                          w_y=w_y)
 test_that("Test permutation result - output dimension matches", {
     expect_equal(length(perm_p_s), 4)
-    expect_equal(dim(perm_p_s$perm.arrays), c(4,1,100))
+    expect_equal(dim(perm_p_s$perm.arrays), c(4,1,10))
     expect_equal(dim(perm_p_s$obs.stat), c(4,1))
     expect_equal(dim(perm_p_s$perm.pval.adj), c(4,1))
     expect_equal(dim(perm_p_s$perm.pval), c(4,1))
@@ -262,7 +262,7 @@ test_that("Can work for one sample sce without sample name", {
 test_that("Invaid input",{
     expect_error(compute_permp(x=invalid_sce,
                                cluster_info=clusters,
-                               perm.size=100,
+                               perm.size=10,
                                bin_type="square",
                                bin_param=c(2,2),
                                test_genes=row.names(cm),
