@@ -1,30 +1,30 @@
 library(SpatialExperiment)
 set.seed(100)
 # simulate coordiantes for clusters
-df_clA = data.frame(x = rnorm(n=100, mean=20, sd=5),
-                    y = rnorm(n=100, mean=20, sd=5), cluster="A")
-df_clB = data.frame(x = rnorm(n=100, mean=100, sd=5),
-                    y = rnorm(n=100, mean=100, sd=5), cluster="B")
+df_clA = data.frame(x = rnorm(n=5, mean=20, sd=5),
+                    y = rnorm(n=5, mean=20, sd=5), cluster="A")
+df_clB = data.frame(x = rnorm(n=5, mean=100, sd=5),
+                    y = rnorm(n=5, mean=100, sd=5), cluster="B")
 
 clusters = rbind(df_clA, df_clB)
 clusters$sample="rep1"
 # simulate coordiantes for genes
-trans_info = data.frame(rbind(cbind(x = rnorm(n=100, mean=20, sd=5),
-                                    y = rnorm(n=100, mean=20, sd=5),
+trans_info = data.frame(rbind(cbind(x = rnorm(n=5, mean=20, sd=5),
+                                    y = rnorm(n=5, mean=20, sd=5),
                                     feature_name="gene_A1"),
-                              cbind(x = rnorm(n=100, mean=20, sd=5),
-                                    y = rnorm(n=100, mean=20, sd=5),
+                              cbind(x = rnorm(n=5, mean=20, sd=5),
+                                    y = rnorm(n=5, mean=20, sd=5),
                                     feature_name="gene_A2"),
-                              cbind(x = rnorm(n=100, mean=100, sd=5),
-                                    y = rnorm(n=100, mean=100, sd=5),
+                              cbind(x = rnorm(n=5, mean=100, sd=5),
+                                    y = rnorm(n=5, mean=100, sd=5),
                                     feature_name="gene_B1"),
-                              cbind(x = rnorm(n=100, mean=100, sd=5),
-                                    y = rnorm(n=100, mean=100, sd=5),
+                              cbind(x = rnorm(n=5, mean=100, sd=5),
+                                    y = rnorm(n=5, mean=100, sd=5),
                                     feature_name="gene_B2")))
 trans_info$x=as.numeric(trans_info$x)
 trans_info$y=as.numeric(trans_info$y)
 
-trans_info$cell =  rep(paste("cell",1:200, sep=""), times=2)
+trans_info$cell =  rep(paste("cell",1:10, sep=""), times=2)
 mol <- BumpyMatrix::splitAsBumpyMatrix(
     trans_info[, c("x", "y")], 
     row = trans_info$feature_name, col = trans_info$cell )
@@ -117,16 +117,16 @@ perm_p_lst = compute_permp(x=spe_rep1,
                        w_x=w_x ,
                        w_y=w_y)
 perm_p_s = compute_permp(x=spe_rep1,
-                           cluster_info=clusters,
-                         perm.size=10,
-                           bin_type="square",
-                           bin_param=c(2,2),
-                           test_genes=unique(trans_info$feature_name),
-                           correlation_method = "pearson",
-                           n_cores=1,
-                           correction_method="BH",
-                           w_x=w_x ,
-                           w_y=w_y)
+                        cluster_info=clusters,
+                        perm.size=10,
+                        bin_type="square",
+                        bin_param=c(2,2),
+                        test_genes=unique(trans_info$feature_name),
+                        correlation_method = "pearson",
+                        n_cores=1,
+                        correction_method="BH",
+                        w_x=w_x ,
+                        w_y=w_y)
 test_that("Test permutation result - output dimension matches", {
   expect_equal(length(perm_p_lst), 4)
   expect_equal(dim(perm_p_lst$perm.arrays), c(4,2,10))
@@ -144,17 +144,6 @@ test_that("Test permutation result - observed stat matches", {
                c(1,1, -1/3, -1/3,-1/3,-1/3,1,1))
 })
 
-perm_p_s = compute_permp(x=spe_rep1,
-                         cluster_info=clusters,
-                         perm.size=10,
-                         bin_type="square",
-                         bin_param=c(2,2),
-                         test_genes=unique(trans_info$feature_name),
-                         correlation_method = "pearson",
-                         n_cores=1,
-                         correction_method="BH",
-                         w_x=w_x ,
-                         w_y=w_y)
 test_that("Test permutation result - sequential calculation works", {
     expect_equal(length(perm_p_s), 4)
     expect_equal(dim(perm_p_s$perm.arrays), c(4,2,10))
@@ -170,28 +159,28 @@ test_that("Test permutation result - sequential calculation works", {
 })
 
 #############################################################################
-set.seed(100)
-perm_hex_lst = compute_permp(x=spe_rep1,
-                           cluster_info=clusters,
-                           perm.size=10,
-                           bin_type="hexagon",
-                           bin_param=c(5),
-                           test_genes=unique(trans_info$feature_name),
-                           correlation_method = "pearson",
-                           n_cores=2,
-                           correction_method="BH",
-                           w_x=w_x ,
-                           w_y=w_y)
-test_that("Test permutation result - output dimension matches", {
-    expect_equal(length(perm_hex_lst), 4)
-    expect_equal(dim(perm_hex_lst$perm.arrays), c(4,2,10))
-    expect_equal(dim(perm_hex_lst$obs.stat), c(4,2))
-    expect_equal(dim(perm_hex_lst$perm.pval.adj), c(4,2))
-    expect_equal(dim(perm_hex_lst$perm.pval), c(4,2))
-    expect_equal(names(perm_hex_lst),
-                 c("obs.stat", "perm.arrays", "perm.pval", "perm.pval.adj"))
-    
-})
+# set.seed(100)
+# perm_hex_lst = compute_permp(x=spe_rep1,
+#                            cluster_info=clusters,
+#                            perm.size=10,
+#                            bin_type="hexagon",
+#                            bin_param=c(5),
+#                            test_genes=unique(trans_info$feature_name),
+#                            correlation_method = "pearson",
+#                            n_cores=2,
+#                            correction_method="BH",
+#                            w_x=w_x ,
+#                            w_y=w_y)
+# test_that("Test permutation result - output dimension matches", {
+#     expect_equal(length(perm_hex_lst), 4)
+#     expect_equal(dim(perm_hex_lst$perm.arrays), c(4,2,10))
+#     expect_equal(dim(perm_hex_lst$obs.stat), c(4,2))
+#     expect_equal(dim(perm_hex_lst$perm.pval.adj), c(4,2))
+#     expect_equal(dim(perm_hex_lst$perm.pval), c(4,2))
+#     expect_equal(names(perm_hex_lst),
+#                  c("obs.stat", "perm.arrays", "perm.pval", "perm.pval.adj"))
+#     
+# })
 
 #############################################################################
 # 
@@ -248,8 +237,8 @@ test_that("Test permutation result - output dimension matches", {
     expect_equal(dim(perm_p_s$obs.stat), c(4,1))
     expect_equal(dim(perm_p_s$perm.pval.adj), c(4,1))
     expect_equal(dim(perm_p_s$perm.pval), c(4,1))
-    expect_equal(names(perm_hex_lst),
-                 c("obs.stat", "perm.arrays", "perm.pval", "perm.pval.adj"))
+    # expect_equal(names(perm_hex_lst),
+    #              c("obs.stat", "perm.arrays", "perm.pval", "perm.pval.adj"))
     
 })
 

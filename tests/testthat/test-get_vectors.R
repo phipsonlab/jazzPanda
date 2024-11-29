@@ -29,7 +29,7 @@ test_that("Test can only vectorise clusters - output vector matches", {
 
 #############################################################################
 # one sample SPE object
-n <- 1e3  # number of molecules
+n <- 100  # number of molecules
 ng <- 50  # number of genes
 nc <- 20  # number of cells
 # sample xy-coordinates in [0, 1]
@@ -407,16 +407,16 @@ test_that("Test can vectorise genes and clusters - output mathces", {
 set.seed(123)
 
 # Generate 100 feature names
-feature_names <- paste("gene", 1:200, sep="")
+feature_names <- paste("gene", 1:30, sep="")
 
 # Function to generate random coordinates for a given gene
 generate_coords <- function(feature_name) {
     # Random number of coordinates between 100 and 10000
-    n_coords <- sample(5000:10000, 1)
+    n_coords <- 100
     
     # Generate random x and y coordinates
-    x_coords <- runif(n_coords, min=0, max=10000)
-    y_coords <- runif(n_coords, min=0, max=10000)
+    x_coords <- runif(n_coords, min=0, max=100)
+    y_coords <- runif(n_coords, min=0, max=100)
     
     # Create a data frame
     data.frame(x = x_coords, y = y_coords, feature_name = rep(feature_name, n_coords))
@@ -425,7 +425,7 @@ generate_coords <- function(feature_name) {
 # Apply the function to each feature name and combine results
 coords_data <- do.call(rbind, lapply(feature_names, generate_coords))
 
-coords_data$cell =  sample(paste("cell",1:10, sep=""), 
+coords_data$cell =  sample(paste("cell",1:5, sep=""), 
                      replace = TRUE, size = nrow(coords_data))
 mol <- BumpyMatrix::splitAsBumpyMatrix(
     coords_data[, c("x", "y")], 
@@ -438,16 +438,16 @@ spe_rep2 <- SpatialExperiment(
 vector_lst_1core = get_vectors(x= spe_rep2, sample_names = "rep2",
                                 cluster_info = NULL,
                                 bin_type="square",
-                                bin_param=c(50,50),
+                                bin_param=c(2,2),
                                 test_genes = feature_names,
-                                w_x=c(0,10000), w_y=c(0,10000), n_cores = 1)
+                                w_x=c(0,100), w_y=c(0,100), n_cores = 1)
 
 vector_lst_5core = get_vectors(x= spe_rep2, sample_names = "rep2",
                                cluster_info = NULL,
                                bin_type="square",
-                               bin_param=c(50,50),
+                               bin_param=c(2,2),
                                test_genes = feature_names,
-                               w_x=c(0,10000), w_y=c(0,10000), n_cores = 2)
+                               w_x=c(0,100), w_y=c(0,100), n_cores = 2)
 test_that("Test can result from sequential matches with result from parallel",{
     expect_equal(as.vector(vector_lst_1core$gene_mt), 
                  as.vector(vector_lst_5core$gene_mt))

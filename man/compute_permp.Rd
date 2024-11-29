@@ -92,29 +92,55 @@ times, and permutation p-value is calculated as the probability of
 permuted correlations larger than the observation correlation.
 }
 \examples{
-library(SFEData)
-library(SpatialFeatureExperiment)
-sfe1 <- McKellarMuscleData(dataset = "small")
-cm <- as.matrix(counts(sfe1))
-# take a subset of genes for illustration
-keep_genes <- row.names(cm)[rowSums(cm)>100]
-# get coordinates for clusters and simulate cluster labels
-clusters <- as.data.frame(spatialCoords(sfe1))
-colnames(clusters) <- c("x","y")
-clusters$sample<-sfe1$sample_id
+library(SpatialExperiment)
+library(BumpyMatrix)
 set.seed(100)
-clusters$cluster<- sample(c("A","B","C","D","E"),
-                            size = ncol(sfe1), replace = TRUE)
-clusters$cell_id<- sfe1$barcode
-w_x <- c(floor(min(clusters$x)),ceiling(max(clusters$x)))
-w_y <- c(floor(min(clusters$y)),ceiling(max(clusters$y)))
-perm_res <- compute_permp(x= sfe1, cluster_info=clusters, 
-                            perm.size=10, bin_type="square",
-                            bin_param=c(5, 5),test_genes=keep_genes,
-                            correlation_method = "spearman", 
-                            n_cores=2,
-                            correction_method="BH",
-                            w_x=w_x ,w_y=w_y,
-                            use_cm = TRUE)
-perm_pvalue <- perm_res$perm.pval.adj
+# simulate coordinates for clusters
+df_clA = data.frame(x = rnorm(n=10, mean=20, sd=5),
+                    y = rnorm(n=10, mean=20, sd=5), cluster="A")
+df_clB = data.frame(x = rnorm(n=10, mean=100, sd=5),
+                    y = rnorm(n=10, mean=100, sd=5), cluster="B")
+clusters = rbind(df_clA, df_clB)
+clusters$sample="sample1"
+# simulate coordinates for genes
+trans_info = data.frame(rbind(cbind(x = rnorm(n=10, mean=20, sd=5),
+                                    y = rnorm(n=10, mean=20, sd=5),
+                                    feature_name="gene_A1"),
+                    cbind(x = rnorm(n=10, mean=20, sd=5),
+                                    y = rnorm(n=10, mean=20, sd=5),
+                                    feature_name="gene_A2"),
+                    cbind(x = rnorm(n=10, mean=100, sd=5),
+                                    y = rnorm(n=10, mean=100, sd=5),
+                                    feature_name="gene_B1"),
+                    cbind(x = rnorm(n=10, mean=100, sd=5),
+                                    y = rnorm(n=10, mean=100, sd=5),
+                                    feature_name="gene_B2")))
+trans_info$x=as.numeric(trans_info$x)
+trans_info$y=as.numeric(trans_info$y)
+trans_info$cell =  rep(paste("cell",1:20, sep=""), times=2)
+mol <- BumpyMatrix::splitAsBumpyMatrix(
+     trans_info[, c("x", "y")], 
+     row = trans_info$feature_name, col = trans_info$cell )
+spe_sample1 <- SpatialExperiment(
+        assays = list(molecules = mol),sample_id ="sample1" )
+w_x =  c(min(floor(min(trans_info$x)),
+             floor(min(clusters$x))),
+         max(ceiling(max(trans_info$x)),
+             ceiling(max(clusters$x))))
+w_y =  c(min(floor(min(trans_info$y)),
+             floor(min(clusters$y))),
+         max(ceiling(max(trans_info$y)),
+             ceiling(max(clusters$y))))
+set.seed(100)
+perm_p_lst = compute_permp(x=spe_sample1,
+             cluster_info=clusters,
+             perm.size=10,
+             bin_type="square",
+             bin_param=c(2,2),
+             test_genes=unique(trans_info$feature_name),
+             correlation_method = "pearson",
+             n_cores=1,
+             correction_method="BH",
+             w_x=w_x ,
+             w_y=w_y)
 }

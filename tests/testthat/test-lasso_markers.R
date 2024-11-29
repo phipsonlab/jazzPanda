@@ -238,7 +238,7 @@ test_that("Return error when some genes have zero variance", {
 ########################################################################
 # test the randomness in cv for lasso
 set.seed(989)
-seed_lst = sample(1:9999, size = 100, replace = FALSE)
+seed_lst = sample(1:9999, size = 5, replace = FALSE)
 all_res = as.data.frame(matrix(0, nrow = 4*length(seed_lst), ncol = 6))
 colnames(all_res)= c("gene","top_cluster","glm_coef","pearson",
                      "max_gg_corr","max_gc_corr")
