@@ -53,7 +53,7 @@
 
       <h1>jazzPanda example</h1>
             
-            <h4 data-toc-skip class="date">17 Nov 2024</h4>
+            <h4 data-toc-skip class="date">29 Nov 2024</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/phipsonlab/jazzPanda/blob/main/vignettes/jazzPanda.Rmd" class="external-link"><code>vignettes/jazzPanda.Rmd</code></a></small>
       <div class="d-none name"><code>jazzPanda.Rmd</code></div>
@@ -205,19 +205,19 @@ genes.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">rep1_sub</span>, <span class="va">rep1_clusters</span>, <span class="va">rep1_neg</span><span class="op">)</span></span>
 <span><span class="va">rep1_clusters</span><span class="op">$</span><span class="va">cluster</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">rep1_clusters</span><span class="op">$</span><span class="va">cluster</span>,</span>
-<span>                            levels<span class="op">=</span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"c"</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">8</span>, sep<span class="op">=</span><span class="st">""</span><span class="op">)</span><span class="op">)</span></span>
+<span>                            levels<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"c"</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">8</span>, sep<span class="op">=</span><span class="st">""</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co"># record the transcript coordinates for rep1</span></span>
 <span><span class="va">rep1_transcripts</span> <span class="op">&lt;-</span><span class="fu">BumpyMatrix</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BumpyMatrix/man/unsplitAsDataFrame.html" class="external-link">unsplitAsDataFrame</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/SpatialExperiment/man/SpatialExperiment-assays.html" class="external-link">molecules</a></span><span class="op">(</span><span class="va">rep1_sub</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">rep1_transcripts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">rep1_transcripts</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/row_colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">rep1_transcripts</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"feature_name"</span>,<span class="st">"cell_id"</span>,<span class="st">"x"</span>,<span class="st">"y"</span><span class="op">)</span></span>
+<span><span class="va">rep1_transcripts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">rep1_transcripts</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">rep1_transcripts</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"feature_name"</span>,<span class="st">"cell_id"</span>,<span class="st">"x"</span>,<span class="st">"y"</span><span class="op">)</span></span>
 <span><span class="co"># record the negative control transcript coordinates for rep1</span></span>
 <span><span class="va">rep1_nc_data</span> <span class="op">&lt;-</span> <span class="fu">BumpyMatrix</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BumpyMatrix/man/unsplitAsDataFrame.html" class="external-link">unsplitAsDataFrame</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/SpatialExperiment/man/SpatialExperiment-assays.html" class="external-link">molecules</a></span><span class="op">(</span><span class="va">rep1_neg</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">rep1_nc_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">rep1_nc_data</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/row_colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">rep1_nc_data</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"feature_name"</span>,<span class="st">"cell_id"</span>,<span class="st">"x"</span>,<span class="st">"y"</span>,<span class="st">"category"</span><span class="op">)</span></span>
+<span><span class="va">rep1_nc_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">rep1_nc_data</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">rep1_nc_data</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"feature_name"</span>,<span class="st">"cell_id"</span>,<span class="st">"x"</span>,<span class="st">"y"</span>,<span class="st">"category"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># record all real genes in the data</span></span>
-<span><span class="va">all_real_genes</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">rep1_transcripts</span><span class="op">$</span><span class="va">feature_name</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">all_celltypes</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">rep1_clusters</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"anno"</span>,<span class="st">"cluster"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="va">all_real_genes</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">rep1_transcripts</span><span class="op">$</span><span class="va">feature_name</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">all_celltypes</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">rep1_clusters</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"anno"</span>,<span class="st">"cluster"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="co"># nc_patterns = "^BLANK_|^NegControlProbe_|^NegControlCodeword_|^antisense_"</span></span>
 <span><span class="co"># nc_targets = grep(pattern =nc_patterns , x = test_genes,value = TRUE)</span></span></code></pre></div>
 <p>The main function <code><a href="../reference/lasso_markers.html">lasso_markers()</a></code> requires spatial
@@ -857,15 +857,15 @@ p-value for every pair of gene cluster and cluster vector.</p>
 <code class="sourceCode R"><span><span class="co"># permutation adjusted p-value for every pair of gene and cluster vector</span></span>
 <span><span class="va">perm_res</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">perm_p</span><span class="op">$</span><span class="va">perm.pval.adj</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">perm_res</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">##                c5        c8        c3         c2          c1          c4</span></span>
-<span><span class="co">## CD68  0.999000999 0.7276057 0.1238761 1.00000000 1.000000000 0.003330003</span></span>
-<span><span class="co">## DST   0.006660007 1.0000000 1.0000000 0.01498501 0.003996004 1.000000000</span></span>
-<span><span class="co">## EPCAM 0.999000999 1.0000000 1.0000000 0.08791209 0.003996004 1.000000000</span></span>
-<span><span class="co">## ERBB2 0.999000999 1.0000000 1.0000000 0.00999001 0.003996004 1.000000000</span></span>
-<span><span class="co">## FOXA1 0.999000999 1.0000000 1.0000000 0.40293040 0.003996004 1.000000000</span></span>
-<span><span class="co">## KRT7  0.999000999 1.0000000 1.0000000 1.00000000 0.003996004 1.000000000</span></span>
+<pre><code><span><span class="co">##                c5        c8        c3          c2          c1          c4</span></span>
+<span><span class="co">## CD68  1.000000000 0.7359307 0.1678322 1.000000000 1.000000000 0.002854289</span></span>
+<span><span class="co">## DST   0.006660007 1.0000000 1.0000000 0.006660007 0.003996004 1.000000000</span></span>
+<span><span class="co">## EPCAM 1.000000000 1.0000000 1.0000000 0.075924076 0.003996004 1.000000000</span></span>
+<span><span class="co">## ERBB2 1.000000000 1.0000000 1.0000000 0.006660007 0.003996004 1.000000000</span></span>
+<span><span class="co">## FOXA1 1.000000000 1.0000000 1.0000000 0.416250416 0.003996004 1.000000000</span></span>
+<span><span class="co">## KRT7  1.000000000 1.0000000 1.0000000 1.000000000 0.003996004 1.000000000</span></span>
 <span><span class="co">##               c6        c7</span></span>
-<span><span class="co">## CD68  0.06455083 0.2713953</span></span>
+<span><span class="co">## CD68  0.07377238 0.2457542</span></span>
 <span><span class="co">## DST   1.00000000 1.0000000</span></span>
 <span><span class="co">## EPCAM 1.00000000 1.0000000</span></span>
 <span><span class="co">## ERBB2 1.00000000 1.0000000</span></span>
@@ -1456,10 +1456,10 @@ accounting for multiple samples and background noise</p>
 <span><span class="co">## </span></span>
 <span><span class="co">## other attached packages:</span></span>
 <span><span class="co">##  [1] ggpubr_0.6.0                tidyr_1.3.1                </span></span>
-<span><span class="co">##  [3] spatstat_3.2-1              spatstat.linnet_3.2-2      </span></span>
-<span><span class="co">##  [5] spatstat.model_3.3-2        rpart_4.1.23               </span></span>
+<span><span class="co">##  [3] spatstat_3.3-0              spatstat.linnet_3.2-3      </span></span>
+<span><span class="co">##  [5] spatstat.model_3.3-3        rpart_4.1.23               </span></span>
 <span><span class="co">##  [7] spatstat.explore_3.3-3      nlme_3.1-166               </span></span>
-<span><span class="co">##  [9] spatstat.random_3.3-2       spatstat.geom_3.3-3        </span></span>
+<span><span class="co">##  [9] spatstat.random_3.3-2       spatstat.geom_3.3-4        </span></span>
 <span><span class="co">## [11] spatstat.univar_3.1-1       spatstat.data_3.1-4        </span></span>
 <span><span class="co">## [13] gridExtra_2.3               ggrepel_0.9.6              </span></span>
 <span><span class="co">## [15] ggraph_2.2.1                igraph_2.1.1               </span></span>
@@ -1482,7 +1482,7 @@ accounting for multiple samples and background noise</p>
 <span><span class="co">##   [7] tools_4.4.2             sctransform_0.4.1       backports_1.5.0        </span></span>
 <span><span class="co">##  [10] utf8_1.2.4              R6_2.5.1                lazyeval_0.2.2         </span></span>
 <span><span class="co">##  [13] uwot_0.2.2              mgcv_1.9-1              withr_3.0.2            </span></span>
-<span><span class="co">##  [16] progressr_0.15.0        cli_3.6.3               textshaping_0.4.0      </span></span>
+<span><span class="co">##  [16] progressr_0.15.1        cli_3.6.3               textshaping_0.4.0      </span></span>
 <span><span class="co">##  [19] fastDummies_1.7.4       labeling_0.4.3          sass_0.4.9             </span></span>
 <span><span class="co">##  [22] ggridges_0.5.6          pbapply_1.7-2           pkgdown_2.1.1          </span></span>
 <span><span class="co">##  [25] systemfonts_1.1.0       parallelly_1.39.0       generics_0.1.3         </span></span>
@@ -1490,7 +1490,7 @@ accounting for multiple samples and background noise</p>
 <span><span class="co">##  [31] fansi_1.0.6             abind_1.4-8             lifecycle_1.0.4        </span></span>
 <span><span class="co">##  [34] yaml_2.3.10             carData_3.0-5           recipes_1.1.0          </span></span>
 <span><span class="co">##  [37] SparseArray_1.6.0       Rtsne_0.17              grid_4.4.2             </span></span>
-<span><span class="co">##  [40] promises_1.3.0          crayon_1.5.3            miniUI_0.1.1.1         </span></span>
+<span><span class="co">##  [40] promises_1.3.2          crayon_1.5.3            miniUI_0.1.1.1         </span></span>
 <span><span class="co">##  [43] cowplot_1.1.3           magick_2.8.5            pillar_1.9.0           </span></span>
 <span><span class="co">##  [46] knitr_1.49              rjson_0.2.23            future.apply_1.11.3    </span></span>
 <span><span class="co">##  [49] codetools_0.2-20        leiden_0.4.3.1          glue_1.8.0             </span></span>
@@ -1517,13 +1517,13 @@ accounting for multiple samples and background noise</p>
 <span><span class="co">## [112] reticulate_1.40.0       stringi_1.8.4           pROC_1.18.5            </span></span>
 <span><span class="co">## [115] zlibbioc_1.52.0         MASS_7.3-61             plyr_1.8.9             </span></span>
 <span><span class="co">## [118] parallel_4.4.2          listenv_0.9.1           deldir_2.0-4           </span></span>
-<span><span class="co">## [121] graphlayouts_1.2.0      splines_4.4.2           tensor_1.5             </span></span>
+<span><span class="co">## [121] graphlayouts_1.2.1      splines_4.4.2           tensor_1.5             </span></span>
 <span><span class="co">## [124] ggsignif_0.6.4          RcppHNSW_0.6.0          reshape2_1.4.4         </span></span>
 <span><span class="co">## [127] evaluate_1.0.1          foreach_1.5.2           tweenr_2.0.3           </span></span>
 <span><span class="co">## [130] httpuv_1.6.15           RANN_2.6.2              purrr_1.0.2            </span></span>
 <span><span class="co">## [133] polyclip_1.10-7         future_1.34.0           scattermore_1.2        </span></span>
 <span><span class="co">## [136] ggforce_0.4.2           broom_1.0.7             xtable_1.8-4           </span></span>
-<span><span class="co">## [139] RSpectra_0.16-2         rstatix_0.7.2           later_1.3.2            </span></span>
+<span><span class="co">## [139] RSpectra_0.16-2         rstatix_0.7.2           later_1.4.1            </span></span>
 <span><span class="co">## [142] viridisLite_0.4.2       class_7.3-22            ragg_1.3.3             </span></span>
 <span><span class="co">## [145] tibble_3.2.1            memoise_2.0.1           cluster_2.1.6          </span></span>
 <span><span class="co">## [148] timechange_0.3.0        globals_0.16.3</span></span></code></pre>
