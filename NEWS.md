@@ -1,3 +1,19 @@
+# jazzPanda 0.2.1
+*Updated on January 20, 2025*
+
+Changes to the package include:
+
+- **New Accessors for the Correlation Approach Results**:
+    - Add the function `get_cor()`
+    - Add the function `get_perm_p()`
+    - Add the function `get_perm_adjp()`
+    
+- **New Accessors for Results from the Linear Modeling Approach**:
+    - Add the function `get_top_mg()` 
+    - Add the function `get_full_mg()`
+
+
+
 # jazzPanda 0.2.0
 *Updated on November 16, 2024*
 

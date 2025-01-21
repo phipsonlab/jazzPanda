@@ -30,10 +30,17 @@ technologies including 10x Xenium, NanoString CosMx and Vizgen MERSCOPE.
 
 
 ## Installation
-We are currently in the process of submitting jazzPanda to Bioconductor. 
+
+To install jazzPanda from Bioconductor, use the following commands:
+
+``` r
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+BiocManager::install("jazzPanda")
+```
 
 To install jazzPanda from github, use the following commands:
-
 ``` r
 library(devtools)
 devtools::install_github("phipsonlab/jazzPanda")

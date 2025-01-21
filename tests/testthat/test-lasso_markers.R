@@ -58,14 +58,12 @@ lasso_res1 = lasso_markers(gene_mt=vecs_lst$gene_mt,
                            cluster_mt = vecs_lst$cluster_mt,
                            sample_names=c("rep1"),
                            keep_positive=TRUE,
-                           coef_cutoff=0.05,
                            background=NULL)
 set.seed(100)
 lasso_res0 = lasso_markers(gene_mt=vecs_lst$gene_mt,
                            cluster_mt = vecs_lst$cluster_mt,
                            sample_names=c("rep1"),
                            keep_positive=TRUE,
-                           coef_cutoff=0,
                            background=NULL)
 
 set.seed(100)
@@ -73,14 +71,12 @@ lasso_res_neg = lasso_markers(gene_mt=vecs_lst$gene_mt*(-1),
                               cluster_mt = vecs_lst$cluster_mt,
                               sample_names=c("rep1"),
                               keep_positive=FALSE,
-                              coef_cutoff=0,
                               background=NULL)
 set.seed(100)
 lasso_res_background = lasso_markers(gene_mt=vecs_lst$gene_mt*(-1),
                               cluster_mt = vecs_lst$cluster_mt,
                               sample_names=c("rep1"),
                               keep_positive=FALSE,
-                              coef_cutoff=0,
                               background=background_sv)
 invlid_vec = vecs_lst
 colnames(invlid_vec$cluster_mt)=NULL
@@ -102,55 +98,46 @@ test_that("Invalid input", {
                                cluster_mt = vecs_lst$cluster_mt,
                                sample_names=NULL,
                                keep_positive=FALSE,
-                               coef_cutoff=0,
                                background=NULL))
     expect_error(lasso_markers(gene_mt=vecs_lst$gene_mt,
                                cluster_mt = vecs_lst$cluster_mt,
                                sample_names=NULL,
                                keep_positive=FALSE,
-                               coef_cutoff=0,
                                background=NULL))
     expect_error(lasso_markers(gene_mt=vecs_lst$gene_mt,
                                cluster_mt = invlid_vec$cluster_mt,
                                sample_names=c("rep1"),
                                keep_positive=FALSE,
-                               coef_cutoff=0,
                                background=background_sv))
     expect_error(lasso_markers(gene_mt=invlid_vec$gene_mt,
                                cluster_mt = vecs_lst$cluster_mt,
                                sample_names=c("rep1"),
                                keep_positive=FALSE,
-                               coef_cutoff=0,
                                background=background_sv))
     expect_error(lasso_markers(gene_mt=vecs_lst$gene_mt,
                                cluster_mt = vecs_lst$cluster_mt,
                                sample_names=c("rep1"),
                                keep_positive=FALSE,
-                               coef_cutoff=0,
                                background=invalid_back))
     expect_error(lasso_markers(gene_mt=vecs_lst$gene_mt,
                                cluster_mt = vecs_lst$cluster_mt,
                                sample_names=c("rep1"),
                                keep_positive=FALSE,
-                               coef_cutoff=0,
                                background=invalid_back_overlapped))
     expect_error(lasso_markers(gene_mt=vecs_lst$gene_mt,
                                cluster_mt = vecs_lst$cluster_mt,
                                sample_names=c("rep1"),
                                keep_positive=FALSE,
-                               coef_cutoff=0,
                                background=background_sv[1:10,]))
     expect_error(lasso_markers(gene_mt=vecs_lst$gene_mt,
                                cluster_mt = invalid_mt_le_fold,
                                sample_names=c("rep1"),
                                keep_positive=FALSE,
-                               coef_cutoff=0,
                                background=NULL))
     expect_error(lasso_markers(gene_mt=vecs_lst$gene_mt,
                                cluster_mt = invlid_vec_int$cluster_mt,
                                sample_names=NULL,
                                keep_positive=FALSE,
-                               coef_cutoff=0,
                                background=NULL))
 })
 
@@ -158,31 +145,41 @@ test_that("Invalid input", {
 test_that("lasso- one sample case - dimension correct", {
     expect_equal(length(lasso_res1), 2)
 })
+top_res <- get_top_mg(lasso_res1,coef_cutoff = 0.05)
 test_that("lasso- one sample case", {
-    expect_equal(lasso_res1$lasso_top_result$top_cluster, c("A","A","B","B"))
+    expect_equal(top_res$top_cluster, c("A","A","B","B"))
     
 })
 ########################################################################
+top_res <- get_top_mg(lasso_res_neg,coef_cutoff = 0.05)
+full_res <- get_full_mg(lasso_res_neg,coef_cutoff = 0.05)
 test_that("lasso- one sample case- 0 cutoff - dimension correct", {
     expect_equal(length(lasso_res_neg), 2)
 })
+
 test_that("lasso- one sample case - 0 cutoff", {
-    expect_equal(lasso_res_neg$lasso_top_result$top_cluster, c("A","A","B","B"))
-    expect_equal(lasso_res_neg$lasso_full_result$cluster, c("A","A","B","B"))
+    expect_equal(top_res$top_cluster, c("A","A","B","B"))
+    expect_equal(full_res$cluster, c("A","A","B","B"))
 })
 ########################################################################
+top_res <- get_top_mg(lasso_res0,coef_cutoff = 0.05)
+full_res <- get_full_mg(lasso_res0,coef_cutoff = 0.05)
+
 test_that("lasso- one sample case -negative correlation - dimension correct", {
     expect_equal(length(lasso_res0), 2)
 })
 test_that("lasso- one sample case -negative correlation", {
-    expect_equal(lasso_res0$lasso_top_result$top_cluster, c("A","A","B","B"))
-    expect_equal(lasso_res0$lasso_full_result$cluster, c("A","A","B","B"))
+    expect_equal(top_res$top_cluster, c("A","A","B","B"))
+    expect_equal(full_res$cluster, c("A","A","B","B"))
 })
 ########################################################################
+top_res <- get_top_mg(lasso_res_background,coef_cutoff = 0.05)
+full_res <- get_full_mg(lasso_res_background,coef_cutoff = 0.05)
+
 test_that("lasso- wih background", {
     expect_equal(length(lasso_res_background), 2)
-    expect_equal(lasso_res_background$lasso_top_result$top_cluster, c("A","A","B","B"))
-    expect_equal(unique(lasso_res_background$lasso_full_result$cluster), c("A","dummy_W","B"))
+    expect_equal(top_res$top_cluster, c("A","A","B","B"))
+    expect_equal(unique(full_res$cluster), c("A","dummy_W","B"))
 })
 ########################################################################
 dummy_cl = vecs_lst$cluster_mt
@@ -194,7 +191,6 @@ test_that("Return error when column names contain integers", {
                       cluster_mt = dummy_cl,
                       sample_names=c("rep1"),
                       keep_positive=TRUE,
-                      coef_cutoff=0.05,
                       background=NULL))
 })
 
@@ -205,8 +201,7 @@ test_that("Return error when some genes non-zero entry < n_fold", {
         lasso_markers(gene_mt= vecs_lst$gene_mt,
                       cluster_mt =vecs_lst$cluster_mt,
                       sample_names=c("rep1"),
-                      keep_positive=TRUE,
-                      coef_cutoff=0.05,n_fold = 20,
+                      keep_positive=TRUE,n_fold = 20,
                       background=NULL))
 })
 ########################################################################
@@ -219,7 +214,6 @@ test_that("Return error when some clusters have zero variance", {
                       cluster_mt = dummy_cl,
                       sample_names=c("rep1"),
                       keep_positive=TRUE,
-                      coef_cutoff=0.05,
                       background=NULL))
 })
 
@@ -231,7 +225,6 @@ test_that("Return error when some genes have zero variance", {
                       cluster_mt =vecs_lst$cluster_mt,
                       sample_names=c("rep1"),
                       keep_positive=TRUE,
-                      coef_cutoff=0.05,
                       background=NULL))
 })
 
@@ -250,9 +243,9 @@ for (curr_id in 1:length(seed_lst)){
                              cluster_mt = vecs_lst$cluster_mt,
                              sample_names=c("rep1"),
                              keep_positive=TRUE,
-                             coef_cutoff=0.05,
                              background=NULL)
-    all_res[(4*(curr_id-1)+1):(curr_id*4), ] = curr_res$lasso_top_result
+    top_res = get_top_mg(curr_res, coef_cutoff = 0.05)
+    all_res[(4*(curr_id-1)+1):(curr_id*4), ] = top_res
     
 }
 
@@ -273,10 +266,9 @@ one_gene_lst = lasso_markers(gene_mt=one_gene_mt,
                              cluster_mt = vecs_lst$cluster_mt,
                              sample_names=c("rep1"),
                              keep_positive=TRUE,
-                             coef_cutoff=0.05,
                              background=NULL)
-one_gene_top = one_gene_lst$lasso_top_result
-one_gene_full = one_gene_lst$lasso_full_result
+one_gene_top = get_top_mg(one_gene_lst, coef_cutoff = 0.05)
+one_gene_full = get_full_mg(one_gene_lst, coef_cutoff = 0.05)
 
 test_that("lasso cross validation penalty - randomness", {
     expect_equal(unique(one_gene_top[one_gene_top$gene == "gene_A",
@@ -289,10 +281,9 @@ one_gene_res1 = lasso_markers(gene_mt=one_gene_mt,
                               cluster_mt = vecs_lst$cluster_mt,
                               sample_names=c("rep1"),
                               keep_positive=TRUE,
-                              coef_cutoff=1,
                               background=NULL)
-one_gene_top = one_gene_res1$lasso_top_result
-one_gene_full = one_gene_res1$lasso_full_result
+one_gene_top = get_top_mg(one_gene_res1, coef_cutoff = 1)
+one_gene_full =get_full_mg(one_gene_res1, coef_cutoff = 0)
 test_that("high resolution results in 0 significant genes", {
     expect_equal(unique(one_gene_top[one_gene_top$gene == "gene_A",
                                      "top_cluster"]), "NoSig")
@@ -365,17 +356,18 @@ lasso_res_background = lasso_markers(gene_mt=vecs_lst$gene_mt,
                                      cluster_mt = vecs_lst$cluster_mt,
                                      sample_names=c("sample1","sample2"),
                                      keep_positive=TRUE,
-                                     coef_cutoff=0,
                                      background=background_sv)
+top_res <- get_top_mg(lasso_res_background,coef_cutoff = 0)
+full_res <- get_full_mg(lasso_res_background,coef_cutoff = 0)
+
 test_that("lasso-two sample with background", {
     expect_equal(length(lasso_res_background), 2)
-    expect_equal(lasso_res_background$lasso_top_result$top_cluster, c("A","A","B","B"))
-    expect_equal(unique(lasso_res_background$lasso_full_result$cluster), c("A","dummy_W","B"))
+    expect_equal(top_res$top_cluster, c("A","A","B","B"))
+    expect_equal(unique(full_res$cluster), c("A","dummy_W","B"))
     expect_error( lasso_markers(gene_mt=vecs_lst$gene_mt,
                                 cluster_mt = vecs_lst$cluster_mt,
                                 sample_names=c("sample3","sample4"),
                                 keep_positive=TRUE,
-                                coef_cutoff=0,
                                 background=NULL))
 })
 
@@ -395,8 +387,10 @@ lasso_nosig_bg = lasso_markers(gene_mt=vecs_lst$gene_mt,
                                      cluster_mt = vecs_lst$cluster_mt,
                                      sample_names=c("sample1","sample2"),
                                      keep_positive=TRUE,
-                                     coef_cutoff=0,
                                      background=background_sv_all)
+top_res_bg <- get_top_mg(lasso_nosig_bg,coef_cutoff = 0)
+full_res_bg <- get_full_mg(lasso_nosig_bg,coef_cutoff = 0)
+
 set.seed(989)
 rand_cl_mt = matrix(runif(n=1600,min=0, max = 1),
                     ncol=2, 
@@ -407,15 +401,17 @@ lasso_nosig_cl = lasso_markers(gene_mt=vecs_lst$gene_mt,
                             cluster_mt = rand_cl_mt,
                             sample_names=c("sample1","sample2"),
                             keep_positive=TRUE,
-                            coef_cutoff=0,
                             background=NULL)
+top_res_cl <- get_top_mg(lasso_nosig_cl,coef_cutoff = 0)
+full_res_cl <- get_full_mg(lasso_nosig_cl,coef_cutoff = 0)
+
 test_that("set gene as NA if no clusters are significant", {
     expect_equal(length(lasso_nosig_bg), 2)
-    expect_equal(unique(lasso_nosig_bg$lasso_top_result$top_cluster), c("NoSig"))
-    expect_equal(unique(lasso_nosig_bg$lasso_full_result$cluster), 
+    expect_equal(unique(top_res_bg$top_cluster), c("NoSig"))
+    expect_equal(unique(full_res_bg$cluster), 
                  c("dummy_A1","A","dummy_A2","dummy_B1","B","dummy_B2"))
     
     expect_equal(length(lasso_nosig_cl), 2)
-    expect_equal(unique(lasso_nosig_cl$lasso_top_result$top_cluster), c("NoSig"))
+    expect_equal(unique(top_res_cl$top_cluster), c("NoSig"))
 })
 

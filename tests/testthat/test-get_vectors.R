@@ -482,7 +482,6 @@ clusters$cluster = rep(c("A","B"), each=10)
 # cell_10 = (0,0,0,1)
 sce_two <- SingleCellExperiment(list(sp1=counts_sp1, sp2=counts_sp2))
 
-
 vector_lst_twosample = get_vectors(x= sce_two, sample_names =c("sp1","sp2"),
                                cluster_info = clusters,
                                bin_type="square",

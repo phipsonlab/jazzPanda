@@ -9,7 +9,6 @@ lasso_markers(
   cluster_mt,
   sample_names,
   keep_positive = TRUE,
-  coef_cutoff = 0.05,
   background = NULL,
   n_fold = 10
 )
@@ -31,10 +30,6 @@ This can be the output from the function \code{\link{get_vectors}}.}
 \item{keep_positive}{A logical flag indicating whether to return positively
 correlated clusters or not.}
 
-\item{coef_cutoff}{A positive number giving the coefficient cutoff value.
-Genes whose top cluster showing a coefficient vlaue smaller than the cutoff
-will be . Default is 0.05.}
-
 \item{background}{Optional. A matrix providing the
 background information. Each row refers to a grid, and each column refers to
 one category of background information. Number of rows must equal to the
@@ -47,41 +42,12 @@ for cross validation. This parameter will pass to
 \code{\link[glmnet]{cv.glmnet}} to calculate a penalty term for every gene.}
 }
 \value{
-a list of two matrices with the following components
-\item{\code{lasso_top_result}  }{A matrix with detailed information for
-each gene and the most relevant cluster label.
+An object of class 'glm_mg_result'
+To access specific components of the returned object:
 \itemize{
-\item{\code{gene} Gene name}
-\item{\code{top_cluster} The name of the most revelant cluster
-after thresholding the coefficients. }
-\item{\code{glm_coef} The coefficient of the selected cluster in the
-generalised linear model.}
-\item{\code{pearson} Pearson correlation between the gene vector and the
-selected cluster vector. }
-\item{\code{max_gg_corr} A number showing the maximum pearson correlation
-for this gene vector and all other gene vectors in the input \code{gene_mt}}
-\item{\code{max_gc_corr} A number showing the maximum pearson correlation
-for this gene vector and every cluster vectors in the input
-\code{cluster_mt}}
+\item{Use \code{\link{get_top_mg}} to retrieve the top result data frame}
+\item{Use \code{\link{get_full_mg}} to retrieve full result data frame}
 }
-
-}
-\item{\code{lasso_full_result}  }{A matrix with detailed information for
-each gene and the most relevant cluster label.
-
-\itemize{
-\item{\code{gene} Gene name}
-\item{\code{cluster} The name of the significant cluster after }
-\item{\code{glm_coef} The coefficient of the selected cluster
-in the generalised linear model.}
-\item{\code{pearson} Pearson correlation between the gene vector and the
-selected cluster vector. }
-\item{\code{max_gg_corr} A number showing the maximum pearson correlation
-for this gene vector and all other gene vectors in the input \code{gene_mt}}
-\item{\code{max_gc_corr} A number showing the maximum pearson correlation
-for this gene vector and every cluster vectors in the input
-\code{cluster_mt}}
-}}
 }
 \description{
 This function will find the most spatially relevant cluster label
@@ -127,16 +93,16 @@ we will return "NoSig" for this gene.
 library(SpatialExperiment)
 set.seed(100)
 #  simulate coordinates for clusters
-df_clA = data.frame(x = rnorm(n=100, mean=20, sd=5),
+df_clA <- data.frame(x = rnorm(n=100, mean=20, sd=5),
                  y = rnorm(n=100, mean=20, sd=5), cluster="A")
-df_clB = data.frame(x = rnorm(n=100, mean=100, sd=5),
+df_clB <- data.frame(x = rnorm(n=100, mean=100, sd=5),
                 y = rnorm(n=100, mean=100, sd=5), cluster="B")
 
-clusters = rbind(df_clA, df_clB)
-clusters$sample="sample1"
+clusters <- rbind(df_clA, df_clB)
+clusters$sample<-"sample1"
 
 # simulate coordinates for genes
-trans_info = data.frame(rbind(cbind(x = rnorm(n=100, mean=20,sd=5),
+trans_info <- data.frame(rbind(cbind(x = rnorm(n=100, mean=20,sd=5),
                                 y = rnorm(n=100, mean=20, sd=5),
                                  feature_name="gene_A1"),
                            cbind(x = rnorm(n=100, mean=20, sd=5),
@@ -148,37 +114,38 @@ trans_info = data.frame(rbind(cbind(x = rnorm(n=100, mean=20,sd=5),
                            cbind(x = rnorm(n=100, mean=100, sd=5),
                                  y = rnorm(n=100, mean=100, sd=5),
                                  feature_name="gene_B2")))
-trans_info$x=as.numeric(trans_info$x)
-trans_info$y=as.numeric(trans_info$y)
-trans_info$cell = sample(c("cell1","cell2","cell2"),replace=TRUE,
+trans_info$x<-as.numeric(trans_info$x)
+trans_info$y<-as.numeric(trans_info$y)
+trans_info$cell<-sample(c("cell1","cell2","cell2"),replace=TRUE,
                         size=nrow(trans_info))
 trans_mol <- BumpyMatrix::splitAsBumpyMatrix(
     trans_info[, c("x", "y")], 
     row = trans_info$feature_name, col = trans_info$cell )
 spe<- SpatialExperiment(
      assays = list(molecules = trans_mol),sample_id ="sample1" )
-w_x =  c(min(floor(min(trans_info$x)),
+w_x <- c(min(floor(min(trans_info$x)),
          floor(min(clusters$x))),
       max(ceiling(max(trans_info$x)),
           ceiling(max(clusters$x))))
-w_y =  c(min(floor(min(trans_info$y)),
+w_y <- c(min(floor(min(trans_info$y)),
           floor(min(clusters$y))),
       max(ceiling(max(trans_info$y)),
           ceiling(max(clusters$y))))
-vecs_lst = get_vectors(x=spe,sample_names=c("sample1"),
+vecs_lst <- get_vectors(x=spe,sample_names=c("sample1"),
                     cluster_info = clusters,
                     bin_type = "square",
                     bin_param = c(20,20),
                     test_genes =c("gene_A1","gene_A2","gene_B1","gene_B2"),
                     w_x = w_x, w_y=w_y)
-lasso_res = lasso_markers(gene_mt=vecs_lst$gene_mt,
+lasso_res <- lasso_markers(gene_mt=vecs_lst$gene_mt,
                         cluster_mt = vecs_lst$cluster_mt,
                         sample_names=c("sample1"),
                         keep_positive=TRUE,
-                        coef_cutoff=0.05,
                         background=NULL)
-
-
+# the top result
+top_result <- get_top_mg(lasso_res, coef_cutoff=0.05)
+# the full result
+full_result <- get_full_mg(lasso_res, coef_cutoff=0.05)
 }
 \seealso{
 \code{\link{get_vectors}}

@@ -36,7 +36,7 @@
 #' refers to a cluster}
 #' \item{\code{gene_mt}  }{ contains the transcript count in each grid.
 #' Each row refers to a grid, and each column refers to a gene.}
-compute_observation<- function(x, cluster_info, correlation_method, n_cores,
+.compute_observation<- function(x, cluster_info, correlation_method, n_cores,
                             test_genes,bin_type, bin_param, w_x, w_y,use_cm){
     primary_class <- class(x)[1]
     if (primary_class == "SpatialExperiment" | 
@@ -110,7 +110,7 @@ SingleCellExperiment, SpatialExperiment, or SpatialFeatureExperiment.")
 #' @importFrom stats cor
 #' @return A matrix with permutation statistics
 #'
-compute_permutation<- function(cluster_info, perm.size = 1000,
+.compute_permutation<- function(cluster_info, perm.size = 1000,
                                 correlation_method = "pearson",  bin_type,
                                 bin_param, n_cores=1, w_x,w_y, gene_mt,
                                 cluster_names){
@@ -206,18 +206,16 @@ compute_permutation<- function(cluster_info, perm.size = 1000,
 #' vectors for genes using the count matrix and cell coordinates instead of 
 #' the transcript coordinates when both types of information are available. 
 #' The default setting is FALSE.
-#' @return A named list with the following components
-#' \item{\code{obs.stat}  }{ A matrix contains the observation statistic for
-#' every gene and every cluster. Each row refers to a gene, and each column
-#' refers to a cluster}
-#' \item{\code{perm.arrays}  }{ A three dimensional array.
-#' The first two dimensions represent the correlation between the genes and
-#' permuted clusters. The third dimension refers to the different permutation
-#' runs. }
-#' \item{\code{perm.pval}  }{A matrix contains the raw permutation p-value.
-#' Each row refers to a gene, and each column refers to a cluster}
-#' \item{\code{perm.pval.adj}  }{A matrix contains the adjusted permutation
-#' p-value. Each row refers to a gene, and each column refers to a cluster}
+#' @return An object of class 'cor_mg_result'. 
+#' To access specific components of the returned object:
+#' \itemize{
+#' \item{Use \code{\link{get_cor}} to retrieve the matrix of observed 
+#' correlation coefficients.}
+#' \item{Use \code{\link{get_perm_p}} to access the matrix of 
+#' raw permutation p-values.}
+#' \item{Use \code{\link{get_perm_adjp}} to obtain the matrix of adjusted 
+#' permutation p-values.}
+#' }
 
 #' @importFrom stats p.adjust
 #' @importFrom foreach foreach
@@ -228,14 +226,14 @@ compute_permutation<- function(cluster_info, perm.size = 1000,
 #' library(BumpyMatrix)
 #' set.seed(100)
 #' # simulate coordinates for clusters
-#' df_clA = data.frame(x = rnorm(n=10, mean=20, sd=5),
+#' df_clA <- data.frame(x = rnorm(n=10, mean=20, sd=5),
 #'                     y = rnorm(n=10, mean=20, sd=5), cluster="A")
-#' df_clB = data.frame(x = rnorm(n=10, mean=100, sd=5),
+#' df_clB <- data.frame(x = rnorm(n=10, mean=100, sd=5),
 #'                     y = rnorm(n=10, mean=100, sd=5), cluster="B")
-#' clusters = rbind(df_clA, df_clB)
+#' clusters <- rbind(df_clA, df_clB)
 #' clusters$sample="sample1"
 #' # simulate coordinates for genes
-#' trans_info = data.frame(rbind(cbind(x = rnorm(n=10, mean=20, sd=5),
+#' trans_info <- data.frame(rbind(cbind(x = rnorm(n=10, mean=20, sd=5),
 #'                                     y = rnorm(n=10, mean=20, sd=5),
 #'                                     feature_name="gene_A1"),
 #'                     cbind(x = rnorm(n=10, mean=20, sd=5),
@@ -247,24 +245,24 @@ compute_permutation<- function(cluster_info, perm.size = 1000,
 #'                     cbind(x = rnorm(n=10, mean=100, sd=5),
 #'                                     y = rnorm(n=10, mean=100, sd=5),
 #'                                     feature_name="gene_B2")))
-#' trans_info$x=as.numeric(trans_info$x)
-#' trans_info$y=as.numeric(trans_info$y)
+#' trans_info$x<-as.numeric(trans_info$x)
+#' trans_info$y<-as.numeric(trans_info$y)
 #' trans_info$cell =  rep(paste("cell",1:20, sep=""), times=2)
 #' mol <- BumpyMatrix::splitAsBumpyMatrix(
 #'      trans_info[, c("x", "y")], 
 #'      row = trans_info$feature_name, col = trans_info$cell )
 #' spe_sample1 <- SpatialExperiment(
 #'         assays = list(molecules = mol),sample_id ="sample1" )
-#' w_x =  c(min(floor(min(trans_info$x)),
+#' w_x <- c(min(floor(min(trans_info$x)),
 #'              floor(min(clusters$x))),
 #'          max(ceiling(max(trans_info$x)),
 #'              ceiling(max(clusters$x))))
-#' w_y =  c(min(floor(min(trans_info$y)),
+#' w_y <-  c(min(floor(min(trans_info$y)),
 #'              floor(min(clusters$y))),
 #'          max(ceiling(max(trans_info$y)),
 #'              ceiling(max(clusters$y))))
 #' set.seed(100)
-#' perm_p_lst = compute_permp(x=spe_sample1,
+#' corr_res <- compute_permp(x=spe_sample1,
 #'              cluster_info=clusters,
 #'              perm.size=10,
 #'              bin_type="square",
@@ -275,6 +273,14 @@ compute_permutation<- function(cluster_info, perm.size = 1000,
 #'              correction_method="BH",
 #'              w_x=w_x ,
 #'              w_y=w_y)
+#'              
+#' # raw permutation p-value
+#' perm_p <- get_perm_p(corr_res)
+#' # adjusted permutation p-value
+#' adjusted_perm_p <- get_perm_adjp(corr_res)
+#' # observed correlation 
+#' obs_corr <- get_cor(corr_res)
+#' 
 compute_permp<-function(x, cluster_info, perm.size, bin_type,
                         bin_param,test_genes,
                         correlation_method = "pearson", n_cores=1,
@@ -283,7 +289,7 @@ compute_permp<-function(x, cluster_info, perm.size, bin_type,
 
     tm1 <- system.time(
     {
-        obs_res<- compute_observation(x=x, cluster_info=cluster_info,
+        obs_res<- .compute_observation(x=x, cluster_info=cluster_info,
                                     n_cores=n_cores,use_cm =use_cm,
                                     correlation_method = correlation_method,
                                     bin_type=bin_type,test_genes=test_genes,
@@ -300,7 +306,7 @@ compute_permp<-function(x, cluster_info, perm.size, bin_type,
 
 
     # permutation stats
-    perm_stat <- compute_permutation(cluster_info= cluster_info,
+    perm_stat <- .compute_permutation(cluster_info= cluster_info,
                                         perm.size = perm.size,
                                         correlation_method = correlation_method,
                                         bin_type=bin_type,
@@ -328,11 +334,9 @@ function(r) (sum(perm.arrays[r[1],r[2],]>obs.stat[r[1],r[2]])+1)/(perm.size+1))
     perm.pval.adj<- as.data.frame(perm.pval.adj)
     rownames(perm.pval.adj) <- row.names(obs.stat)
     colnames(perm.pval.adj) <- colnames(obs.stat)
-
-    return(list(obs.stat= obs.stat,
-                perm.arrays=perm.arrays,
-                perm.pval = perm.pval,
-                perm.pval.adj=perm.pval.adj
-    ))
+    cor_mg <- .create_cor_mg_result(obs.stat= obs.stat,
+                                    perm.pval = perm.pval,
+                                    perm.pval.adj=perm.pval.adj)
+    return(cor_mg)
 }
 

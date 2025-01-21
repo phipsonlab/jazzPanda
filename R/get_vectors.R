@@ -24,7 +24,7 @@
 #' @importFrom BiocParallel bplapply
 #' @return a matrix contains the transcript count in each grid.
 #' Each row refers to a grid, and each column refers to a gene.
-get_gene_vectors_tr<- function(trans_lst, test_genes, bin_type, bin_param,
+.get_gene_vectors_tr<- function(trans_lst, test_genes, bin_type, bin_param,
                                 bin_length, w_x, w_y){
     n_genes <- length(test_genes)
     n_samples <- length(trans_lst)
@@ -111,7 +111,7 @@ get_gene_vectors_tr<- function(trans_lst, test_genes, bin_type, bin_param,
 #' @importFrom spatstat.geom as.tess
 #' @importFrom magrittr "%>%"
 #'
-get_gene_vectors_cm<- function(cluster_info, cm_lst, bin_type, bin_param,
+.get_gene_vectors_cm<- function(cluster_info, cm_lst, bin_type, bin_param,
                                 test_genes, w_x, w_y){
     # binning
     bin_length <- 0
@@ -192,7 +192,7 @@ get_gene_vectors_cm<- function(cluster_info, cm_lst, bin_type, bin_param,
 #' @return a matrix contains the cell count in each grid.
 #' Each row refers to a grid, and each column refers to a cluster.
 #'
-get_cluster_vectors<- function(cluster_info,bin_length,bin_type, bin_param,
+.get_cluster_vectors<- function(cluster_info,bin_length,bin_type, bin_param,
                                 w_x, w_y, sample_names){
     ava_sample_names <- unique(as.character(cluster_info$sample))
     if (length(setdiff(sample_names,ava_sample_names))>0){
@@ -260,7 +260,7 @@ get_cluster_vectors<- function(cluster_info,bin_length,bin_type, bin_param,
 #'
 #' @return the length of total bins
 
-check_binning<- function(bin_param, bin_type, w_x, w_y){
+.check_binning<- function(bin_param, bin_type, w_x, w_y){
     # binning
     bin_length <- 0
     if (bin_type == "hexagon"){
@@ -281,7 +281,6 @@ check_binning<- function(bin_param, bin_type, w_x, w_y){
         stop("Input bin_type is not supported. Supported bin_type is
             rectangle/square or hexagon.")
     }
-    #st_time = Sys.time()
     return (bin_length)
 }
 
@@ -307,7 +306,7 @@ check_binning<- function(bin_param, bin_type, w_x, w_y){
 #' @importFrom methods is
 #' @importFrom BumpyMatrix unsplitAsDataFrame
 #' @importFrom SpatialExperiment molecules
-convert_data <- function(x, sample_names, test_genes){
+.convert_data <- function(x, sample_names, test_genes){
     n_samples <- length(sample_names)
     cm_lst <- vector("list", n_samples)
     names(cm_lst) <- sample_names
@@ -331,7 +330,6 @@ convert_data <- function(x, sample_names, test_genes){
                 sample information in x.")}
         if(length(setdiff(test_genes,row.names(x))) >0){
             stop("Invalid input test_genes, can not match test_genes from x")}
-        #all_cm <- x@assays@data$counts
         for (sp in sample_names){
             # x$imgData <- NULL
             sub_x <- x[,x$sample_id==sp]
@@ -345,9 +343,6 @@ convert_data <- function(x, sample_names, test_genes){
                 colnames(tmp_data) <- c("feature_name","cell_id","x","y")
                 tmp_data$x <- as.numeric(tmp_data$x)
                 tmp_data$y <- as.numeric(tmp_data$y)
-#       genes_with_coords <- unique(tmp_data$feature_name)
-#     if(length(intersect(test_genes,genes_with_coords)) == 0){
-# stop("Invalid input test_genes, can not match test_genes from x")}
                 trans_lst[[sp]]<- tmp_data
                 }
         }else{ trans_lst <- NULL }
@@ -490,7 +485,7 @@ get_vectors<- function(x, cluster_info, sample_names, bin_type, bin_param,
         stop("Invalid input, no coordinates information is specified") }
     # convert SingleCellExperiment/SpatialExperiment/SpatialFeatureExperiment
     if (is.null(x) ==FALSE){
-        re_lst <- convert_data(x, sample_names, test_genes)
+        re_lst <- .convert_data(x, sample_names, test_genes)
         trans_lst <- re_lst$trans_lst
         cm_lst <- re_lst$cm_lst
         # decide how to define gene vectors 
@@ -522,26 +517,26 @@ get_vectors<- function(x, cluster_info, sample_names, bin_type, bin_param,
     # must provide cluster info if gene vectors are created from count matrix
     if ((is.null(cm_lst) == FALSE) & (is.null(cluster_info) == TRUE)){
         stop("Missing cluster information to build gene vector matrix.")}
-    bin_length<-check_binning(bin_param=bin_param,bin_type=bin_type,
+    bin_length<-.check_binning(bin_param=bin_param,bin_type=bin_type,
                         w_x=w_x,w_y=w_y)
     # register for BiocParallel 
     register(SnowParam(workers = n_cores, type = "SOCK"))
     # with cluster information
     if (is.null(cluster_info) == FALSE){
-        vec_cluster <- get_cluster_vectors(cluster_info=cluster_info,
+        vec_cluster <- .get_cluster_vectors(cluster_info=cluster_info,
                                     bin_length=bin_length, bin_type=bin_type,
                                     bin_param=bin_param,w_x=w_x,w_y=w_y,
                                     sample_names=sample_names) }
     # with gene information
     if (is.null(trans_lst) == FALSE & is.null(cm_lst)== TRUE){
-        vec_gene_mt<-get_gene_vectors_tr(trans_lst=trans_lst, 
+        vec_gene_mt<-.get_gene_vectors_tr(trans_lst=trans_lst, 
                                 test_genes=test_genes,bin_type=bin_type, 
                                 bin_param=bin_param,
                                 bin_length=bin_length,w_x=w_x,w_y=w_y)}
     if (is.null(trans_lst) == TRUE & is.null(cm_lst)==FALSE &
         is.null(cluster_info)==FALSE){
         # use count matrix to build gene vector matrix
-        vec_gene_mt<-get_gene_vectors_cm(cluster_info=cluster_info,
+        vec_gene_mt<-.get_gene_vectors_cm(cluster_info=cluster_info,
                         cm_lst=cm_lst, bin_type=bin_type, bin_param=bin_param,
                         test_genes=test_genes,w_x=w_x, w_y=w_y) }
     result <- list()

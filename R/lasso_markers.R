@@ -26,7 +26,7 @@
 #' \item{\code{cluster_names} }{a vector of strings giving the name
 #' of the clusters }
 
-check_valid_input<- function(gene_mt,cluster_mt,sample_names, n_fold=10,
+.check_valid_input<- function(gene_mt,cluster_mt,sample_names, n_fold=10,
                             background=NULL){
     if (is.null(colnames(gene_mt)) ==TRUE){
         stop("Please provide valid column names for parameter gene_mt ") }
@@ -99,7 +99,7 @@ check_valid_input<- function(gene_mt,cluster_mt,sample_names, n_fold=10,
 #' each cluster}
 #' \item{\code{lambda.1se} }{the lambda.1se value of best fitted model }
 #'
-get_lasso_coef <- function(i_gene, gene_mt,vec_cluster,cluster_names,n_fold=10,
+.get_lasso_coef <- function(i_gene, gene_mt,vec_cluster,cluster_names,n_fold=10,
                         n_samples, sample_names){
 
     data <- as.data.frame(matrix(gene_mt[,i_gene],ncol=1))
@@ -204,9 +204,6 @@ get_lasso_coef <- function(i_gene, gene_mt,vec_cluster,cluster_names,n_fold=10,
 #' @param sample_names  A vector specifying the names for the samples.
 #' @param keep_positive A logical flag indicating whether to return positively
 #' correlated clusters or not.
-#' @param coef_cutoff A positive number giving the coefficient cutoff value.
-#' Genes whose top cluster showing a coefficient vlaue smaller than the cutoff
-#' will be . Default is 0.05.
 #' @param background Optional. A matrix providing the
 #' background information. Each row refers to a grid, and each column refers to
 #' one category of background information. Number of rows must equal to the
@@ -217,42 +214,12 @@ get_lasso_coef <- function(i_gene, gene_mt,vec_cluster,cluster_names,n_fold=10,
 #' for cross validation. This parameter will pass to 
 #' \code{\link[glmnet]{cv.glmnet}} to calculate a penalty term for every gene.
 
-#' @return a list of two matrices with the following components
-#' \item{\code{lasso_top_result}  }{A matrix with detailed information for
-#' each gene and the most relevant cluster label.
+#' @return An object of class 'glm_mg_result'
+#' To access specific components of the returned object:
 #' \itemize{
-#' \item{\code{gene} Gene name}
-#' \item{\code{top_cluster} The name of the most revelant cluster
-#' after thresholding the coefficients. }
-#' \item{\code{glm_coef} The coefficient of the selected cluster in the
-#' generalised linear model.}
-#' \item{\code{pearson} Pearson correlation between the gene vector and the
-#' selected cluster vector. }
-#' \item{\code{max_gg_corr} A number showing the maximum pearson correlation
-#' for this gene vector and all other gene vectors in the input \code{gene_mt}}
-#' \item{\code{max_gc_corr} A number showing the maximum pearson correlation
-#' for this gene vector and every cluster vectors in the input
-#' \code{cluster_mt}}
+#' \item{Use \code{\link{get_top_mg}} to retrieve the top result data frame}
+#' \item{Use \code{\link{get_full_mg}} to retrieve full result data frame}
 #' }
-#'
-#' }
-#' \item{\code{lasso_full_result}  }{A matrix with detailed information for
-#' each gene and the most relevant cluster label.
-#'
-#' \itemize{
-#' \item{\code{gene} Gene name}
-#' \item{\code{cluster} The name of the significant cluster after }
-#' \item{\code{glm_coef} The coefficient of the selected cluster
-#' in the generalised linear model.}
-#' \item{\code{pearson} Pearson correlation between the gene vector and the
-#' selected cluster vector. }
-#' \item{\code{max_gg_corr} A number showing the maximum pearson correlation
-#' for this gene vector and all other gene vectors in the input \code{gene_mt}}
-#' \item{\code{max_gc_corr} A number showing the maximum pearson correlation
-#' for this gene vector and every cluster vectors in the input
-#' \code{cluster_mt}}
-#' }}
-
 #' @importFrom caret createFolds
 #' @importFrom glmnet cv.glmnet
 #' @importFrom glmnet glmnet
@@ -267,16 +234,16 @@ get_lasso_coef <- function(i_gene, gene_mt,vec_cluster,cluster_names,n_fold=10,
 #' library(SpatialExperiment)
 #' set.seed(100)
 #' #  simulate coordinates for clusters
-#' df_clA = data.frame(x = rnorm(n=100, mean=20, sd=5),
+#' df_clA <- data.frame(x = rnorm(n=100, mean=20, sd=5),
 #'                  y = rnorm(n=100, mean=20, sd=5), cluster="A")
-#' df_clB = data.frame(x = rnorm(n=100, mean=100, sd=5),
+#' df_clB <- data.frame(x = rnorm(n=100, mean=100, sd=5),
 #'                 y = rnorm(n=100, mean=100, sd=5), cluster="B")
 #'
-#' clusters = rbind(df_clA, df_clB)
-#' clusters$sample="sample1"
+#' clusters <- rbind(df_clA, df_clB)
+#' clusters$sample<-"sample1"
 #'
 #' # simulate coordinates for genes
-#' trans_info = data.frame(rbind(cbind(x = rnorm(n=100, mean=20,sd=5),
+#' trans_info <- data.frame(rbind(cbind(x = rnorm(n=100, mean=20,sd=5),
 #'                                 y = rnorm(n=100, mean=20, sd=5),
 #'                                  feature_name="gene_A1"),
 #'                            cbind(x = rnorm(n=100, mean=20, sd=5),
@@ -288,41 +255,41 @@ get_lasso_coef <- function(i_gene, gene_mt,vec_cluster,cluster_names,n_fold=10,
 #'                            cbind(x = rnorm(n=100, mean=100, sd=5),
 #'                                  y = rnorm(n=100, mean=100, sd=5),
 #'                                  feature_name="gene_B2")))
-#' trans_info$x=as.numeric(trans_info$x)
-#' trans_info$y=as.numeric(trans_info$y)
-#' trans_info$cell = sample(c("cell1","cell2","cell2"),replace=TRUE,
+#' trans_info$x<-as.numeric(trans_info$x)
+#' trans_info$y<-as.numeric(trans_info$y)
+#' trans_info$cell<-sample(c("cell1","cell2","cell2"),replace=TRUE,
 #'                         size=nrow(trans_info))
 #' trans_mol <- BumpyMatrix::splitAsBumpyMatrix(
 #'     trans_info[, c("x", "y")], 
 #'     row = trans_info$feature_name, col = trans_info$cell )
 #' spe<- SpatialExperiment(
 #'      assays = list(molecules = trans_mol),sample_id ="sample1" )
-#' w_x =  c(min(floor(min(trans_info$x)),
+#' w_x <- c(min(floor(min(trans_info$x)),
 #'          floor(min(clusters$x))),
 #'       max(ceiling(max(trans_info$x)),
 #'           ceiling(max(clusters$x))))
-#' w_y =  c(min(floor(min(trans_info$y)),
+#' w_y <- c(min(floor(min(trans_info$y)),
 #'           floor(min(clusters$y))),
 #'       max(ceiling(max(trans_info$y)),
 #'           ceiling(max(clusters$y))))
-#' vecs_lst = get_vectors(x=spe,sample_names=c("sample1"),
+#' vecs_lst <- get_vectors(x=spe,sample_names=c("sample1"),
 #'                     cluster_info = clusters,
 #'                     bin_type = "square",
 #'                     bin_param = c(20,20),
 #'                     test_genes =c("gene_A1","gene_A2","gene_B1","gene_B2"),
 #'                     w_x = w_x, w_y=w_y)
-#' lasso_res = lasso_markers(gene_mt=vecs_lst$gene_mt,
+#' lasso_res <- lasso_markers(gene_mt=vecs_lst$gene_mt,
 #'                         cluster_mt = vecs_lst$cluster_mt,
 #'                         sample_names=c("sample1"),
 #'                         keep_positive=TRUE,
-#'                         coef_cutoff=0.05,
 #'                         background=NULL)
-#'
-#'
+#' # the top result
+#' top_result <- get_top_mg(lasso_res, coef_cutoff=0.05)
+#' # the full result
+#' full_result <- get_full_mg(lasso_res, coef_cutoff=0.05)
 lasso_markers<- function(gene_mt,cluster_mt,sample_names,
-                        keep_positive=TRUE, coef_cutoff=0.05,
-                        background=NULL,n_fold=10){
-    input_res <- check_valid_input(gene_mt=gene_mt, cluster_mt=cluster_mt,
+                        keep_positive=TRUE, background=NULL,n_fold=10){
+    input_res <- .check_valid_input(gene_mt=gene_mt, cluster_mt=cluster_mt,
                                 sample_names=sample_names,n_fold=n_fold,
                                 background=background)
     n_clusters <- input_res$n_clusters
@@ -364,7 +331,7 @@ lasso_markers<- function(gene_mt,cluster_mt,sample_names,
         gene_indx <- gg_corr$gene==i_gene
         res_df[i_gene,"max_gg_corr"]<-gg_corr[gene_indx,"max_gg_corr"]
         res_df[i_gene,"max_gc_corr"]<-gg_corr[gene_indx,"max_gc_corr"]
-        lasso_coef_lst <- get_lasso_coef(i_gene=i_gene, gene_mt=gene_mt,
+        lasso_coef_lst <- .get_lasso_coef(i_gene=i_gene, gene_mt=gene_mt,
                 vec_cluster=vec_cluster, cluster_names=cluster_names,
                 n_fold=n_fold, n_samples=n_samples, sample_names=sample_names)
         lambda_vals[i,1] <- i_gene
@@ -451,9 +418,6 @@ lasso_markers<- function(gene_mt,cluster_mt,sample_names,
                 res_df[i_gene,4]<-cor(gene_mt[,i_gene],
                         vec_cluster[,res_df[i_gene,2]],method = "pearson")} } }
     res_df$top_cluster <- res_df$top1
-    res_df[abs(res_df$glm_coef)<= coef_cutoff,"top_cluster"] <- "NoSig"
-    res_df[abs(res_df$glm_coef)<= coef_cutoff,"glm_coef"] <- 0
-    res_df[abs(res_df$glm_coef)<= coef_cutoff,"pearson"] <- 0
     res_df<-res_df[, c("gene","top_cluster","glm_coef","pearson",
                         "max_gg_corr","max_gc_corr")]
     colnames(res_df_all)<-c("gene","cluster","glm_coef","p_value","pearson",
@@ -464,7 +428,6 @@ lasso_markers<- function(gene_mt,cluster_mt,sample_names,
         res_df[nc_rows_id, "glm_coef"] <- 0
         res_df[nc_rows_id, "pearson"] <- 0 }
     res_df_all <- res_df_all[2:nrow(res_df_all),]
-    #res_df_all <- res_df_all[res_df_all$cluster %in% cluster_names,]
     row.names(res_df_all) <- NULL
     res_df_all$glm_coef  <- as.numeric(res_df_all$glm_coef)
     res_df_all$p_value  <- as.numeric(res_df_all$p_value)
@@ -472,8 +435,7 @@ lasso_markers<- function(gene_mt,cluster_mt,sample_names,
     res_df_all$glm_coef  <- as.numeric(res_df_all$glm_coef)
     to_num_cols<-c("glm_coef","p_value","pearson","max_gg_corr","max_gc_corr")
     res_df_all[, to_num_cols] <- lapply(res_df_all[to_num_cols], as.numeric)
-    res_df_all <- res_df_all[order(res_df_all$gene, res_df_all$p_value,
-                                na.last = TRUE), ]
-    return (list(lasso_top_result = data.frame(res_df),
-                lasso_full_result = data.frame(res_df_all)))
+    mg_r<- .create_lm_mg_result(top_result=data.frame(res_df), 
+                            full_result=data.frame(res_df_all))
+    return(mg_r)
 }

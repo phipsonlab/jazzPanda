@@ -128,32 +128,29 @@ perm_p_s = compute_permp(x=spe_rep1,
                         w_x=w_x ,
                         w_y=w_y)
 test_that("Test permutation result - output dimension matches", {
-  expect_equal(length(perm_p_lst), 4)
-  expect_equal(dim(perm_p_lst$perm.arrays), c(4,2,10))
-  expect_equal(dim(perm_p_lst$obs.stat), c(4,2))
-  expect_equal(dim(perm_p_lst$perm.pval.adj), c(4,2))
-  expect_equal(dim(perm_p_lst$perm.pval), c(4,2))
-  expect_equal(names(perm_p_lst),
-               c("obs.stat", "perm.arrays", "perm.pval", "perm.pval.adj"))
-  
+  #expect_equal(length(perm_p_lst), 4)
+  #expect_equal(dim(perm_p_lst$perm.arrays), c(4,2,10))
+  expect_equal(dim(get_perm_p(perm_p_lst)), c(4,2))
+  expect_equal(dim(get_perm_adjp(perm_p_lst)), c(4,2))
+  expect_equal(dim(get_cor(perm_p_lst)), c(4,2))
 
 })
 
 test_that("Test permutation result - observed stat matches", {
-  expect_equal(as.vector(perm_p_lst$obs.stat),
+  expect_equal(as.vector(get_cor(perm_p_lst)),
                c(1,1, -1/3, -1/3,-1/3,-1/3,1,1))
 })
 
 test_that("Test permutation result - sequential calculation works", {
-    expect_equal(length(perm_p_s), 4)
-    expect_equal(dim(perm_p_s$perm.arrays), c(4,2,10))
-    expect_equal(dim(perm_p_s$obs.stat), c(4,2))
-    expect_equal(dim(perm_p_s$perm.pval.adj), c(4,2))
-    expect_equal(dim(perm_p_s$perm.pval), c(4,2))
-    expect_equal(names(perm_p_s),
-                 c("obs.stat", "perm.arrays", "perm.pval", "perm.pval.adj"))
-    expect_equal(as.vector(perm_p_s$obs.stat),
-                 as.vector(perm_p_lst$obs.stat))
+    #expect_equal(length(perm_p_s), 4)
+    #expect_equal(dim(perm_p_s$perm.arrays), c(4,2,10))
+    expect_equal(dim(get_perm_p(perm_p_s)), c(4,2))
+    expect_equal(dim(get_perm_adjp(perm_p_s)), c(4,2))
+    expect_equal(dim(get_cor(perm_p_s)), c(4,2))
+    # expect_equal(names(perm_p_s),
+    #              c("obs.stat", "perm.arrays", "perm.pval", "perm.pval.adj"))
+    expect_equal(as.vector(get_cor(perm_p_s)),
+                 as.vector(get_cor(perm_p_lst)))
     
     
 })
@@ -232,19 +229,19 @@ perm_noname= compute_permp(x=noname_sce,
                          w_x=w_x ,
                          w_y=w_y)
 test_that("Test permutation result - output dimension matches", {
-    expect_equal(length(perm_p_s), 4)
-    expect_equal(dim(perm_p_s$perm.arrays), c(4,1,10))
-    expect_equal(dim(perm_p_s$obs.stat), c(4,1))
-    expect_equal(dim(perm_p_s$perm.pval.adj), c(4,1))
-    expect_equal(dim(perm_p_s$perm.pval), c(4,1))
+    #expect_equal(length(perm_p_s), 4)
+    #expect_equal(dim(perm_p_s$perm.arrays), c(4,1,10))
+    expect_equal(dim(get_cor(perm_p_s)), c(4,1))
+    expect_equal(dim(get_perm_p(perm_p_s)), c(4,1))
+    expect_equal(dim(get_perm_adjp(perm_p_s)), c(4,1))
     # expect_equal(names(perm_hex_lst),
     #              c("obs.stat", "perm.arrays", "perm.pval", "perm.pval.adj"))
     
 })
 
 test_that("Can work for one sample sce without sample name", {
-    expect_equal(as.vector(perm_p_s$obs.stat),
-                 as.vector(perm_noname$obs.stat))
+    expect_equal(as.vector(get_cor(perm_p_s)),
+                 as.vector(get_cor(perm_noname)))
     
 })
 
