@@ -18,15 +18,28 @@ get_vectors(
 )
 }
 \arguments{
-\item{x}{a SingleCellExperiment or SpatialExperiment or 
-SpatialFeatureExperiment object}
+\item{x}{a named list (of transcript detection coordinates) or 
+SingleCellExperiment or SpatialExperiment or 
+SpatialFeatureExperiment object. If a named list is provided, every list
+element is a dataframe containing the transcript detection
+coordinates and column names must include "feature_name" (gene name), 
+"x" (x coordinate), "y" (y coordinate). 
+The list names must match samples in cluster_info.}
 
 \item{cluster_info}{A dataframe/matrix containing the centroid coordinates,
 cluster label and sample for each cell.The column names must include
 "x" (x coordinate), "y" (y coordinate),
-"cluster" (cluster label) and "sample" (sample).}
+"cluster" (cluster label) and "sample" (sample). It is strongly recommended 
+to use syntactically valid names for columns clusters and samples. 
+If invalid names are detected, the function \code{\link{make.names}} will be 
+employed to generate valid names. A message will also be displayed to 
+indicate this change.}
 
-\item{sample_names}{a vector of strings giving the sample names}
+\item{sample_names}{a vector of strings giving the sample names. 
+It is strongly recommended to use syntactically valid names for columns 
+clusters and samples. If invalid names are detected, the function 
+\code{\link{make.names}} will be employed to generate valid names. 
+A message will also be displayed to indicate this change.}
 
 \item{bin_type}{A string indicating which bin shape is to be used for
 vectorization. One of "square" (default), "rectangle", or "hexagon".}
@@ -122,11 +135,6 @@ trans_info$x=as.numeric(trans_info$x)
 trans_info$y=as.numeric(trans_info$y)
 trans_info$cell = sample(c("cell1","cell2","cell2"),replace=TRUE,
                         size=nrow(trans_info))
-trans_mol <- BumpyMatrix::splitAsBumpyMatrix(
-    trans_info[, c("x", "y")], 
-    row = trans_info$feature_name, col = trans_info$cell )
-spe<- SpatialExperiment(
-     assays = list(molecules = trans_mol),sample_id ="sample1" )
 w_x =  c(min(floor(min(trans_info$x)),
          floor(min(clusters$x))),
       max(ceiling(max(trans_info$x)),
@@ -135,7 +143,21 @@ w_y =  c(min(floor(min(trans_info$y)),
           floor(min(clusters$y))),
       max(ceiling(max(trans_info$y)),
           ceiling(max(clusters$y))))
-vecs_lst = get_vectors(x=spe,sample_names=c("sample1"),
+# use named list as input
+vecs_lst = get_vectors(x= list("sample1" = trans_info),
+                    sample_names=c("sample1"),
+                    cluster_info = clusters,
+                    bin_type = "square",
+                    bin_param = c(5,5),
+                    test_genes =c("gene_A1","gene_A2","gene_B1","gene_B2"),
+                    w_x = w_x, w_y=w_y)
+# use SpatialExperiment object as input
+trans_mol <- BumpyMatrix::splitAsBumpyMatrix(
+    trans_info[, c("x", "y")], 
+    row = trans_info$feature_name, col = trans_info$cell )
+spe<- SpatialExperiment(
+     assays = list(molecules = trans_mol),sample_id ="sample1" )
+vecs_lst_spe = get_vectors(x=spe,sample_names=c("sample1"),
                     cluster_info = clusters,
                     bin_type = "square",
                     bin_param = c(5,5),

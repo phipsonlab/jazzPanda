@@ -284,6 +284,33 @@
     return (bin_length)
 }
 
+
+#' helper function to check the names of gene/cluster/sample
+#'
+#' @param x A character vector to check naming 
+#' @param x_name A name specifying the type of x, for message purpose only
+#' @return A character vector of same length with valid names 
+
+.check_valid_names<- function(x, x_name){
+    org_nm<-sort(unique(as.character(x)))
+    valid_nm<-make.names(org_nm, unique=TRUE)
+    changed_names<-setdiff(valid_nm,org_nm)
+    if (length(changed_names) > 0){
+        nm_df<- as.data.frame(cbind(org=org_nm, valid_nm = valid_nm ))
+        cg_cln <- nm_df[nm_df$org != nm_df$valid_nm, ]
+        message(sprintf("Invalid %s names are detected and converted:",x_name))
+        for (i in seq_along(cg_cln$org)) {
+            message(sprintf("'%s' '%s' is renamed as '%s'",
+                    x_name, cg_cln$org[i], cg_cln$valid_nm[i]))}
+        # rename invalid clusters names
+        ren_idx_cl <- match(x, nm_df$org)
+        renamed_vec <- nm_df$valid_nm[ren_idx_cl]
+        return (renamed_vec) 
+    }else{
+        return (x) 
+    }
+}
+
 #' Convert SingleCellExperiment/SpatialExperiment/SpatialFeatureExperiment 
 #' objects to list object for jazzPanda. 
 #'
@@ -347,6 +374,19 @@
                 }
         }else{ trans_lst <- NULL }
             }
+    }else if (primary_class == "list"){
+        if (!all(sample_names %in% names(x))){
+            stop("Input sample_names does not match names specified in x.")}
+        for (sp in sample_names){
+            sub_x <- x[[sp]]
+            req_cols <- c("feature_name","x","y")
+            if (length(setdiff(req_cols, colnames(sub_x))) != 0){
+                stop("Invalid columns in input x. Every list element in x must
+            contain columns 'feature_name','x', 'y', 
+                for every transcipt")}
+        }
+        trans_lst <- x
+        cm_lst <- NULL
     }else{
         stop(sprintf("The input class of 'x' is not supported. 
 Please convert 'x' to one of the following supported types: 
@@ -384,13 +424,26 @@ SingleCellExperiment, SpatialExperiment, or SpatialFeatureExperiment.")) }
 #' If \code{cluster_info} is NULL, this function will return vectorised genes
 #' based on \code{x}.
 #'
-#' @param x a SingleCellExperiment or SpatialExperiment or 
-#' SpatialFeatureExperiment object
+#' @param x a named list (of transcript detection coordinates) or 
+#' SingleCellExperiment or SpatialExperiment or 
+#' SpatialFeatureExperiment object. If a named list is provided, every list
+#' element is a dataframe containing the transcript detection
+#' coordinates and column names must include "feature_name" (gene name), 
+#' "x" (x coordinate), "y" (y coordinate). 
+#' The list names must match samples in cluster_info. 
 #' @param cluster_info A dataframe/matrix containing the centroid coordinates,
 #' cluster label and sample for each cell.The column names must include
 #' "x" (x coordinate), "y" (y coordinate),
-#' "cluster" (cluster label) and "sample" (sample).
-#' @param sample_names a vector of strings giving the sample names 
+#' "cluster" (cluster label) and "sample" (sample). It is strongly recommended 
+#' to use syntactically valid names for columns clusters and samples. 
+#' If invalid names are detected, the function \code{\link{make.names}} will be 
+#' employed to generate valid names. A message will also be displayed to 
+#' indicate this change.
+#' @param sample_names a vector of strings giving the sample names. 
+#' It is strongly recommended to use syntactically valid names for columns 
+#' clusters and samples. If invalid names are detected, the function 
+#' \code{\link{make.names}} will be employed to generate valid names. 
+#' A message will also be displayed to indicate this change.
 #' @param bin_type A string indicating which bin shape is to be used for
 #' vectorization. One of "square" (default), "rectangle", or "hexagon".
 #' @param bin_param A numeric vector indicating the size of the bin. If the
@@ -458,11 +511,6 @@ SingleCellExperiment, SpatialExperiment, or SpatialFeatureExperiment.")) }
 #' trans_info$y=as.numeric(trans_info$y)
 #' trans_info$cell = sample(c("cell1","cell2","cell2"),replace=TRUE,
 #'                         size=nrow(trans_info))
-#' trans_mol <- BumpyMatrix::splitAsBumpyMatrix(
-#'     trans_info[, c("x", "y")], 
-#'     row = trans_info$feature_name, col = trans_info$cell )
-#' spe<- SpatialExperiment(
-#'      assays = list(molecules = trans_mol),sample_id ="sample1" )
 #' w_x =  c(min(floor(min(trans_info$x)),
 #'          floor(min(clusters$x))),
 #'       max(ceiling(max(trans_info$x)),
@@ -471,13 +519,27 @@ SingleCellExperiment, SpatialExperiment, or SpatialFeatureExperiment.")) }
 #'           floor(min(clusters$y))),
 #'       max(ceiling(max(trans_info$y)),
 #'           ceiling(max(clusters$y))))
-#' vecs_lst = get_vectors(x=spe,sample_names=c("sample1"),
+#' # use named list as input
+#' vecs_lst = get_vectors(x= list("sample1" = trans_info),
+#'                     sample_names=c("sample1"),
 #'                     cluster_info = clusters,
 #'                     bin_type = "square",
 #'                     bin_param = c(5,5),
 #'                     test_genes =c("gene_A1","gene_A2","gene_B1","gene_B2"),
 #'                     w_x = w_x, w_y=w_y)
-#'
+#' # use SpatialExperiment object as input
+#' trans_mol <- BumpyMatrix::splitAsBumpyMatrix(
+#'     trans_info[, c("x", "y")], 
+#'     row = trans_info$feature_name, col = trans_info$cell )
+#' spe<- SpatialExperiment(
+#'      assays = list(molecules = trans_mol),sample_id ="sample1" )
+#' vecs_lst_spe = get_vectors(x=spe,sample_names=c("sample1"),
+#'                     cluster_info = clusters,
+#'                     bin_type = "square",
+#'                     bin_param = c(5,5),
+#'                     test_genes =c("gene_A1","gene_A2","gene_B1","gene_B2"),
+#'                     w_x = w_x, w_y=w_y)
+#' 
 get_vectors<- function(x, cluster_info, sample_names, bin_type, bin_param,
                         test_genes, w_x, w_y, use_cm = FALSE, n_cores=1){
     # check input
@@ -523,6 +585,10 @@ get_vectors<- function(x, cluster_info, sample_names, bin_type, bin_param,
     register(SnowParam(workers = n_cores, type = "SOCK"))
     # with cluster information
     if (is.null(cluster_info) == FALSE){
+        # check the cluster names are valid column names 
+    cluster_info$cluster<- .check_valid_names(cluster_info$cluster,"cluster")
+    cluster_info$sample<- .check_valid_names(cluster_info$sample,"sample")
+    sample_names<- .check_valid_names(sample_names,"sample")
         vec_cluster <- .get_cluster_vectors(cluster_info=cluster_info,
                                     bin_length=bin_length, bin_type=bin_type,
                                     bin_param=bin_param,w_x=w_x,w_y=w_y,

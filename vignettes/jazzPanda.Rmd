@@ -447,10 +447,50 @@ ggraph::ggraph(vector_graph, layout = layout) +
 The main function `lasso_markers()` requires spatial vectors for each 
 cluster and gene. These vectors can be conveniently generated using the 
 `get_vectors()` function. Currently, the get_vectors() function supports 
-inputs of type `SingleCellExperiment`, `SpatialExperiment`, or 
+inputs of type `list`, `SingleCellExperiment`, `SpatialExperiment`, or 
 `SpatialFeatureExperiment`. 
 The following sections will illustrate how to create spatial vectors for genes 
 and clusters given different data objects you have.
+
+#### From a list
+A named list can be effectively utilized to store the transcript detection 
+data for each sample. Specifically, we will create a named list where each 
+name corresponds to a different sample within your data. Each element of 
+this list is a dataframe containing columns: 
+"feature_name" (gene name), "x" (x-coordinate), and "y" (y-coordinate). 
+It is crucial that the list names match the sample identifiers in the 
+cluster_info. This approach is highly recommended when difficulties arise in 
+defining a SpatialExperiment object for your data.
+```{r}
+
+seed_number<- 589
+w_x <-  c(min(floor(min(rep1_transcripts$x)),
+            floor(min(rep1_clusters$x))), 
+        max(ceiling(max(rep1_transcripts$x)),
+            ceiling(max(rep1_clusters$x))))
+w_y <-  c(min(floor(min(rep1_transcripts$y)),
+            floor(min(rep1_clusters$y))), 
+        max(ceiling(max(rep1_transcripts$y)),
+            ceiling(max(rep1_clusters$y))))
+
+grid_length <- 10
+# get spatial vectors
+rep1_sq10_vectors_lst <- get_vectors(x= list("rep1" = rep1_transcripts),
+                                sample_names = "rep1",
+                                cluster_info = rep1_clusters,
+                                bin_type="square",
+                                bin_param=c(grid_length,grid_length), 
+                                test_genes = all_real_genes , 
+                                w_x=w_x, w_y=w_y)
+# the created spatial vectors will be the same as from other input structure 
+table(rep1_sq10_vectors$gene_mt[,"DST"]==rep1_sq10_vectors_lst$gene_mt[,"DST"])
+# spatial vector for every cluster 
+head(rep1_sq10_vectors_lst$cluster_mt)
+
+# spatial vector for every gene 
+head(rep1_sq10_vectors_lst$gene_mt)
+```
+
 
 #### From a SpatialExperiment object 
 If the transcript coordinates are available, you can 
@@ -535,8 +575,12 @@ example_vectors_tr <- get_vectors(x= spe_sub,
 ```
 
 #### From a SpatialFeatureExperiment object 
-```{r, eval=TRUE}
-sfe_example <- toSpatialFeatureExperiment(spe_sub)
+```{r, eval=FALSE}
+sfe_example <-SpatialFeatureExperiment(
+    list(counts = spe_sub@assays@data$counts),
+    colData = spe_sub@colData,
+    spatialCoords = spatialCoords(spe_sub),
+    spatialCoordsNames = c("x_centroid", "y_centroid"))
 # -----------------------------------------------------------------------------
 # build spatial vectors from count matrix and cluster coordinates 
 # make sure the cluster information contains column names: 

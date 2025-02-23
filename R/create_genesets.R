@@ -1,13 +1,23 @@
 #' Convert the coordinates of set of genes into vectors.
 #'
-#' @param x a SingleCellExperiment or SpatialExperiment or 
-#' SpatialFeatureExperiment object
+#' @param x a named list (of transcript detection coordinates) or 
+#' SingleCellExperiment or SpatialExperiment or 
+#' SpatialFeatureExperiment object. If a named list is provided, every list
+#' element is a dataframe containing the transcript detection
+#' coordinates and column names must include 
+#' "feature_name" (nagative control name), "x" (x coordinate) and
+#'  "y" (y coordinate). The list names must match samples in cluster_info. 
 #' @param name_lst A named list of strings giving the name of features that are
 #' treated as background.
 #' @param cluster_info A dataframe/matrix containing the centroid coordinates,
 #' cluster label and sample for each cell.The column names must include
 #' "x" (x coordinate), "y" (y coordinate),
-#' "cluster" (cluster label) and "sample" (sample).
+#' "cluster" (cluster label) and "sample" (sample). It is strongly recommended 
+#' to use syntactically valid names for columns clusters and samples. 
+#' If invalid names are detected, the function \code{\link{make.names}} will be 
+#' employed to generate valid names. A message will also be displayed to 
+#' indicate this change.
+#' This parameter is only used when use_cm parameter is TURE
 #' @param sample_names a vector of strings giving the sample names 
 #' @param bin_type A string indicating which bin shape is to be used for
 #' vectorization. One of "square" (default), "rectangle", or "hexagon".
@@ -90,11 +100,28 @@
 create_genesets<-function(x, name_lst, 
                         cluster_info, sample_names, bin_type, bin_param,
                         w_x, w_y, use_cm = FALSE, n_cores=1){
+    primary_class <- class(x)[1]
+    if (primary_class == "list"){
+        for (sp in sample_names){
+            sub_x <- x[[sp]]
+            req_cols <- c("feature_name","x","y")
+            if (length(setdiff(req_cols, colnames(sub_x))) != 0){
+                stop("Invalid columns in input x. Every list element in x must
+            contain columns 'feature_name','x', 'y', 
+                for every transcipt")}
+            uni_genes <- unique(sub_x$feature_name)
+    if (length(setdiff(as.vector(unique(unlist(name_lst))),uni_genes))>0){
+            stop("Invalid name_lst, 
+                can not find genes in the input name_lst from x")}}
+    test_genes <- intersect(as.vector(unique(unlist(name_lst))), uni_genes)
+    }else {
     if (length(setdiff(as.vector(unique(unlist(name_lst))), row.names(x)))>0){
-    stop("Invalid name_lst, can not find genes in the input name_lst from x")
+            stop("Invalid name_lst, can not find genes in the 
+                input name_lst from x")
     }
     test_genes <- intersect(as.vector(unique(unlist(name_lst))), row.names(x))
-
+    }
+    
     res_lst <- get_vectors(x=x, cluster_info=cluster_info, 
                 sample_names=sample_names, bin_type=bin_type, 
                 bin_param=bin_param,test_genes=test_genes, w_x=w_x, w_y=w_y, 

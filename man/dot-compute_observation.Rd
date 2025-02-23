@@ -18,13 +18,22 @@
 )
 }
 \arguments{
-\item{x}{a SingleCellExperiment or SpatialExperiment or 
-SpatialFeatureExperiment object}
+\item{x}{a named list (of transcript detection coordinates) or 
+SingleCellExperiment or SpatialExperiment or 
+SpatialFeatureExperiment object. If a named list is provided, every list
+element is a dataframe containing the transcript detection
+coordinates and column names must include "feature_name" (gene name), 
+"x" (x coordinate), "y" (y coordinate). 
+The list names must match samples in cluster_info.}
 
-\item{cluster_info}{A dataframe/matrix containing the centroid
-coordinates and cluster label for each cell.The column names should
-include "x" (x coordinate), "y" (y coordinate),
-and "cluster" (cluster label).}
+\item{cluster_info}{A dataframe/matrix containing the centroid coordinates,
+cluster label and sample for each cell.The column names must include
+"x" (x coordinate), "y" (y coordinate),
+"cluster" (cluster label) and "sample" (sample). It is strongly recommended 
+to use syntactically valid names for columns clusters and samples. 
+If invalid names are detected, the function \code{\link{make.names}} will be 
+employed to generate valid names. A message will also be displayed to 
+indicate this change.}
 
 \item{correlation_method}{A parameter pass to \code{\link{cor}},
 indicating which correlation coefficient is to be computed.

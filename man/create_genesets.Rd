@@ -18,8 +18,13 @@ create_genesets(
 )
 }
 \arguments{
-\item{x}{a SingleCellExperiment or SpatialExperiment or 
-SpatialFeatureExperiment object}
+\item{x}{a named list (of transcript detection coordinates) or 
+SingleCellExperiment or SpatialExperiment or 
+SpatialFeatureExperiment object. If a named list is provided, every list
+element is a dataframe containing the transcript detection
+coordinates and column names must include 
+"feature_name" (nagative control name), "x" (x coordinate) and
+ "y" (y coordinate). The list names must match samples in cluster_info.}
 
 \item{name_lst}{A named list of strings giving the name of features that are
 treated as background.}

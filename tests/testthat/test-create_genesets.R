@@ -12,6 +12,15 @@ trans$x = as.numeric(trans$x)
 trans$y = as.numeric(trans$y)
 trans$cell =  sample(paste("cell",1:7, sep=""), 
                      replace = TRUE, size = nrow(trans))
+trans_invalid = trans
+colnames(trans_invalid) = c("x","y","gene","cell")
+test_that("Invaid input",{
+    expect_error(create_genesets(x=list("rep1" = trans_invalid),sample_names = "rep1",
+                                 name_lst=list(dummy_W=c("A","B")),
+                                 bin_type="square",
+                                 bin_param=c(2,2),cluster_info = NULL,
+                                 w_x=c(0,25), w_y=c(0,25)))
+})
 mol <- BumpyMatrix::splitAsBumpyMatrix(
     trans[, c("x", "y")], 
     row = trans$feature_name, col = trans$cell )
@@ -31,6 +40,12 @@ spe_invalid <- SpatialExperiment(
 
 
 #data_invalid_missing_trans_cols = list(trans_info=invalid_trans_df)
+geneset_res_A_fl = create_genesets(x=list("rep1" = trans),sample_names = "rep1",
+                                name_lst=list(dummy_W=c("A")),
+                                bin_type="square",
+                                bin_param=c(2,2),cluster_info = NULL,
+                                w_x=c(0,25), w_y=c(0,25))
+
 geneset_res_A = create_genesets(x=spe_rep1,sample_names = "rep1",
                                 name_lst=list(dummy_W=c("A")),
                                 bin_type="square",
@@ -59,10 +74,17 @@ expect_error(create_genesets(x=spe_rep1,sample_names = "rep1",
                              w_x=c(0,25), w_y=c(0,25)))
 
 })
+test_that("Test can create vectors for for a list input", {
+    expect_equal(colnames(geneset_res_A_fl), c("dummy_W"))
+    expect_equal(as.vector(geneset_res_A_fl$dummy_W), c(0,0,10, 0))
+    
+})
+
 test_that("Test can create vectors for a single gene set with a single element A", {
     expect_equal(colnames(geneset_res_A), c("dummy_W"))
     expect_equal(as.vector(geneset_res_A$dummy_W), c(0,0,10, 0))
     expect_equal(as.vector(geneset_res_A_hex$dummy_W), c(2,5,0,3,0,0,0))
+    
 })
 
 geneset_res_C = create_genesets(x=spe_rep1,sample_names = "rep1",
@@ -81,10 +103,15 @@ geneset_res1 = create_genesets(x=spe_rep1,sample_names = "rep1",
                                bin_type="square",
                                bin_param=c(2,2),cluster_info = NULL,
                                w_x=c(0,25), w_y=c(0,25))
-
+geneset_res1_lst = create_genesets(x=list("rep1" = trans),sample_names = "rep1",
+                               name_lst=list(dummy_W=c("A","B")),
+                               bin_type="square",
+                               bin_param=c(2,2),cluster_info = NULL,
+                               w_x=c(0,25), w_y=c(0,25))
 test_that("Test can create vectors for a single gene set with multiple elements", {
     expect_equal(colnames(geneset_res1), c("dummy_W"))
     expect_equal(as.vector(geneset_res1$dummy_W), c(0,0,11,4))
+    expect_equal(as.vector(geneset_res1$dummy_W), as.vector(geneset_res1_lst$dummy_W))
 })
 
 geneset_res2 = create_genesets(x=spe_rep1,sample_names = "rep1",

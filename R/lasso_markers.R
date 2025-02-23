@@ -349,7 +349,7 @@ lasso_markers<- function(gene_mt,cluster_mt,sample_names,
         }else{
             coef_df <- coef_df[coef_df!=0,,drop=FALSE]
             if (n_samples>1){
-                # multiple samples check number of significant clusterS
+                # multiple samples check number of significant clusters
                 if ( is.null(background) == TRUE){
                     # include sample variables as features
                     sig_features <- union(row.names(coef_df),sample_names)
@@ -371,7 +371,7 @@ lasso_markers<- function(gene_mt,cluster_mt,sample_names,
                                 coef_mod[,"Estimate"]<0, c(1,4),drop=FALSE] }
                 ccluster_count<-length(setdiff(row.names(target_clusters),
                                                 sample_names))
-        }else{
+            }else{
                 # one-sample, check the number of significant clusters
                 if (is.null(background) == TRUE){
                     glm_data<-data.frame("gene"=gene_mt[,i_gene],
@@ -404,6 +404,7 @@ lasso_markers<- function(gene_mt,cluster_mt,sample_names,
                 res_df[i_gene,4] <- 0
             }else{
                 sig_clusters<-as.matrix(target_clusters)
+                #cl_sigs <- intersect(row.names(sig_clusters), cluster_names)
                 sig_clusters<-sig_clusters[order(sig_clusters[,2],
                                     -abs(sig_clusters[,1])),,drop=FALSE]
                 corr_p<-as.vector(cor(gene_mt[,i_gene],

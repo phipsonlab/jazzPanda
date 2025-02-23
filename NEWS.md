@@ -1,3 +1,23 @@
+# jazzPanda 0.2.2
+*Updated on February 23, 2025*
+
+Changes to the package include:
+
+- **function `get_vectors()`**:
+    - Input `x` can also be a named list now. This approach enables users to 
+    directly input transcript detection coordinates using a dataframe. 
+    This helps prevent integer overflow issues that may arise when 
+    creating the SpatialExperiment object for a large dataset
+    
+    - If invalid cluster/sample names are detected, the function `make.names()` 
+    will be employed to generate valid names. A message will also be displayed
+    to indicate this change.
+    
+- **function `create_genesets()`**:
+    - Input `x` can also be a named list now as in `get_vectors()`
+
+
+    
 # jazzPanda 0.2.1
 *Updated on January 20, 2025*
 
