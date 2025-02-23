@@ -59,8 +59,13 @@
 
 
 <dl><dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
-<dd><p>a SingleCellExperiment or SpatialExperiment or
-SpatialFeatureExperiment object</p></dd>
+<dd><p>a named list (of transcript detection coordinates) or
+SingleCellExperiment or SpatialExperiment or
+SpatialFeatureExperiment object. If a named list is provided, every list
+element is a dataframe containing the transcript detection
+coordinates and column names must include
+"feature_name" (nagative control name), "x" (x coordinate) and
+ "y" (y coordinate). The list names must match samples in cluster_info.</p></dd>
 
 
 <dt id="arg-name-lst">name_lst<a class="anchor" aria-label="anchor" href="#arg-name-lst"></a></dt>

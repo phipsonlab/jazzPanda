@@ -34,6 +34,21 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.2.2" id="jazzpanda-022">jazzPanda 0.2.2<a class="anchor" aria-label="anchor" href="#jazzpanda-022"></a></h2>
+<p><em>Updated on February 23, 2025</em></p>
+<p>Changes to the package include:</p>
+<ul><li>
+<strong>function <code><a href="../reference/get_vectors.html">get_vectors()</a></code></strong>:
+<ul><li><p>Input <code>x</code> can also be a named list now. This approach enables users to directly input transcript detection coordinates using a dataframe. This helps prevent integer overflow issues that may arise when creating the SpatialExperiment object for a large dataset</p></li>
+<li><p>If invalid cluster/sample names are detected, the function <code><a href="https://rdrr.io/r/base/make.names.html" class="external-link">make.names()</a></code> will be employed to generate valid names. A message will also be displayed to indicate this change.</p></li>
+</ul></li>
+<li>
+<strong>function <code><a href="../reference/create_genesets.html">create_genesets()</a></code></strong>:
+<ul><li>Input <code>x</code> can also be a named list now as in <code><a href="../reference/get_vectors.html">get_vectors()</a></code>
+</li>
+</ul></li>
+</ul></div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.1" id="jazzpanda-021">jazzPanda 0.2.1<a class="anchor" aria-label="anchor" href="#jazzpanda-021"></a></h2>
 <p><em>Updated on January 20, 2025</em></p>
 <p>Changes to the package include:</p>

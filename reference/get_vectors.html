@@ -62,19 +62,32 @@ genes and clusters.</p>
 
 
 <dl><dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
-<dd><p>a SingleCellExperiment or SpatialExperiment or
-SpatialFeatureExperiment object</p></dd>
+<dd><p>a named list (of transcript detection coordinates) or
+SingleCellExperiment or SpatialExperiment or
+SpatialFeatureExperiment object. If a named list is provided, every list
+element is a dataframe containing the transcript detection
+coordinates and column names must include "feature_name" (gene name),
+"x" (x coordinate), "y" (y coordinate).
+The list names must match samples in cluster_info.</p></dd>
 
 
 <dt id="arg-cluster-info">cluster_info<a class="anchor" aria-label="anchor" href="#arg-cluster-info"></a></dt>
 <dd><p>A dataframe/matrix containing the centroid coordinates,
 cluster label and sample for each cell.The column names must include
 "x" (x coordinate), "y" (y coordinate),
-"cluster" (cluster label) and "sample" (sample).</p></dd>
+"cluster" (cluster label) and "sample" (sample). It is strongly recommended
+to use syntactically valid names for columns clusters and samples.
+If invalid names are detected, the function <code><a href="https://rdrr.io/r/base/make.names.html" class="external-link">make.names</a></code> will be
+employed to generate valid names. A message will also be displayed to
+indicate this change.</p></dd>
 
 
 <dt id="arg-sample-names">sample_names<a class="anchor" aria-label="anchor" href="#arg-sample-names"></a></dt>
-<dd><p>a vector of strings giving the sample names</p></dd>
+<dd><p>a vector of strings giving the sample names.
+It is strongly recommended to use syntactically valid names for columns
+clusters and samples. If invalid names are detected, the function
+<code><a href="https://rdrr.io/r/base/make.names.html" class="external-link">make.names</a></code> will be employed to generate valid names.
+A message will also be displayed to indicate this change.</p></dd>
 
 
 <dt id="arg-bin-type">bin_type<a class="anchor" aria-label="anchor" href="#arg-bin-type"></a></dt>
@@ -185,11 +198,6 @@ based on <code>x</code>.</p>
 <span class="r-in"><span><span class="va">trans_info</span><span class="op">$</span><span class="va">y</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">trans_info</span><span class="op">$</span><span class="va">y</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">trans_info</span><span class="op">$</span><span class="va">cell</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"cell1"</span>,<span class="st">"cell2"</span>,<span class="st">"cell2"</span><span class="op">)</span>,replace<span class="op">=</span><span class="cn">TRUE</span>,</span></span>
 <span class="r-in"><span>                        size<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">trans_info</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">trans_mol</span> <span class="op">&lt;-</span> <span class="fu">BumpyMatrix</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BumpyMatrix/man/splitAsBumpyMatrix.html" class="external-link">splitAsBumpyMatrix</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="va">trans_info</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"y"</span><span class="op">)</span><span class="op">]</span>, </span></span>
-<span class="r-in"><span>    row <span class="op">=</span> <span class="va">trans_info</span><span class="op">$</span><span class="va">feature_name</span>, col <span class="op">=</span> <span class="va">trans_info</span><span class="op">$</span><span class="va">cell</span> <span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">spe</span><span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/SpatialExperiment/man/SpatialExperiment.html" class="external-link">SpatialExperiment</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>     assays <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>molecules <span class="op">=</span> <span class="va">trans_mol</span><span class="op">)</span>,sample_id <span class="op">=</span><span class="st">"sample1"</span> <span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">w_x</span> <span class="op">=</span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">floor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">trans_info</span><span class="op">$</span><span class="va">x</span><span class="op">)</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>         <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">floor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">clusters</span><span class="op">$</span><span class="va">x</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>      <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">ceiling</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">trans_info</span><span class="op">$</span><span class="va">x</span><span class="op">)</span><span class="op">)</span>,</span></span>
@@ -198,7 +206,21 @@ based on <code>x</code>.</p>
 <span class="r-in"><span>          <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">floor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">clusters</span><span class="op">$</span><span class="va">y</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>      <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">ceiling</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">trans_info</span><span class="op">$</span><span class="va">y</span><span class="op">)</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>          <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">ceiling</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">clusters</span><span class="op">$</span><span class="va">y</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">vecs_lst</span> <span class="op">=</span> <span class="fu">get_vectors</span><span class="op">(</span>x<span class="op">=</span><span class="va">spe</span>,sample_names<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sample1"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span><span class="co"># use named list as input</span></span></span>
+<span class="r-in"><span><span class="va">vecs_lst</span> <span class="op">=</span> <span class="fu">get_vectors</span><span class="op">(</span>x<span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"sample1"</span> <span class="op">=</span> <span class="va">trans_info</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                    sample_names<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sample1"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                    cluster_info <span class="op">=</span> <span class="va">clusters</span>,</span></span>
+<span class="r-in"><span>                    bin_type <span class="op">=</span> <span class="st">"square"</span>,</span></span>
+<span class="r-in"><span>                    bin_param <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>,<span class="fl">5</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                    test_genes <span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"gene_A1"</span>,<span class="st">"gene_A2"</span>,<span class="st">"gene_B1"</span>,<span class="st">"gene_B2"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                    w_x <span class="op">=</span> <span class="va">w_x</span>, w_y<span class="op">=</span><span class="va">w_y</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># use SpatialExperiment object as input</span></span></span>
+<span class="r-in"><span><span class="va">trans_mol</span> <span class="op">&lt;-</span> <span class="fu">BumpyMatrix</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BumpyMatrix/man/splitAsBumpyMatrix.html" class="external-link">splitAsBumpyMatrix</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="va">trans_info</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"y"</span><span class="op">)</span><span class="op">]</span>, </span></span>
+<span class="r-in"><span>    row <span class="op">=</span> <span class="va">trans_info</span><span class="op">$</span><span class="va">feature_name</span>, col <span class="op">=</span> <span class="va">trans_info</span><span class="op">$</span><span class="va">cell</span> <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">spe</span><span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/SpatialExperiment/man/SpatialExperiment.html" class="external-link">SpatialExperiment</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>     assays <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>molecules <span class="op">=</span> <span class="va">trans_mol</span><span class="op">)</span>,sample_id <span class="op">=</span><span class="st">"sample1"</span> <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">vecs_lst_spe</span> <span class="op">=</span> <span class="fu">get_vectors</span><span class="op">(</span>x<span class="op">=</span><span class="va">spe</span>,sample_names<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sample1"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                    cluster_info <span class="op">=</span> <span class="va">clusters</span>,</span></span>
 <span class="r-in"><span>                    bin_type <span class="op">=</span> <span class="st">"square"</span>,</span></span>
 <span class="r-in"><span>                    bin_param <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>,<span class="fl">5</span><span class="op">)</span>,</span></span>

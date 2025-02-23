@@ -63,12 +63,6 @@ in image-based spatial transcriptomics data
 <p>The jazzPanda package contains functions to find marker genes based on the spatial coordinates for imaging-based spatial transcriptomics technologies including 10x Xenium, NanoString CosMx and Vizgen MERSCOPE.</p>
 </div>
 <div class="section level2">
-<h2 id="updates-feb-20-2025">Updates (Feb 20, 2025)<a class="anchor" aria-label="anchor" href="#updates-feb-20-2025"></a>
-</h2>
-<p>If you are working with large image-based spatial data, such as <strong>Xenium 5k samples</strong>, and encounter a warning from the <code>SpatialExperiment</code> class when storing molecule detections, please set <strong><code>use_cm=TRUE</code></strong> and run <strong><code>jazzPanda</code></strong> using the <strong>count matrix</strong> and <strong>cell coordinates</strong> to avoid integer overflow issues.</p>
-<p>We are actively updating the structure to better support large-scale transcript detection data.</p>
-</div>
-<div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
 <p>To install jazzPanda from Bioconductor, use the following commands:</p>
