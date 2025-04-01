@@ -242,7 +242,7 @@ as well as the square and hex bin values over the space as an example.
 We can see that with the square and hex bins capture the key patterns of the
 original coordinates. Hex bins can capture more details than square bins. 
 
-### Example of gene vectors 
+### Example of gene vectors from scratch
 ```{r plot spatial genes, fig.width=6, fig.height=4}
 
 w_x <- c(min(floor(min(rep1_transcripts$x)),
@@ -289,7 +289,7 @@ title(main = "hex binning", line = -2)
 
 ```
 
-### Example of cluster vectors 
+### Example of cluster vectors from scratch
 ```{r plot spatial clusters, fig.width=6, fig.height=4}
 w_x <- c(min(floor(min(rep1_transcripts$x)),
             floor(min(rep1_clusters$x))), 
@@ -338,7 +338,6 @@ The function `get_vectors()` can be used to create spatial vectors for
 all the genes and clusters.
 These spatial vectors may take the form of squares, rectangles, or hexagons 
 specified by the `bin_type` parameter. 
-
 ### Create spatial vectors for all genes and clusters
 ```{r create rep1 all vectors}
 seed_number<- 589
@@ -362,7 +361,48 @@ rep1_sq10_vectors <- get_vectors(x= rep1_sub,
                                 test_genes = all_real_genes , 
                                 w_x=w_x, w_y=w_y)
 ```
+If your data has different scales (e.g.,` w_x` and `w_y`) for cluster 
+coordinates and gene coordinates, you can construct separate spatial vectors 
+for clusters and genes. Please make sure you use consistent bin parameters 
+(`bin_type` & `bin_param`) to get the spatial vectors. 
+```{r create rep1 different cluster-vec and gene vec}
+seed_number<- 589
+grid_length <- 10
+# define a window for cell detections
+cluster_w_x <- c(floor(min(rep1_clusters$x)), ceiling(max(rep1_clusters$x)))
+cluster_w_y <- c(floor(min(rep1_clusters$y)), ceiling(max(rep1_clusters$y)))
 
+# get spatial vectors for clusters only
+cluster_sq10_vectors <- get_vectors(x= NULL,
+                                sample_names = "rep1",
+                                cluster_info = rep1_clusters,
+                                bin_type="square",
+                                bin_param=c(grid_length,grid_length), 
+                                test_genes = all_real_genes , 
+                                w_x=cluster_w_x, w_y=cluster_w_y)
+# the gene vectors can be accessed as:
+head(cluster_sq10_vectors$cluster_mt) 
+# cluster_sq10_vectors$cluster_mt is equivalent to rep1_sq10_vectors$cluster_mt
+
+#######################################################
+# define a different window for transctipt detections
+transcript_w_x <-c(floor(min(rep1_transcripts$x)), 
+                    ceiling(max(rep1_transcripts$x)))
+transcript_w_y <- c(floor(min(rep1_transcripts$y)),
+                ceiling(max(rep1_transcripts$y)))
+# get spatial vectors for genes only 
+gene_sq10_vectors <- get_vectors(x= rep1_sub,
+                                sample_names = "rep1",
+                                cluster_info = NULL,
+                                bin_type="square",
+                                bin_param=c(grid_length,grid_length), 
+                                test_genes = all_real_genes , 
+                                w_x=transcript_w_x, w_y=transcript_w_y)
+# the gene vectors can be accessed as:
+head(gene_sq10_vectors$gene_mt)
+# gene_sq10_vectors$gene_mt is equivalent to rep1_sq10_vectors$gene_mt
+
+```
 The constructed spatial vectors can be used to quantify cluster-cluster and
 gene-gene correlation.
 
