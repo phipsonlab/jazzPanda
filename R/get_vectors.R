@@ -389,7 +389,7 @@
         cm_lst <- NULL
     }else{
         stop(sprintf("The input class of 'x' is not supported. 
-Please convert 'x' to one of the following supported types: 
+Please convert 'x' to one of the following supported types: List, 
 SingleCellExperiment, SpatialExperiment, or SpatialFeatureExperiment.")) }
     return (list(trans_lst = trans_lst, cm_lst = cm_lst))
 }

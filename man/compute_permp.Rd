@@ -20,8 +20,13 @@ compute_permp(
 )
 }
 \arguments{
-\item{x}{a SingleCellExperiment or SpatialExperiment or 
-SpatialFeatureExperiment object}
+\item{x}{a named list (of transcript detection coordinates) or 
+named SingleCellExperiment or named SpatialExperiment or 
+named SpatialFeatureExperiment object. If a named list is provided, the list
+element is a dataframe containing the transcript detection
+coordinates and column names must include "feature_name" (gene name), 
+"x" (x coordinate), "y" (y coordinate). 
+The list name must match samples in cluster_info.}
 
 \item{cluster_info}{A dataframe/matrix containing the centroid coordinates
 and cluster label for each cell.The column names should include "x"

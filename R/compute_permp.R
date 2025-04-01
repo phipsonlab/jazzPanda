@@ -47,32 +47,32 @@
 #' Each row refers to a grid, and each column refers to a gene.}
 .compute_observation<- function(x, cluster_info, correlation_method, n_cores,
                             test_genes,bin_type, bin_param, w_x, w_y,use_cm){
-    primary_class <- class(x)[1]
-    if (primary_class == "SpatialExperiment" | 
-        primary_class ==  "SpatialFeatureExperiment"){
-        if (is.null(x$sample_id) == FALSE){
-            if (length(unique(x$sample_id))>1){
-stop("Input x has multiple samples")
-            }
-            cluster_info$sample <- unique(x$sample_id)
-        }else{
-            cluster_info$sample <- "sample1"
-            x$sample_id <- "sample1"
-        }
-    }else if (primary_class == "SingleCellExperiment"){
-        if (length(names(x@assays@data@listData)) == 1){
-            cluster_info$sample <- names(x@assays@data@listData)
-        }else if (length(names(x@assays@data@listData)) > 1){
-            stop("Input x has multiple samples")
-        }else {
-            cluster_info$sample <- "sample1"
-            names(x@assays@data@listData) <- "sample1"
-        }
-    }else{
-        stop("The input class of 'x' is not supported. 
-Please convert 'x' to one of the following supported types: 
-SingleCellExperiment, SpatialExperiment, or SpatialFeatureExperiment.")
-    }
+#     primary_class <- class(x)[1]
+#     if (primary_class == "SpatialExperiment" | 
+#         primary_class ==  "SpatialFeatureExperiment"){
+#         if (is.null(x$sample_id) == FALSE){
+#             if (length(unique(x$sample_id))>1){
+# stop("Input x has multiple samples")
+#             }
+#             cluster_info$sample <- unique(x$sample_id)
+#         }else{
+#             cluster_info$sample <- "sample1"
+#             x$sample_id <- "sample1"
+#         }
+#     }else if (primary_class == "SingleCellExperiment"){
+#         if (length(names(x@assays@data@listData)) == 1){
+#             cluster_info$sample <- names(x@assays@data@listData)
+#         }else if (length(names(x@assays@data@listData)) > 1){
+#             stop("Input x has multiple samples")
+#         }else {
+#             cluster_info$sample <- "sample1"
+#             names(x@assays@data@listData) <- "sample1"
+#         }
+#     }else{
+#         stop("The input class of 'x' is not supported. 
+# Please convert 'x' to one of the following supported types: 
+# SingleCellExperiment, SpatialExperiment, or SpatialFeatureExperiment.")
+#     }
     vectors_lst <- get_vectors(x=x,sample_names=unique(cluster_info$sample),
                                 cluster_info = cluster_info,
                                 bin_type=bin_type,
@@ -80,7 +80,7 @@ SingleCellExperiment, SpatialExperiment, or SpatialFeatureExperiment.")
                                 test_genes=test_genes, n_cores=n_cores,
                                 w_x=w_x, w_y=w_y,use_cm =use_cm)
 
-    # calculate correation of permuted clusters and gene
+    # calculate correlation of permuted clusters and gene
     obs.stat <- cor(x=vectors_lst$gene_mt, y=vectors_lst$cluster_mt,
                         method=correlation_method)
     return (list(obs.stat = obs.stat, gene_mt=vectors_lst$gene_mt))
@@ -182,8 +182,13 @@ SingleCellExperiment, SpatialExperiment, or SpatialFeatureExperiment.")
 #' times, and permutation p-value is calculated as the probability of
 #' permuted correlations larger than the observation correlation.
 #' 
-#' @param x a SingleCellExperiment or SpatialExperiment or 
-#' SpatialFeatureExperiment object
+#' @param x a named list (of transcript detection coordinates) or 
+#' named SingleCellExperiment or named SpatialExperiment or 
+#' named SpatialFeatureExperiment object. If a named list is provided, the list
+#' element is a dataframe containing the transcript detection
+#' coordinates and column names must include "feature_name" (gene name), 
+#' "x" (x coordinate), "y" (y coordinate). 
+#' The list name must match samples in cluster_info. 
 #' @param cluster_info A dataframe/matrix containing the centroid coordinates
 #' and cluster label for each cell.The column names should include "x"
 #' (x coordinate), "y" (y coordinate), and "cluster" (cluster label).

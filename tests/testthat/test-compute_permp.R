@@ -105,6 +105,18 @@ test_that("Invaid input",{
                                w_y=w_y))
 })
 set.seed(100)
+perm_p_lst_input = compute_permp(x=list("rep1"=trans_info),
+                           cluster_info=clusters,
+                           perm.size=10,
+                           bin_type="square",
+                           bin_param=c(2,2),
+                           test_genes=unique(trans_info$feature_name),
+                           correlation_method = "pearson",
+                           n_cores=2,
+                           correction_method="BH",
+                           w_x=w_x ,
+                           w_y=w_y)
+
 perm_p_lst = compute_permp(x=spe_rep1,
                        cluster_info=clusters,
                        perm.size=10,
@@ -140,7 +152,13 @@ test_that("Test permutation result - observed stat matches", {
   expect_equal(as.vector(get_cor(perm_p_lst)),
                c(1,1, -1/3, -1/3,-1/3,-1/3,1,1))
 })
-
+test_that("Test permutation  - can work for list input", {
+    expect_equal(as.vector(get_cor(perm_p_lst_input)),
+                 c(1,1, -1/3, -1/3,-1/3,-1/3,1,1))
+    expect_equal(dim(get_perm_p(perm_p_lst_input)), c(4,2))
+    expect_equal(dim(get_perm_adjp(perm_p_lst_input)), c(4,2))
+    expect_equal(dim(get_cor(perm_p_lst_input)), c(4,2))
+})
 test_that("Test permutation result - sequential calculation works", {
     #expect_equal(length(perm_p_s), 4)
     #expect_equal(dim(perm_p_s$perm.arrays), c(4,2,10))
@@ -217,17 +235,7 @@ perm_p_s = compute_permp(x=sce,
                          correction_method="BH",
                          w_x=w_x ,
                          w_y=w_y)
-perm_noname= compute_permp(x=noname_sce,
-                         cluster_info=clusters,
-                         perm.size=10,
-                         bin_type="square",
-                         bin_param=c(2,2),
-                         test_genes=row.names(cm),
-                         correlation_method = "pearson",
-                         n_cores=1,
-                         correction_method="BH",
-                         w_x=w_x ,
-                         w_y=w_y)
+
 test_that("Test permutation result - output dimension matches", {
     #expect_equal(length(perm_p_s), 4)
     #expect_equal(dim(perm_p_s$perm.arrays), c(4,1,10))
@@ -239,13 +247,19 @@ test_that("Test permutation result - output dimension matches", {
     
 })
 
-test_that("Can work for one sample sce without sample name", {
-    expect_equal(as.vector(get_cor(perm_p_s)),
-                 as.vector(get_cor(perm_noname)))
-    
-})
-
 test_that("Invaid input",{
+    # no name detected for sce
+    expect_error(compute_permp(x=noname_sce,
+                                      cluster_info=clusters,
+                                      perm.size=10,
+                                      bin_type="square",
+                                      bin_param=c(2,2),
+                                      test_genes=row.names(cm),
+                                      correlation_method = "pearson",
+                                      n_cores=1,
+                                      correction_method="BH",
+                                      w_x=w_x ,
+                                      w_y=w_y))
     expect_error(compute_permp(x=invalid_sce,
                                cluster_info=clusters,
                                perm.size=10,
