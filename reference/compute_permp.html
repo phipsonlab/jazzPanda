@@ -11,7 +11,7 @@ sample."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">jazzPanda</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.6</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.7</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -67,8 +67,13 @@ sample.</p>
 
 
 <dl><dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
-<dd><p>a SingleCellExperiment or SpatialExperiment or
-SpatialFeatureExperiment object</p></dd>
+<dd><p>a named list (of transcript detection coordinates) or
+named SingleCellExperiment or named SpatialExperiment or
+named SpatialFeatureExperiment object. If a named list is provided, the list
+element is a dataframe containing the transcript detection
+coordinates and column names must include "feature_name" (gene name),
+"x" (x coordinate), "y" (y coordinate).
+The list name must match samples in cluster_info.</p></dd>
 
 
 <dt id="arg-cluster-info">cluster_info<a class="anchor" aria-label="anchor" href="#arg-cluster-info"></a></dt>
