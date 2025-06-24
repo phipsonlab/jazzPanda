@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">jazzPanda</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.7</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -47,8 +47,6 @@
 <span>  <span class="va">sample_names</span>,</span>
 <span>  <span class="va">bin_type</span>,</span>
 <span>  <span class="va">bin_param</span>,</span>
-<span>  <span class="va">w_x</span>,</span>
-<span>  <span class="va">w_y</span>,</span>
 <span>  use_cm <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  n_cores <span class="op">=</span> <span class="fl">1</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -95,16 +93,6 @@ vectorization. One of "square" (default), "rectangle", or "hexagon".</p></dd>
 two giving the numbers of rectangular quadrats in the x and y directions. If
 the <code>bin_type</code> is "hexagonal", this will be a number giving the side
 length of hexagons. Positive numbers only.</p></dd>
-
-
-<dt id="arg-w-x">w_x<a class="anchor" aria-label="anchor" href="#arg-w-x"></a></dt>
-<dd><p>A numeric vector of length two specifying the x coordinate
-limits of enclosing box.</p></dd>
-
-
-<dt id="arg-w-y">w_y<a class="anchor" aria-label="anchor" href="#arg-w-y"></a></dt>
-<dd><p>A numeric vector of length two specifying the y coordinate
-limits of enclosing box.</p></dd>
 
 
 <dt id="arg-use-cm">use_cm<a class="anchor" aria-label="anchor" href="#arg-use-cm"></a></dt>
@@ -165,8 +153,7 @@ The column name will match the names in <code>name_lst</code>.</p>
 <span class="r-in"><span>                             name_lst<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>dummy_A<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>,<span class="st">"C"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                                             dummy_B<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>,<span class="st">"B"</span>,<span class="st">"C"</span><span class="op">)</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                             bin_type<span class="op">=</span><span class="st">"square"</span>,</span></span>
-<span class="r-in"><span>                             bin_param<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>,<span class="fl">2</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>                             w_x<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">25</span><span class="op">)</span>, w_y<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">25</span><span class="op">)</span>, cluster_info<span class="op">=</span><span class="cn">NULL</span><span class="op">)</span></span></span>
+<span class="r-in"><span>                             bin_param<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>,<span class="fl">2</span><span class="op">)</span>,cluster_info<span class="op">=</span><span class="cn">NULL</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
@@ -179,7 +166,7 @@ The column name will match the names in <code>name_lst</code>.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer></div>

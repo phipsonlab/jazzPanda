@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">jazzPanda</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.7</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -33,6 +33,25 @@
       <small>Source: <a href="https://github.com/phipsonlab/jazzPanda/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.2.3" id="jazzpanda-023">jazzPanda 0.2.3<a class="anchor" aria-label="anchor" href="#jazzpanda-023"></a></h2>
+<p><em>Updated on June 24, 2025</em></p>
+<p>Changes to the package include:</p>
+<ul><li>
+<strong>function <code><a href="../reference/get_vectors.html">get_vectors()</a></code></strong>:
+<ul><li>Parameters <code>w_x</code> and <code>w_y</code> have been removed. Spatial windows are now automatically determined <strong>per sample</strong> using a 5% buffer around the coordinate range.</li>
+<li>Improved handling of genes that are only detected in a subset of samples. If a gene is not present in a sample, a zero-filled vector is used for that sample to maintain consistent vector lengths across samples.</li>
+</ul></li>
+<li>
+<strong>function <code><a href="../reference/create_genesets.html">create_genesets()</a></code></strong>:
+<ul><li>Parameters <code>w_x</code> and <code>w_y</code> have been removed. Spatial windows are now computed <strong>per sample</strong> using a 5% buffer based on input coordinates.<br></li>
+<li>Improved handling of genes that are only detected in a subset of samples. If a gene is not present in a sample, a zero-filled vector is used for that sample to maintain consistent vector lengths across samples.</li>
+</ul></li>
+<li>
+<strong>function <code><a href="../reference/compute_permp.html">compute_permp()</a></code></strong>:
+<ul><li>Parameters <code>w_x</code> and <code>w_y</code> are no longer required. Spatial boundaries are now automatically derived <strong>per sample</strong> using a 5% buffer.</li>
+</ul></li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.2" id="jazzpanda-022">jazzPanda 0.2.2<a class="anchor" aria-label="anchor" href="#jazzpanda-022"></a></h2>
 <p><em>Updated on February 23, 2025</em></p>
@@ -120,7 +139,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer></div>

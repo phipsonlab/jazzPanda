@@ -9,7 +9,7 @@ an 'cor_mg_result' object."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">jazzPanda</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.7</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -94,14 +94,6 @@ refers to a cluster</p>
 <span class="r-in"><span>     row <span class="op">=</span> <span class="va">trans_info</span><span class="op">$</span><span class="va">feature_name</span>, col <span class="op">=</span> <span class="va">trans_info</span><span class="op">$</span><span class="va">cell</span> <span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">spe_sample1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/SpatialExperiment/man/SpatialExperiment.html" class="external-link">SpatialExperiment</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>        assays <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>molecules <span class="op">=</span> <span class="va">mol</span><span class="op">)</span>,sample_id <span class="op">=</span><span class="st">"sample1"</span> <span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">w_x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">floor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">trans_info</span><span class="op">$</span><span class="va">x</span><span class="op">)</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>             <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">floor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">clusters</span><span class="op">$</span><span class="va">x</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>         <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">ceiling</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">trans_info</span><span class="op">$</span><span class="va">x</span><span class="op">)</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>             <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">ceiling</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">clusters</span><span class="op">$</span><span class="va">x</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">w_y</span> <span class="op">&lt;-</span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">floor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">trans_info</span><span class="op">$</span><span class="va">y</span><span class="op">)</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>             <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">floor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">clusters</span><span class="op">$</span><span class="va">y</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>         <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">ceiling</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">trans_info</span><span class="op">$</span><span class="va">y</span><span class="op">)</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>             <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">ceiling</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">clusters</span><span class="op">$</span><span class="va">y</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">100</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">corr_res</span> <span class="op">&lt;-</span> <span class="fu"><a href="compute_permp.html">compute_permp</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">spe_sample1</span>,</span></span>
 <span class="r-in"><span>             cluster_info<span class="op">=</span><span class="va">clusters</span>,</span></span>
@@ -111,9 +103,7 @@ refers to a cluster</p>
 <span class="r-in"><span>             test_genes<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">trans_info</span><span class="op">$</span><span class="va">feature_name</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>             correlation_method <span class="op">=</span> <span class="st">"pearson"</span>,</span></span>
 <span class="r-in"><span>             n_cores<span class="op">=</span><span class="fl">1</span>,</span></span>
-<span class="r-in"><span>             correction_method<span class="op">=</span><span class="st">"BH"</span>,</span></span>
-<span class="r-in"><span>             w_x<span class="op">=</span><span class="va">w_x</span> ,</span></span>
-<span class="r-in"><span>             w_y<span class="op">=</span><span class="va">w_y</span><span class="op">)</span></span></span>
+<span class="r-in"><span>             correction_method<span class="op">=</span><span class="st">"BH"</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Correlation Method = pearson</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Running 10 permutation in sequential</span>
 <span class="r-in"><span><span class="co"># observed correlation </span></span></span>
@@ -129,7 +119,7 @@ refers to a cluster</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer></div>

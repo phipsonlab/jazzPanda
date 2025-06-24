@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">jazzPanda</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.7</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -45,8 +45,7 @@
 <span>  <span class="va">bin_length</span>,</span>
 <span>  <span class="va">bin_type</span>,</span>
 <span>  <span class="va">bin_param</span>,</span>
-<span>  <span class="va">w_x</span>,</span>
-<span>  <span class="va">w_y</span>,</span>
+<span>  <span class="va">range_list</span>,</span>
 <span>  <span class="va">sample_names</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -79,14 +78,14 @@ the <code>bin_type</code> is "hexagonal", this will be a number giving the side
 length of hexagons. Positive numbers only.</p></dd>
 
 
-<dt id="arg-w-x">w_x<a class="anchor" aria-label="anchor" href="#arg-w-x"></a></dt>
-<dd><p>A numeric vector of length two specifying the x coordinate
-limits of enclosing box.</p></dd>
-
-
-<dt id="arg-w-y">w_y<a class="anchor" aria-label="anchor" href="#arg-w-y"></a></dt>
-<dd><p>A numeric vector of length two specifying the y coordinate
-limits of enclosing box.</p></dd>
+<dt id="arg-range-list">range_list<a class="anchor" aria-label="anchor" href="#arg-range-list"></a></dt>
+<dd><p>A named list of spatial ranges for each sample.
+Each element should be a list with two components:
+<code>w_x</code> and <code>w_y</code>, which are numeric vectors of length 2
+specifying the x- and y-axis ranges (e.g., from cell or
+transcript coordinates).
+The range is calculated with 5<!-- % buffer to ensure all points fall  -->
+within the window.</p></dd>
 
 
 <dt id="arg-sample-names">sample_names<a class="anchor" aria-label="anchor" href="#arg-sample-names"></a></dt>
@@ -108,7 +107,7 @@ Each row refers to a grid, and each column refers to a cluster.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer></div>
