@@ -1,4 +1,4 @@
-# jazzPanda 0.2.2
+# jazzPanda 1.0.2
 *Updated on February 23, 2025*
 
 Changes to the package include:
