@@ -10,8 +10,7 @@
   bin_type,
   bin_param,
   test_genes,
-  w_x,
-  w_y
+  range_list
 )
 }
 \arguments{
@@ -39,11 +38,13 @@ length of hexagons. Positive numbers only.}
 want to test. This will be used as column names for one of the result matrix
 \code{gene_mt}.}
 
-\item{w_x}{A numeric vector of length two specifying the x coordinate
-limits of enclosing box.}
-
-\item{w_y}{A numeric vector of length two specifying the y coordinate
-limits of enclosing box.}
+\item{range_list}{A named list of spatial ranges for each sample. 
+Each element should be a list with two components:
+\code{w_x} and \code{w_y}, which are numeric vectors of length 2 
+specifying the x- and y-axis ranges (e.g., from cell or 
+transcript coordinates).
+The range is calculated with 5% buffer to ensure all points fall 
+within the window.}
 }
 \value{
 a matrix contains the transcript count in each grid.

@@ -18,8 +18,7 @@ test_that("Invaid input",{
     expect_error(create_genesets(x=list("rep1" = trans_invalid),sample_names = "rep1",
                                  name_lst=list(dummy_W=c("A","B")),
                                  bin_type="square",
-                                 bin_param=c(2,2),cluster_info = NULL,
-                                 w_x=c(0,25), w_y=c(0,25)))
+                                 bin_param=c(2,2),cluster_info = NULL))
 })
 mol <- BumpyMatrix::splitAsBumpyMatrix(
     trans[, c("x", "y")], 
@@ -43,35 +42,29 @@ spe_invalid <- SpatialExperiment(
 geneset_res_A_fl = create_genesets(x=list("rep1" = trans),sample_names = "rep1",
                                 name_lst=list(dummy_W=c("A")),
                                 bin_type="square",
-                                bin_param=c(2,2),cluster_info = NULL,
-                                w_x=c(0,25), w_y=c(0,25))
+                                bin_param=c(2,2),cluster_info = NULL)
 
 geneset_res_A = create_genesets(x=spe_rep1,sample_names = "rep1",
                                 name_lst=list(dummy_W=c("A")),
                                 bin_type="square",
-                                bin_param=c(2,2),cluster_info = NULL,
-                                w_x=c(0,25), w_y=c(0,25))
+                                bin_param=c(2,2),cluster_info = NULL)
 geneset_res_A_hex = create_genesets(x=spe_rep1,sample_names = "rep1",
                                     name_lst=list(dummy_W=c("A")),
                                 bin_type="hexagon",
-                                bin_param=c(10),cluster_info = NULL,
-                                w_x=c(0,25), w_y=c(0,25))
+                                bin_param=c(10),cluster_info = NULL)
 test_that("Invaid input",{
 expect_error(create_genesets(x=spe_rep1,sample_names = "rep1",
                              name_lst=list(dummy_W=c("A")),
                              bin_type="hexagon",
-                             bin_param=c(2,2),cluster_info = NULL,
-                             w_x=c(0,25), w_y=c(0,25)))
+                             bin_param=c(2,2),cluster_info = NULL))
 expect_error(create_genesets(x=spe_rep1,sample_names = "rep1",
                              name_lst=list(dummy_W=c("A")),
                              bin_type="circle",
-                             bin_param=c(2,2),cluster_info = NULL,
-                             w_x=c(0,25), w_y=c(0,25)))
+                             bin_param=c(2,2),cluster_info = NULL))
 expect_error(create_genesets(x=spe_rep1,sample_names = "rep1",
                              name_lst=list(dummy_W=c("A")),
                              bin_type="square",
-                             bin_param=c(2),cluster_info = NULL,
-                             w_x=c(0,25), w_y=c(0,25)))
+                             bin_param=c(2),cluster_info = NULL))
 
 })
 test_that("Test can create vectors for for a list input", {
@@ -80,18 +73,33 @@ test_that("Test can create vectors for for a list input", {
     
 })
 
+# 
+# x_rng <- range(trans$x, na.rm = TRUE)
+# y_rng <- range(trans$y, na.rm = TRUE)
+# 
+# # 1% padding on each side
+# pad_x <- 0.05 * diff(x_rng)
+# pad_y <- 0.05 * diff(y_rng)
+# 
+# w_x = c(x_rng[1] - pad_x, x_rng[2] + pad_x)
+# w_y = c(y_rng[1] - pad_y, y_rng[2] + pad_y)
+# 
+# points_ppp <- ppp(trans[trans$feature_name=="A","x"], trans[trans$feature_name=="A","y"],
+#                     window = owin(xrange = w_x,yrange =w_y))
+# H <- hextess(W = points_ppp$window,   10)
+# vec_g <- as.vector(t(quadratcount(points_ppp, tess = H)))
+# vec_g
 test_that("Test can create vectors for a single gene set with a single element A", {
     expect_equal(colnames(geneset_res_A), c("dummy_W"))
     expect_equal(as.vector(geneset_res_A$dummy_W), c(0,0,10, 0))
-    expect_equal(as.vector(geneset_res_A_hex$dummy_W), c(2,5,0,3,0,0,0))
+    expect_equal(as.vector(geneset_res_A_hex$dummy_W), c(2,6,0,2,0,0,0))
     
 })
 
 geneset_res_C = create_genesets(x=spe_rep1,sample_names = "rep1",
                                 name_lst=list(dummy_W=c("C")),
                                 bin_type="square",
-                                bin_param=c(2,2),cluster_info = NULL,
-                                w_x=c(0,25), w_y=c(0,25))
+                                bin_param=c(2,2),cluster_info = NULL)
 
 test_that("Test can create vectors for a single gene set with a single element C", {
     expect_equal(colnames(geneset_res_C), c("dummy_W"))
@@ -101,13 +109,11 @@ test_that("Test can create vectors for a single gene set with a single element C
 geneset_res1 = create_genesets(x=spe_rep1,sample_names = "rep1",
                                name_lst=list(dummy_W=c("A","B")),
                                bin_type="square",
-                               bin_param=c(2,2),cluster_info = NULL,
-                               w_x=c(0,25), w_y=c(0,25))
+                               bin_param=c(2,2),cluster_info = NULL)
 geneset_res1_lst = create_genesets(x=list("rep1" = trans),sample_names = "rep1",
                                name_lst=list(dummy_W=c("A","B")),
                                bin_type="square",
-                               bin_param=c(2,2),cluster_info = NULL,
-                               w_x=c(0,25), w_y=c(0,25))
+                               bin_param=c(2,2),cluster_info = NULL)
 test_that("Test can create vectors for a single gene set with multiple elements", {
     expect_equal(colnames(geneset_res1), c("dummy_W"))
     expect_equal(as.vector(geneset_res1$dummy_W), c(0,0,11,4))
@@ -118,8 +124,7 @@ geneset_res2 = create_genesets(x=spe_rep1,sample_names = "rep1",
                                name_lst=list(dummy_A=c("A","C"),
                                              dummy_B=c("A","B","C")),
                                bin_type="square",
-                               bin_param=c(2,2),cluster_info = NULL,
-                               w_x=c(0,25), w_y=c(0,25))
+                               bin_param=c(2,2),cluster_info = NULL)
 
 test_that("Test can create vectors for gene sets- output mathces", {
     expect_equal(colnames(geneset_res2), c("dummy_A","dummy_B"))
@@ -132,8 +137,7 @@ geneset_res3 = create_genesets(x=spe_rep1,sample_names = "rep1",
                                name_lst=list(dummy_A=c("A","B","C","C"),
                                              dummy_B=c("A","B","C")),
                                bin_type="square",cluster_info = NULL,
-                               bin_param=c(2,2),
-                               w_x=c(0,25), w_y=c(0,25))
+                               bin_param=c(2,2))
 
 test_that("Test can create vectors for duplicated gene sets", {
     expect_equal(colnames(geneset_res3), c("dummy_A","dummy_B"))
@@ -144,15 +148,13 @@ test_that("Test can create vectors for duplicated gene sets", {
 geneset_res4 = create_genesets(x=spe_rep1,sample_names = "rep1",
                                name_lst=list(dummy_B=c("A","B","C")),
                                bin_type="square",
-                               bin_param=c(2,2),cluster_info = NULL,
-                               w_x=c(0,25), w_y=c(0,25))
+                               bin_param=c(2,2),cluster_info = NULL)
 
 test_that("Test can not create vectors for gene sets with non-overlapped genes", {
     expect_error(create_genesets(x=spe_rep1,sample_names = "rep1",
                                  name_lst=list(dummy_A=c("F","G")),
                                  bin_type="square",
-                                 bin_param=c(2,2),cluster_info = NULL,
-                                 w_x=c(0,25), w_y=c(0,25)))
+                                 bin_param=c(2,2),cluster_info = NULL))
     expect_equal(colnames(geneset_res4), c("dummy_B"))
     expect_equal(as.vector(geneset_res4$dummy_B), c(2,7,11,5))
 })
@@ -172,15 +174,14 @@ clusters$sample="sample1"
 clusters$cell_id= colnames(cm)
 sce <- SingleCellExperiment(list(sample1=cm))
 # simulate coordiantes for genes
-w_x=c(0,25)
-w_y=c(0,25)
+# w_x=c(0,25)
+# w_y=c(0,25)
 geneset_res_cm = create_genesets(x=sce,sample_names = "sample1",
                                name_lst=list(dummy_A=c("gene_A","gene_B"),
                                              dummy_B=c("gene_C","gene_D")),
                                bin_type="square",
-                               bin_param=c(2,2),
-                               cluster_info = clusters,
-                               w_x=w_x, w_y=w_y)
+                               bin_param=c(2,2),use_cm = TRUE,
+                               cluster_info = clusters)
 
 test_that("Test can define gene sets from count matrix", {
     expect_equal(dim(geneset_res_cm), c(4,2))
@@ -191,87 +192,64 @@ test_that("Test can define gene sets from count matrix", {
                                                dummy_B=c("gene_C","gene_D")),
                                  bin_type="square",
                                  bin_param=c(2,2),
-                                 cluster_info = NULL,
-                                 w_x=w_x, w_y=w_y))
+                                 cluster_info = NULL))
     expect_error(create_genesets(x=sce,sample_names = "sample1",
                                  name_lst=list(dummy_A=c("gene_A","gene_B"),
                                                dummy_B=c("gene_C","gene_D")),
                                  bin_type="square",
                                  bin_param=c(2,2),
-                                 cluster_info = invalid_cluster,
-                                 w_x=w_x, w_y=w_y))
+                                 cluster_info = invalid_cluster))
 })
 
 ############################################################################
 # example of two SPE objects but with different gene sets 
-# real world exmple: if the two samples have slightly different negative controls probes
+
 s1 =as.data.frame(cbind(feature_name = c("A","B","C"),
            x= c(1,2,3),
            y= c(24, 22, 23), 
            cell_id = c("cell1","cell2","cell3")))
 s2 = as.data.frame(cbind(feature_name = c("A","E","F","G"),
-           x= c(1,2,3,4),
-           y= c(24, 22, 23,24), 
+           x= c(1,2,3,3),
+           y= c(24,22,23,24), 
            cell_id = c("cell4","cell5","cell6","cell7")))
 
-shared_nc =  intersect(s1$feature_name,s2$feature_name)
+s2$x = as.numeric(s2$x)
+s2$y = as.numeric(s2$y)
+s1$x = as.numeric(s1$x)
+s1$y = as.numeric(s1$y)
 
-s1_added = cbind(x=NA, y=NA, 
-                   feature_name=setdiff(s2$feature_name,shared_nc),
-                   cell_id = NA)
-s2_added = cbind(x=NA, y=NA, 
-                   feature_name=setdiff(s1$feature_name,shared_nc),
-                   cell_id = NA)
+# library(spatstat.geom)
+# w <- owin(xrange = c(0.9, 3.1), yrange = c(21.9, 24.1))
+# pp <- ppp(x = s1[s1$feature_name=="B", "x"], y = s1[s1$feature_name=="B", "y"],
+#           window = w)
+# qc <- quadratcount(pp, nx = 2, ny = 2)
+# as.vector(t(qc))
 
-s1 = rbind(s1,s1_added)
-s2 = rbind(s2,s2_added)
 
-s1$category = "probe"
-s1[s1$feature_name %in% c("A","E"), "category"] = "codeword"
-
-s2$category = "probe"
-s2[s2$feature_name %in% c("C","G"), "category"] = "codeword"
-
-s1_mol <- BumpyMatrix::splitAsBumpyMatrix(
-    s1[, c("x", "y","category")], 
-    row = s1$feature_name, col = s1$cell_id )
-
-s1_spe<- SpatialExperiment(
-    assays = list(molecules = s1_mol),sample_id ="sample1")
-
-s2_mol <- BumpyMatrix::splitAsBumpyMatrix(
-    s2[, c("x", "y","category")], 
-    row = s2$feature_name, col = s2$cell_id )
-
-s2_spe<- SpatialExperiment(
-    assays = list(molecules = s2_mol),sample_id ="sample2")
-
-combined_spe = SingleCellExperiment::cbind(s1_spe, s2_spe)
-
-vecs_lst = get_vectors(x=combined_spe,sample_names=c("sample1","sample2"), 
+vecs_lst = get_vectors(x=list(sample1= s1,
+                              sample2 =s2 ),
+                       sample_names=c("sample1","sample2"), 
             bin_type="square",test_genes = c("A","B","C","E","F","G"),
             bin_param=c(2,2), 
-            w_x=w_x, w_y=w_y,
             cluster_info = NULL)
 test_that("Test can not create vectors for multi-samples with different genes", {
     expect_equal(as.vector(vecs_lst$gene_mt[,"A"]), c(1,0,0,0,1,0,0,0))
-    expect_equal(as.vector(vecs_lst$gene_mt[,"B"]), c(1,0,0,0,0,0,0,0))
-    expect_equal(as.vector(vecs_lst$gene_mt[,"C"]), c(1,0,0,0,0,0,0,0))
-    expect_equal(as.vector(vecs_lst$gene_mt[,"E"]), c(0,0,0,0,1,0,0,0))
-    expect_equal(as.vector(vecs_lst$gene_mt[,"F"]), c(0,0,0,0,1,0,0,0))
-    expect_equal(as.vector(vecs_lst$gene_mt[,"G"]), c(0,0,0,0,1,0,0,0))
+    expect_equal(as.vector(vecs_lst$gene_mt[,"B"]), c(0,0,1,0,0,0,0,0))
+    expect_equal(as.vector(vecs_lst$gene_mt[,"C"]), c(0,0,0,1,0,0,0,0))
+    expect_equal(as.vector(vecs_lst$gene_mt[,"E"]), c(0,0,0,0,0,0,1,0))
+    expect_equal(as.vector(vecs_lst$gene_mt[,"F"]), c(0,0,0,0,0,0,0,1))
+    expect_equal(as.vector(vecs_lst$gene_mt[,"G"]), c(0,0,0,0,0,1,0,0))
 })
 
 
-example_vec = create_genesets(x=combined_spe,
+example_vec = create_genesets(x=list(sample1= s1,sample2 =s2 ),
                                      sample_names=c("sample1","sample2"),
                                      name_lst=list(probe=c("A","E"), 
                                                    codeword=c("C","G")),
                                      bin_type="square",
                                      bin_param=c(2,2), 
-                                     w_x=w_x, w_y=w_y,
                                      cluster_info = NULL)
 test_that("Test can not create vectors for multi-samples with different genes", {
-    expect_equal(as.vector(example_vec[,"probe"]), c(1,0,0,0,2,0,0,0))
-    expect_equal(as.vector(example_vec[,"codeword"]), c(1,0,0,0,1,0,0,0))
+    expect_equal(as.vector(example_vec[,"probe"]), c(1,0,0,0,1,0,1,0))
+    expect_equal(as.vector(example_vec[,"codeword"]), c(0,0,0,1,0,1,0,0))
 })
