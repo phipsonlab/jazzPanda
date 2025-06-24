@@ -242,7 +242,7 @@ as well as the square and hex bin values over the space as an example.
 We can see that with the square and hex bins capture the key patterns of the
 original coordinates. Hex bins can capture more details than square bins. 
 
-### Example of gene vectors 
+### Example of gene vectors from scratch
 ```{r plot spatial genes, fig.width=6, fig.height=4}
 
 w_x <- c(min(floor(min(rep1_transcripts$x)),
@@ -289,7 +289,7 @@ title(main = "hex binning", line = -2)
 
 ```
 
-### Example of cluster vectors 
+### Example of cluster vectors from scratch
 ```{r plot spatial clusters, fig.width=6, fig.height=4}
 w_x <- c(min(floor(min(rep1_transcripts$x)),
             floor(min(rep1_clusters$x))), 
@@ -338,19 +338,9 @@ The function `get_vectors()` can be used to create spatial vectors for
 all the genes and clusters.
 These spatial vectors may take the form of squares, rectangles, or hexagons 
 specified by the `bin_type` parameter. 
-
 ### Create spatial vectors for all genes and clusters
 ```{r create rep1 all vectors}
 seed_number<- 589
-
-w_x <-  c(min(floor(min(rep1_transcripts$x)),
-            floor(min(rep1_clusters$x))), 
-        max(ceiling(max(rep1_transcripts$x)),
-            ceiling(max(rep1_clusters$x))))
-w_y <-  c(min(floor(min(rep1_transcripts$y)),
-            floor(min(rep1_clusters$y))), 
-        max(ceiling(max(rep1_transcripts$y)),
-            ceiling(max(rep1_clusters$y))))
 
 grid_length <- 10
 # get spatial vectors
@@ -359,10 +349,40 @@ rep1_sq10_vectors <- get_vectors(x= rep1_sub,
                                 cluster_info = rep1_clusters,
                                 bin_type="square",
                                 bin_param=c(grid_length,grid_length), 
-                                test_genes = all_real_genes , 
-                                w_x=w_x, w_y=w_y)
+                                test_genes = all_real_genes)
 ```
+If your data has different scales (e.g.,` w_x` and `w_y`) for cluster 
+coordinates and gene coordinates, you can construct separate spatial vectors 
+for clusters and genes. Please make sure you use consistent bin parameters 
+(`bin_type` & `bin_param`) to get the spatial vectors. 
+```{r create rep1 different cluster-vec and gene vec}
+seed_number<- 589
+grid_length <- 10
 
+# get spatial vectors for clusters only
+cluster_sq10_vectors <- get_vectors(x= NULL,
+                                sample_names = "rep1",
+                                cluster_info = rep1_clusters,
+                                bin_type="square",
+                                bin_param=c(grid_length,grid_length), 
+                                test_genes = all_real_genes)
+# the gene vectors can be accessed as:
+head(cluster_sq10_vectors$cluster_mt) 
+# cluster_sq10_vectors$cluster_mt is equivalent to rep1_sq10_vectors$cluster_mt
+
+#######################################################
+# get spatial vectors for genes only 
+gene_sq10_vectors <- get_vectors(x= rep1_sub,
+                                sample_names = "rep1",
+                                cluster_info = NULL,
+                                bin_type="square",
+                                bin_param=c(grid_length,grid_length), 
+                                test_genes = all_real_genes)
+# the gene vectors can be accessed as:
+head(gene_sq10_vectors$gene_mt)
+# gene_sq10_vectors$gene_mt is equivalent to rep1_sq10_vectors$gene_mt
+
+```
 The constructed spatial vectors can be used to quantify cluster-cluster and
 gene-gene correlation.
 
@@ -464,15 +484,6 @@ defining a SpatialExperiment object for your data.
 ```{r}
 
 seed_number<- 589
-w_x <-  c(min(floor(min(rep1_transcripts$x)),
-            floor(min(rep1_clusters$x))), 
-        max(ceiling(max(rep1_transcripts$x)),
-            ceiling(max(rep1_clusters$x))))
-w_y <-  c(min(floor(min(rep1_transcripts$y)),
-            floor(min(rep1_clusters$y))), 
-        max(ceiling(max(rep1_transcripts$y)),
-            ceiling(max(rep1_clusters$y))))
-
 grid_length <- 10
 # get spatial vectors
 rep1_sq10_vectors_lst <- get_vectors(x= list("rep1" = rep1_transcripts),
@@ -480,8 +491,7 @@ rep1_sq10_vectors_lst <- get_vectors(x= list("rep1" = rep1_transcripts),
                                 cluster_info = rep1_clusters,
                                 bin_type="square",
                                 bin_param=c(grid_length,grid_length), 
-                                test_genes = all_real_genes , 
-                                w_x=w_x, w_y=w_y)
+                                test_genes = all_real_genes)
 # the created spatial vectors will be the same as from other input structure 
 table(rep1_sq10_vectors$gene_mt[,"DST"]==rep1_sq10_vectors_lst$gene_mt[,"DST"])
 # spatial vector for every cluster 
@@ -540,8 +550,6 @@ colnames(clusters_info) <- c("x","y")
 clusters_info$cell_id <- row.names(clusters_info)
 clusters_info$sample <- spe_sub$sample_id
 clusters_info <- merge(clusters_info, scran_clusters, by="cell_id")
-w_x <- c(floor(min(clusters_info$x)), ceiling(max(clusters_info$x)))
-w_y <- c(floor(min(clusters_info$y)), ceiling(max(clusters_info$y)))
 # -----------------------------------------------------------------------------
 # build spatial vectors from count matrix and cluster coordinates 
 example_vectors_cm <- get_vectors(x= spe_sub,
@@ -550,8 +558,7 @@ example_vectors_cm <- get_vectors(x= spe_sub,
                                 bin_type="square",
                                 bin_param=c(5,5), 
                                 test_genes = row.names(spe_sub)[1:5],
-                                use_cm=TRUE,
-                                w_x=w_x, w_y=w_y)
+                                use_cm=TRUE)
 # spatial vector for every cluster 
 head(example_vectors_cm$cluster_mt)
 
@@ -565,8 +572,7 @@ example_vectors_tr <- get_vectors(x= spe_sub,
                                 bin_type="square",
                                 bin_param=c(5,5), 
                                 test_genes = row.names(spe_sub)[1:5],
-                                use_cm=FALSE,
-                                w_x=w_x, w_y=w_y)
+                                use_cm=FALSE)
 # spatial vector for every cluster 
 # example_vectors_tr$cluster_mt
 
@@ -591,7 +597,6 @@ example_vectors_cm <- get_vectors(x= sfe_example,
                                 bin_type="square",
                                 bin_param=c(5,5),
                                 test_genes = row.names(spe_sub)[1:3],
-                                w_x=w_x, w_y=w_y, 
                                 use_cm = TRUE)
 
 # spatial vector for every cluster 
@@ -607,7 +612,6 @@ example_vectors_tr <- get_vectors(x= sfe_example,
                                 bin_type="square",
                                 bin_param=c(5,5),
                                 test_genes = row.names(spe_sub)[1:3],
-                                w_x=w_x, w_y=w_y, 
                                 use_cm = FALSE)
 
 # spatial vector for every cluster 
@@ -637,7 +641,6 @@ example_vectors_cm <- get_vectors(x= sce_example,
                                 bin_type="square",
                                 bin_param=c(5,5), 
                                 test_genes = row.names(spe_sub)[1:3],
-                                w_x=w_x, w_y=w_y, 
                                 use_cm=TRUE)
 
 # spatial vector for every cluster 
@@ -659,8 +662,7 @@ example_vectors_tr <- get_vectors(x= spe, sample_names = "sample01",
                                 cluster_info = clusters_info,
                                 bin_type="square",
                                 bin_param=c(5,5), 
-                                test_genes = row.names(spe_sub)[1:3],
-                                w_x=w_x, w_y=w_y)
+                                test_genes = row.names(spe_sub)[1:3])
 # spatial vector for every cluster 
 # example_vectors_tr$cluster_mt
 
@@ -687,8 +689,6 @@ sce <- SingleCellExperiment(list(sample01 =seu_obj@assays$RNA$counts ))
 # cluster, x, y and sample
 clusters_info = clusters_info
 
-w_x <- c(floor(min(clusters_info$x)), ceiling(max(clusters_info$x)))
-w_y <- c(floor(min(clusters_info$y)), ceiling(max(clusters_info$y)))
 # -----------------------------------------------------------------------------
 # build spatial vectors from count matrix and cluster coordinates 
 # make sure the cluster information contains column names: 
@@ -698,7 +698,6 @@ example_vectors_cm <- get_vectors(x= sce, sample_names = "sample01",
                                 bin_type="square",
                                 bin_param=c(10,10), 
                                 test_genes = test_genes,
-                                w_x=w_x, w_y=w_y,
                                 use_cm=TRUE)
 # spatial vector for every cluster 
 example_vectors_cm$cluster_mt
@@ -720,8 +719,7 @@ example_vectors_tr <- get_vectors(x= spe, sample_names = "sample01",
                                 cluster_info = clusters_info,
                                 bin_type="square",
                                 bin_param=c(10,10), 
-                                test_genes = test_genes,
-                                w_x=w_x, w_y=w_y)
+                                test_genes = test_genes)
 # spatial vector for every cluster 
 example_vectors_tr$cluster_mt
 
@@ -794,14 +792,6 @@ cluster and cluster vector.
 
 ```{r rep1 permutation}
 
-w_x <-  c(min(floor(min(rep1_transcripts$x)),
-            floor(min(rep1_clusters$x))), 
-        max(ceiling(max(rep1_transcripts$x)),
-            ceiling(max(rep1_clusters$x))))
-w_y <-  c(min(floor(min(rep1_transcripts$y)),
-            floor(min(rep1_clusters$y))), 
-        max(ceiling(max(rep1_transcripts$y)),
-            ceiling(max(rep1_clusters$y))))
 set.seed(seed_number)
 perm_p <- compute_permp(x=rep1_sub,
                         cluster_info=rep1_clusters, 
@@ -811,9 +801,7 @@ perm_p <- compute_permp(x=rep1_sub,
                         test_genes= all_real_genes,
                         correlation_method = "pearson", 
                         n_cores=1, 
-                        correction_method="BH",
-                        w_x=w_x ,
-                        w_y=w_y)
+                        correction_method="BH")
 
 # observed correlation for every pair of gene and cluster vector
 obs_corr <- get_cor(perm_p)
@@ -953,7 +941,6 @@ rep1_nc_vectors <- create_genesets(x=rep1_neg,sample_names="rep1",
                                                 codeword=codeword_nm), 
                                     bin_type="square",
                                     bin_param=c(10, 10), 
-                                    w_x=w_x, w_y=w_y,
                                     cluster_info = NULL)
 
 set.seed(seed_number)
@@ -1153,18 +1140,6 @@ genes by providing additional sample information as the input for the function
 
 ### Linear modeling approach to detect marker genes 
 ```{r tworep no background}
-w_x <- c(min(floor(min(rep1_transcripts$x)),
-            floor(min(rep2_transcripts$x)),
-            floor(min(rep_clusters$x))), 
-        max(ceiling(max(rep1_transcripts$x)),
-            ceiling(max(rep2_transcripts$x)),
-            ceiling(max(rep_clusters$x))))
-w_y <- c(min(floor(min(rep1_transcripts$y)),
-            floor(min(rep2_transcripts$y)),
-            floor(min(rep_clusters$y))), 
-        max(ceiling(max(rep1_transcripts$y)),
-            ceiling(max(rep2_transcripts$y)),
-            ceiling(max(rep_clusters$y))))
 grid_length<-10
 twosample_spe<-cbind(rep1_sub, rep2_sub)
 # get spatial vectors
@@ -1172,8 +1147,7 @@ two_rep_vectors<- get_vectors(x= twosample_spe,
                                 sample_names=c("rep1","rep2"),
                                 cluster_info = rep_clusters, bin_type="square",
                                 bin_param=c(grid_length, grid_length),
-                                test_genes = all_real_genes , 
-                                w_x=w_x, w_y=w_y)
+                                test_genes = all_real_genes)
 
 twosample_neg_spe<-cbind(rep1_neg, rep2_neg)
 
@@ -1190,7 +1164,6 @@ two_rep_nc_vectors<-create_genesets(x=twosample_neg_spe,
                                                 codeword=codeword_nm),
                                     bin_type="square",
                                     bin_param=c(10,10), 
-                                    w_x=w_x, w_y=w_y,
                                     cluster_info = NULL)
 set.seed(seed_number)
 two_rep_lasso_with_nc<-lasso_markers(gene_mt=two_rep_vectors$gene_mt,

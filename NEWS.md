@@ -1,4 +1,29 @@
-# jazzPanda 1.0.2
+# jazzPanda 1.1.1
+*Updated on June 24, 2025*
+
+Changes to the package include:
+
+- **function `get_vectors()`**:  
+  - Parameters `w_x` and `w_y` have been removed. Spatial windows are now 
+    automatically determined **per sample** using a 5% buffer around the 
+    coordinate range. 
+  - Improved handling of genes that are only detected in a subset of samples. 
+    If a gene is not present in a sample, a zero-filled vector is used for that
+    sample to maintain consistent vector lengths across samples. 
+
+- **function `create_genesets()`**:  
+  - Parameters `w_x` and `w_y` have been removed. Spatial windows are now 
+    computed **per sample** using a 5% buffer based on input coordinates.  
+  - Improved handling of genes that are only detected in a subset of samples. 
+    If a gene is not present in a sample, a zero-filled vector is used for that
+    sample to maintain consistent vector lengths across samples.
+    
+- **function `compute_permp()`**:  
+  - Parameters `w_x` and `w_y` are no longer required. Spatial boundaries 
+    are now automatically derived **per sample** using a 5% buffer.  
+
+
+# jazzPanda 0.2.2
 *Updated on February 23, 2025*
 
 Changes to the package include:
