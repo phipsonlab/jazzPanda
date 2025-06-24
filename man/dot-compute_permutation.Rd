@@ -11,8 +11,6 @@
   bin_type,
   bin_param,
   n_cores = 1,
-  w_x,
-  w_y,
   gene_mt,
   cluster_names
 )
@@ -41,12 +39,6 @@ length of hexagons. Positive numbers only.}
 \item{n_cores}{A positive number specifying number of cores used for
 parallelizing permutation testing. Default is one core
 (sequential processing).}
-
-\item{w_x}{a numeric vector of length two specifying the x coordinate
-limits of enclosing box.}
-
-\item{w_y}{a numeric vector of length two specifying the y coordinate
-limits of enclosing box.}
 
 \item{gene_mt}{A matrix contains the transcript count in each grid.
 Each row refers to a grid, and each column refers to a gene.}

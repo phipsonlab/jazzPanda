@@ -14,8 +14,6 @@ compute_permp(
   correlation_method = "pearson",
   n_cores = 1,
   correction_method = "BH",
-  w_x,
-  w_y,
   use_cm = FALSE
 )
 }
@@ -57,12 +55,6 @@ parallelizing permutation testing. Default is one core
 
 \item{correction_method}{A character string pass to \code{\link{p.adjust}}
 specifying the correction method for multiple testing .}
-
-\item{w_x}{a numeric vector of length two specifying the x coordinate
-limits of enclosing box.}
-
-\item{w_y}{a numeric vector of length two specifying the y coordinate
-limits of enclosing box.}
 
 \item{use_cm}{A boolean value that specifies whether to create spatial 
 vectors for genes using the count matrix and cell coordinates instead of 
@@ -126,14 +118,6 @@ mol <- BumpyMatrix::splitAsBumpyMatrix(
      row = trans_info$feature_name, col = trans_info$cell )
 spe_sample1 <- SpatialExperiment(
         assays = list(molecules = mol),sample_id ="sample1" )
-w_x <- c(min(floor(min(trans_info$x)),
-             floor(min(clusters$x))),
-         max(ceiling(max(trans_info$x)),
-             ceiling(max(clusters$x))))
-w_y <-  c(min(floor(min(trans_info$y)),
-             floor(min(clusters$y))),
-         max(ceiling(max(trans_info$y)),
-             ceiling(max(clusters$y))))
 set.seed(100)
 corr_res <- compute_permp(x=spe_sample1,
              cluster_info=clusters,
@@ -143,9 +127,7 @@ corr_res <- compute_permp(x=spe_sample1,
              test_genes=unique(trans_info$feature_name),
              correlation_method = "pearson",
              n_cores=1,
-             correction_method="BH",
-             w_x=w_x ,
-             w_y=w_y)
+             correction_method="BH")
              
 # raw permutation p-value
 perm_p <- get_perm_p(corr_res)

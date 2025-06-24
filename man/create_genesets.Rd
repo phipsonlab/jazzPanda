@@ -11,8 +11,6 @@ create_genesets(
   sample_names,
   bin_type,
   bin_param,
-  w_x,
-  w_y,
   use_cm = FALSE,
   n_cores = 1
 )
@@ -44,12 +42,6 @@ vectorization. One of "square" (default), "rectangle", or "hexagon".}
 two giving the numbers of rectangular quadrats in the x and y directions. If
 the \code{bin_type} is "hexagonal", this will be a number giving the side
 length of hexagons. Positive numbers only.}
-
-\item{w_x}{A numeric vector of length two specifying the x coordinate
-limits of enclosing box.}
-
-\item{w_y}{A numeric vector of length two specifying the y coordinate
-limits of enclosing box.}
 
 \item{use_cm}{A boolean value that specifies whether to create spatial 
 vectors for genes using the count matrix and cell coordinates instead of 
@@ -102,7 +94,6 @@ geneset_res <- create_genesets(x=rep1_spe, sample=c("sample1"),
                              name_lst=list(dummy_A=c("A","C"),
                                              dummy_B=c("A","B","C")),
                              bin_type="square",
-                             bin_param=c(2,2),
-                             w_x=c(0,25), w_y=c(0,25), cluster_info=NULL)
+                             bin_param=c(2,2),cluster_info=NULL)
 
 }
