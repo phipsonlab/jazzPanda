@@ -12,8 +12,6 @@
   test_genes,
   bin_type,
   bin_param,
-  w_x,
-  w_y,
   use_cm
 )
 }
@@ -54,12 +52,6 @@ vectorization. One of "square" (default), "rectangle", or "hexagon".}
 two giving the numbers of rectangular quadrats in the x and y directions. If
 the \code{bin_type} is "hexagonal", this will be a number giving the side
 length of hexagons. Positive numbers only.}
-
-\item{w_x}{a numeric vector of length two specifying the x coordinate
-limits of enclosing box.}
-
-\item{w_y}{a numeric vector of length two specifying the y coordinate
-limits of enclosing box.}
 
 \item{use_cm}{A boolean value that specifies whether to create spatial 
 vectors for genes using the count matrix and cell coordinates instead of 

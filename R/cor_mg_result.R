@@ -59,14 +59,6 @@
 #'      row = trans_info$feature_name, col = trans_info$cell )
 #' spe_sample1 <- SpatialExperiment(
 #'         assays = list(molecules = mol),sample_id ="sample1" )
-#' w_x <- c(min(floor(min(trans_info$x)),
-#'              floor(min(clusters$x))),
-#'          max(ceiling(max(trans_info$x)),
-#'              ceiling(max(clusters$x))))
-#' w_y <-  c(min(floor(min(trans_info$y)),
-#'              floor(min(clusters$y))),
-#'          max(ceiling(max(trans_info$y)),
-#'              ceiling(max(clusters$y))))
 #' set.seed(100)
 #' corr_res <- compute_permp(x=spe_sample1,
 #'              cluster_info=clusters,
@@ -76,9 +68,7 @@
 #'              test_genes=unique(trans_info$feature_name),
 #'              correlation_method = "pearson",
 #'              n_cores=1,
-#'              correction_method="BH",
-#'              w_x=w_x ,
-#'              w_y=w_y)
+#'              correction_method="BH")
 #' # observed correlation 
 #' obs_corr <- get_cor(corr_res)
 get_cor <- function(obj) {
@@ -127,14 +117,7 @@ get_cor <- function(obj) {
 #'      row = trans_info$feature_name, col = trans_info$cell )
 #' spe_sample1 <- SpatialExperiment(
 #'         assays = list(molecules = mol),sample_id ="sample1" )
-#' w_x <- c(min(floor(min(trans_info$x)),
-#'              floor(min(clusters$x))),
-#'          max(ceiling(max(trans_info$x)),
-#'              ceiling(max(clusters$x))))
-#' w_y <-  c(min(floor(min(trans_info$y)),
-#'              floor(min(clusters$y))),
-#'          max(ceiling(max(trans_info$y)),
-#'              ceiling(max(clusters$y))))
+
 #' set.seed(100)
 #' corr_res <- compute_permp(x=spe_sample1,
 #'              cluster_info=clusters,
@@ -144,9 +127,7 @@ get_cor <- function(obj) {
 #'              test_genes=unique(trans_info$feature_name),
 #'              correlation_method = "pearson",
 #'              n_cores=1,
-#'              correction_method="BH",
-#'              w_x=w_x ,
-#'              w_y=w_y)
+#'              correction_method="BH")
 #'              
 #' # raw permutation p-value
 #' perm_p <- get_perm_p(corr_res)
@@ -195,14 +176,7 @@ get_perm_p <- function(obj) {
 #'      row = trans_info$feature_name, col = trans_info$cell )
 #' spe_sample1 <- SpatialExperiment(
 #'         assays = list(molecules = mol),sample_id ="sample1" )
-#' w_x <- c(min(floor(min(trans_info$x)),
-#'              floor(min(clusters$x))),
-#'          max(ceiling(max(trans_info$x)),
-#'              ceiling(max(clusters$x))))
-#' w_y <-  c(min(floor(min(trans_info$y)),
-#'              floor(min(clusters$y))),
-#'          max(ceiling(max(trans_info$y)),
-#'              ceiling(max(clusters$y))))
+
 #' set.seed(100)
 #' corr_res <- compute_permp(x=spe_sample1,
 #'              cluster_info=clusters,
@@ -212,9 +186,7 @@ get_perm_p <- function(obj) {
 #'              test_genes=unique(trans_info$feature_name),
 #'              correlation_method = "pearson",
 #'              n_cores=1,
-#'              correction_method="BH",
-#'              w_x=w_x ,
-#'              w_y=w_y)
+#'              correction_method="BH")
 #' # adjusted permutation p-value
 #' adjusted_perm_p <- get_perm_adjp(corr_res)
 get_perm_adjp <- function(obj) {

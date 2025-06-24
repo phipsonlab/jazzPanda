@@ -17,42 +17,57 @@
 #' the \code{bin_type} is "hexagonal", this will be a number giving the side
 #' length of hexagons. Positive numbers only.
 #' @param bin_length A positive integer giving the length of total bins
-#' @param w_x A numeric vector of length two specifying the x coordinate
-#' limits of enclosing box.
-#' @param w_y A numeric vector of length two specifying the y coordinate
-#' limits of enclosing box.
+#' @param range_list A named list of spatial ranges for each sample. 
+#' Each element should be a list with two components:
+#' \code{w_x} and \code{w_y}, which are numeric vectors of length 2 
+#' specifying the x- and y-axis ranges (e.g., from cell or 
+#' transcript coordinates).
+#' The range is calculated with 5% buffer to ensure all points fall 
+#' within the window.
 #' @importFrom BiocParallel bplapply
 #' @return a matrix contains the transcript count in each grid.
 #' Each row refers to a grid, and each column refers to a gene.
 .get_gene_vectors_tr<- function(trans_lst, test_genes, bin_type, bin_param,
-                                bin_length, w_x, w_y){
+                                bin_length, range_list){
     n_genes <- length(test_genes)
     n_samples <- length(trans_lst)
     vec_gene_mt <- as.data.frame(matrix(0, ncol=n_genes,
                                         nrow=bin_length*n_samples))
     colnames(vec_gene_mt) <- test_genes
-    if (bin_type == "hexagon"){
-        w <- owin(xrange=w_x, yrange=w_y)
-        H <- hextess(W=w, bin_param[1])
-    }
-    calculate_one_gene <- function(i_gene){
+    
+    calculate_one_gene <- function(i_gene) {
         vec_gene <- c()
-        for (rpp in trans_lst){
-            curr <- rpp[rpp$feature_name==i_gene,
-                                    c("x","y")] %>% distinct()
-            gene_ppp <- ppp(curr$x,curr$y,w_x, w_y)
-            # create gene vector
-            if (bin_type == "hexagon"){
-                vec_g <- as.vector(t(quadratcount(gene_ppp, tess=H)))
-            }else{
-                vec_g <- as.vector(t(quadratcount(gene_ppp,
-                                                bin_param[1],bin_param[2])))
+        for (sample_name in names(trans_lst)) {
+            rpp <- trans_lst[[sample_name]]
+            ranges <- range_list[[sample_name]]
+            if (!(i_gene %in% rpp$feature_name)) {
+                # Append zeros if gene not found
+                vec_g <- rep(0, bin_length)
+            } else {
+                curr <- rpp[rpp$feature_name == i_gene, c("x", "y")]
+                curr <- unique(curr)
+                # Create point pattern using sample-specific window
+                gene_ppp <- ppp(curr$x, curr$y,
+                    window = owin(xrange = ranges$w_x, yrange = ranges$w_y)
+                )
+                # Create binning and count
+                if (bin_type == "hexagon") {
+                    H <- hextess(W = gene_ppp$window, 
+                                            bin_param[1])
+                    vec_g <- as.vector(t(quadratcount(gene_ppp, tess = H)))
+                } else {
+                    vec_g <- as.vector(t(quadratcount(gene_ppp, 
+                            nx = bin_param[1], ny = bin_param[2]
+                        )))
+                }
             }
             vec_gene <- c(vec_gene, vec_g)
         }
+        
         return(vec_gene)
     }
-
+    
+    
     # to calculate all genes in parallel
     result_lst <- bplapply(test_genes, calculate_one_gene)
 
@@ -90,10 +105,13 @@
 #' @param test_genes A vector of strings giving the name of the genes you 
 #' want to test. This will be used as column names for one of the result matrix
 #' \code{gene_mt}.
-#' @param w_x A numeric vector of length two specifying the x coordinate
-#' limits of enclosing box.
-#' @param w_y A numeric vector of length two specifying the y coordinate
-#' limits of enclosing box.
+#' @param range_list A named list of spatial ranges for each sample. 
+#' Each element should be a list with two components:
+#' \code{w_x} and \code{w_y}, which are numeric vectors of length 2 
+#' specifying the x- and y-axis ranges (e.g., from cell or 
+#' transcript coordinates).
+#' The range is calculated with 5% buffer to ensure all points fall 
+#' within the window.
 #' 
 #' @importFrom BiocParallel bplapply
 #'
@@ -112,43 +130,70 @@
 #' @importFrom magrittr "%>%"
 #'
 .get_gene_vectors_cm<- function(cluster_info, cm_lst, bin_type, bin_param,
-                                test_genes, w_x, w_y){
-    # binning
-    bin_length <- 0
-    if (bin_type == "hexagon"){
-        w <- owin(xrange=w_x, yrange=w_y)
-        H <- hextess(W=w, bin_param[1])
-        bin_length <- length(H$tiles)
-    }else{ bin_length <- bin_param[1] * bin_param[2] }
+                                test_genes,range_list){
     n_genes <- length(test_genes)
-    index_vec <- NULL
-    # use count matrix to build gene vector matrix
-    if (bin_type == "hexagon"){
-        tile_indices <- tileindex(x=cluster_info$x, y=cluster_info$y, Z=H)
-        cluster_info$index_vec  <- match(tile_indices,levels(tile_indices))
-    }else{
-        all_cell_intervals <- as.tess(quadratcount(ppp(cluster_info$x,
-                        cluster_info$y, w_x, w_y),bin_param[1],bin_param[2]))
-        cluster_info$index_x <- findInterval(cluster_info$x,
-                                all_cell_intervals$xgrid, all.inside = TRUE, 
-                                left.open=FALSE, rightmost.closed=TRUE )
-        cluster_info$index_y <- findInterval(cluster_info$y,
-                                all_cell_intervals$ygrid, all.inside = TRUE, 
-                                left.open=FALSE, rightmost.closed=TRUE )
-        cluster_info$index_y  <- bin_param[2] + 1 - cluster_info$index_y
-        # column major
-        ind_vec <-(cluster_info$index_y-1)* bin_param[2]+cluster_info$index_x
-        cluster_info$index_vec <- ind_vec }
-    n_samples <- length(cm_lst)
+    n_samples <- length(unique(cluster_info$sample))
+    
+    # Use first sample as template for binning layout
+    example_sample <- names(range_list)[1]
+    ranges <- range_list[[example_sample]]
+    
+    if (bin_type == "hexagon") {
+        shared_H <- hextess(
+            W = owin(xrange = ranges$w_x, yrange = ranges$w_y),
+            bin_param[1]
+        )
+        bin_length <- length(shared_H$tiles)
+    } else {
+        bin_length <- bin_param[1] * bin_param[2]
+    }
+    
+    cluster_info$index_vec <- NA
+    for (rp_nm in unique(cluster_info$sample)) {
+        i_info <- cluster_info[cluster_info$sample == rp_nm, ]
+        ranges <- range_list[[rp_nm]]
+        
+        if (bin_type == "hexagon") {
+            tile_indices <-tileindex(x = i_info$x, y = i_info$y, Z = shared_H)
+            cluster_info$index_vec[cluster_info$sample == rp_nm] <-
+                match(tile_indices, levels(tile_indices))
+        } else {
+            tess <- as.tess(quadratcount(ppp(i_info$x, i_info$y,
+                    xrange = ranges$w_x, yrange = ranges$w_y),
+                    bin_param[1], bin_param[2]
+                )
+            )
+            
+            ix <- findInterval(i_info$x, tess$xgrid,
+                                all.inside = TRUE,
+                                left.open = FALSE,
+                                rightmost.closed = TRUE)
+            
+            iy <- findInterval(i_info$y, tess$ygrid,
+                                all.inside = TRUE,
+                                left.open = FALSE,
+                                rightmost.closed = TRUE)
+            # column major
+            iy <- bin_param[2] + 1 - iy  # flip y for column-major order
+            ind_vec <- (iy - 1) * bin_param[2] + ix
+            cluster_info$index_vec[cluster_info$sample == rp_nm] <- ind_vec
+        }
+    }
     # create gene vector
     vec_gene_mt<-as.data.frame(matrix(0,ncol=n_genes,nrow=bin_length*n_samples))
     colnames(vec_gene_mt) <- test_genes
     count_value <- NULL
-    calculate_one_gene <- function(i_gene){
+    calculate_one_gene <- function(i_gene) {
         vec_gene <- c()
-        for (rp_nm in names(cm_lst)){
+        for (rp_nm in names(cm_lst)) {
             cm <- cm_lst[[rp_nm]]
             vec_g <- rep(0, bin_length)
+            
+            # If gene is not present in this sample, use zero vector
+            if (!(i_gene %in% rownames(cm))) {
+                vec_gene <- c(vec_gene, vec_g)
+                next
+            }
             i_gene_mt <- cluster_info[cluster_info$sample==rp_nm, ]
             i_gene_mt$count_value <- as.numeric(cm[i_gene,i_gene_mt$cell_id])
             i_gene_mt$index_vec <- factor(i_gene_mt$index_vec )
@@ -184,16 +229,19 @@
 #' two giving the numbers of rectangular quadrats in the x and y directions. If
 #' the \code{bin_type} is "hexagonal", this will be a number giving the side
 #' length of hexagons. Positive numbers only.
-#' @param w_x A numeric vector of length two specifying the x coordinate
-#' limits of enclosing box.
-#' @param w_y A numeric vector of length two specifying the y coordinate
-#' limits of enclosing box.
+#' @param range_list A named list of spatial ranges for each sample. 
+#' Each element should be a list with two components:
+#' \code{w_x} and \code{w_y}, which are numeric vectors of length 2 
+#' specifying the x- and y-axis ranges (e.g., from cell or 
+#' transcript coordinates).
+#' The range is calculated with 5% buffer to ensure all points fall 
+#' within the window.
 #' @param sample_names a vector of strings giving the sample names
 #' @return a matrix contains the cell count in each grid.
 #' Each row refers to a grid, and each column refers to a cluster.
 #'
 .get_cluster_vectors<- function(cluster_info,bin_length,bin_type, bin_param,
-                                w_x, w_y, sample_names){
+                                range_list, sample_names){
     ava_sample_names <- unique(as.character(cluster_info$sample))
     if (length(setdiff(sample_names,ava_sample_names))>0){
         stop("Can not find input sample_names from input cluster_info")
@@ -221,6 +269,8 @@
     for (nm in sample_cluster_nm ){
         rp <- unlist(strsplit(nm, split="--"))[1]
         cl <- unlist(strsplit(nm, split="--"))[2]
+        w_x <- range_list[[rp]]$w_x
+        w_y <- range_list[[rp]]$w_y
         cluster_ppp <- ppp(cluster_info[cluster_info$sample==rp &
                                         cluster_info$cluster==cl,
                                         "x"],
@@ -253,14 +303,17 @@
 #' two giving the numbers of rectangular quadrats in the x and y directions. If
 #' the \code{bin_type} is "hexagonal", this will be a number giving the side
 #' length of hexagons. Positive numbers only.
-#' @param w_x A numeric vector of length two specifying the x coordinate
-#' limits of enclosing box.
-#' @param w_y A numeric vector of length two specifying the y coordinate
-#' limits of enclosing box.
+#' @param range_list A named list of spatial ranges for each sample. 
+#' Each element should be a list with two components:
+#' \code{w_x} and \code{w_y}, which are numeric vectors of length 2 
+#' specifying the x- and y-axis ranges (e.g., from cell or 
+#' transcript coordinates).
+#' The range is calculated with 5% buffer to ensure all points fall 
+#' within the window.
 #'
 #' @return the length of total bins
 
-.check_binning<- function(bin_param, bin_type, w_x, w_y){
+.check_binning<- function(bin_param, bin_type, range_list){
     # binning
     bin_length <- 0
     if (bin_type == "hexagon"){
@@ -268,7 +321,7 @@
             stop("Invalid input bin_param, bin_param should be a vector
                 of length 2 for hexagon bins")
         }
-        w <- owin(xrange=w_x, yrange=w_y)
+        w <- owin(xrange=range_list[[1]]$w_x, yrange=range_list[[1]]$w_y)
         H <- hextess(W=w, bin_param[1])
         bin_length <- length(H$tiles)
     }else if (bin_type == "square" | bin_type == "rectangle"){
@@ -394,6 +447,7 @@ SingleCellExperiment, SpatialExperiment, or SpatialFeatureExperiment.")) }
     return (list(trans_lst = trans_lst, cm_lst = cm_lst))
 }
 
+
 #' Vectorise the spatial coordinates
 #'
 #' @description
@@ -454,10 +508,6 @@ SingleCellExperiment, SpatialExperiment, or SpatialFeatureExperiment.")) }
 #' @param test_genes A vector of strings giving the name of the genes you want
 #' to create gene vector. This will be used as column names for one of the 
 #' result matrix \code{gene_mt}.
-#' @param w_x A numeric vector of length two specifying the x coordinate
-#' limits of enclosing box.
-#' @param w_y A numeric vector of length two specifying the y coordinate
-#' limits of enclosing box.
 #' @param use_cm A boolean value that specifies whether to create spatial 
 #' vectors for genes using the count matrix and cell coordinates instead of 
 #' the transcript coordinates when both types of information are available. 
@@ -511,22 +561,13 @@ SingleCellExperiment, SpatialExperiment, or SpatialFeatureExperiment.")) }
 #' trans_info$y=as.numeric(trans_info$y)
 #' trans_info$cell = sample(c("cell1","cell2","cell2"),replace=TRUE,
 #'                         size=nrow(trans_info))
-#' w_x =  c(min(floor(min(trans_info$x)),
-#'          floor(min(clusters$x))),
-#'       max(ceiling(max(trans_info$x)),
-#'           ceiling(max(clusters$x))))
-#' w_y =  c(min(floor(min(trans_info$y)),
-#'           floor(min(clusters$y))),
-#'       max(ceiling(max(trans_info$y)),
-#'           ceiling(max(clusters$y))))
 #' # use named list as input
 #' vecs_lst = get_vectors(x= list("sample1" = trans_info),
 #'                     sample_names=c("sample1"),
 #'                     cluster_info = clusters,
 #'                     bin_type = "square",
 #'                     bin_param = c(5,5),
-#'                     test_genes =c("gene_A1","gene_A2","gene_B1","gene_B2"),
-#'                     w_x = w_x, w_y=w_y)
+#'                     test_genes =c("gene_A1","gene_A2","gene_B1","gene_B2"))
 #' # use SpatialExperiment object as input
 #' trans_mol <- BumpyMatrix::splitAsBumpyMatrix(
 #'     trans_info[, c("x", "y")], 
@@ -537,11 +578,10 @@ SingleCellExperiment, SpatialExperiment, or SpatialFeatureExperiment.")) }
 #'                     cluster_info = clusters,
 #'                     bin_type = "square",
 #'                     bin_param = c(5,5),
-#'                     test_genes =c("gene_A1","gene_A2","gene_B1","gene_B2"),
-#'                     w_x = w_x, w_y=w_y)
+#'                     test_genes =c("gene_A1","gene_A2","gene_B1","gene_B2"))
 #' 
 get_vectors<- function(x, cluster_info, sample_names, bin_type, bin_param,
-                        test_genes, w_x, w_y, use_cm = FALSE, n_cores=1){
+                        test_genes, use_cm = FALSE, n_cores=1){
     # check input
     if ((is.null(x) ==TRUE) &  (is.null(cluster_info) == TRUE) ){
         stop("Invalid input, no coordinates information is specified") }
@@ -579,8 +619,43 @@ get_vectors<- function(x, cluster_info, sample_names, bin_type, bin_param,
     # must provide cluster info if gene vectors are created from count matrix
     if ((is.null(cm_lst) == FALSE) & (is.null(cluster_info) == TRUE)){
         stop("Missing cluster information to build gene vector matrix.")}
+    
+    if (is.null(trans_lst) == FALSE ){
+        # check the range for transcript coordinates only
+        # For each sample, compute x and y ranges from trasncript coordinates 
+        range_list <- lapply(trans_lst, function(d) {
+            x_rng <- range(d$x, na.rm = TRUE)
+            y_rng <- range(d$y, na.rm = TRUE)
+            
+            # 1% padding on each side
+            pad_x <- BUFFER_FRAC * diff(x_rng)
+            pad_y <- BUFFER_FRAC * diff(y_rng)
+            
+            list(
+                    w_x = c(x_rng[1] - pad_x, x_rng[2] + pad_x),
+                    w_y = c(y_rng[1] - pad_y, y_rng[2] + pad_y)
+            )
+        })
+    }else{
+        # check the range for cell coordinates only 
+        # For each sample, compute x and y ranges from cell coordinates 
+        range_list <- lapply(split(cluster_info, cluster_info$sample), 
+                function(d) {
+                            x_rng <- range(d$x, na.rm = TRUE)
+                            y_rng <- range(d$y, na.rm = TRUE)
+                            
+                            # 1% padding on each side
+                            pad_x <- BUFFER_FRAC * diff(x_rng)
+                            pad_y <- BUFFER_FRAC * diff(y_rng)
+                            list(w_x = c(x_rng[1] - pad_x, x_rng[2] + pad_x),
+                                w_y = c(y_rng[1] - pad_y, y_rng[2] + pad_y)
+                            )
+                        })
+        
+    }
+    
     bin_length<-.check_binning(bin_param=bin_param,bin_type=bin_type,
-                        w_x=w_x,w_y=w_y)
+                                range_list=range_list)
     # register for BiocParallel 
     register(SnowParam(workers = n_cores, type = "SOCK"))
     # with cluster information
@@ -589,22 +664,23 @@ get_vectors<- function(x, cluster_info, sample_names, bin_type, bin_param,
     cluster_info$cluster<- .check_valid_names(cluster_info$cluster,"cluster")
     cluster_info$sample<- .check_valid_names(cluster_info$sample,"sample")
     sample_names<- .check_valid_names(sample_names,"sample")
+    names(range_list) <- make.names(names(range_list), unique=TRUE)
         vec_cluster <- .get_cluster_vectors(cluster_info=cluster_info,
                                     bin_length=bin_length, bin_type=bin_type,
-                                    bin_param=bin_param,w_x=w_x,w_y=w_y,
+                                    bin_param=bin_param,range_list=range_list,
                                     sample_names=sample_names) }
     # with gene information
     if (is.null(trans_lst) == FALSE & is.null(cm_lst)== TRUE){
         vec_gene_mt<-.get_gene_vectors_tr(trans_lst=trans_lst, 
                                 test_genes=test_genes,bin_type=bin_type, 
                                 bin_param=bin_param,
-                                bin_length=bin_length,w_x=w_x,w_y=w_y)}
+                                bin_length=bin_length,range_list=range_list)}
     if (is.null(trans_lst) == TRUE & is.null(cm_lst)==FALSE &
         is.null(cluster_info)==FALSE){
         # use count matrix to build gene vector matrix
         vec_gene_mt<-.get_gene_vectors_cm(cluster_info=cluster_info,
                         cm_lst=cm_lst, bin_type=bin_type, bin_param=bin_param,
-                        test_genes=test_genes,w_x=w_x, w_y=w_y) }
+                        test_genes=test_genes,range_list=range_list) }
     result <- list()
     if ((is.null(cluster_info) == FALSE) ){
         result$cluster_mt <- as.matrix(vec_cluster)}

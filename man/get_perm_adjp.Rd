@@ -49,14 +49,6 @@ mol <- BumpyMatrix::splitAsBumpyMatrix(
      row = trans_info$feature_name, col = trans_info$cell )
 spe_sample1 <- SpatialExperiment(
         assays = list(molecules = mol),sample_id ="sample1" )
-w_x <- c(min(floor(min(trans_info$x)),
-             floor(min(clusters$x))),
-         max(ceiling(max(trans_info$x)),
-             ceiling(max(clusters$x))))
-w_y <-  c(min(floor(min(trans_info$y)),
-             floor(min(clusters$y))),
-         max(ceiling(max(trans_info$y)),
-             ceiling(max(clusters$y))))
 set.seed(100)
 corr_res <- compute_permp(x=spe_sample1,
              cluster_info=clusters,
@@ -66,9 +58,7 @@ corr_res <- compute_permp(x=spe_sample1,
              test_genes=unique(trans_info$feature_name),
              correlation_method = "pearson",
              n_cores=1,
-             correction_method="BH",
-             w_x=w_x ,
-             w_y=w_y)
+             correction_method="BH")
 # adjusted permutation p-value
 adjusted_perm_p <- get_perm_adjp(corr_res)
 }

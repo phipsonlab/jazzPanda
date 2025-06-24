@@ -10,13 +10,10 @@ clusters = data.frame(x = c(1,2,20,21,22,23,24),
                       y = c(23, 24, 1,2,3,4,5), cluster="A")
 clusters$sample="rep1"
 
-w_x=c(0,25)
-w_y=c(0,25)
 vecs_lst = get_vectors(x= NULL, cluster_info = clusters,
                        bin_type = "square",sample_names="rep1",
                        bin_param = c(2,2),
-                       test_genes = NULL,
-                       w_x = w_x, w_y=w_y)
+                       test_genes = NULL)
 
 test_that("Test can only vectorise clusters - output length matches", {
     expect_equal(length(vecs_lst), 1)
@@ -34,13 +31,10 @@ clusters = data.frame(x = c(1,2,20,21,22,23,24),
                       cluster=c("erqf","qre","$+9","9-", "123","erqf","123"))
 clusters$sample="rep1"
 
-w_x=c(0,25)
-w_y=c(0,25)
 vecs_lst = get_vectors(x= NULL, cluster_info = clusters,
                        bin_type = "square",sample_names="rep1",
                        bin_param = c(2,2),
-                       test_genes = NULL,
-                       w_x = w_x, w_y=w_y)
+                       test_genes = NULL)
 
 test_that("Test can correct invalid cluster names- output vector matches", {
     # expect_message(get_vectors(x= NULL, cluster_info = clusters,
@@ -58,13 +52,11 @@ clusters = data.frame(x = c(1,2,20,21,22,23,24),
                       cluster=c("erqf","qre","$+9","9-", "M+","erqf","M+"))
 clusters$sample=c(rep("12",times=4),rep("s1",times=3))
 
-w_x=c(0,25)
-w_y=c(0,25)
+
 vecs_lst = get_vectors(x= NULL, cluster_info = clusters,
                        bin_type = "square",sample_names=c("12","s1"),
                        bin_param = c(2,2),
-                       test_genes = NULL,
-                       w_x = w_x, w_y=w_y)
+                       test_genes = NULL)
 
 test_that("Test can correct invalid sample names- output vector matches", {
     # expect_message(vecs_lst = get_vectors(x= NULL, cluster_info = clusters,
@@ -110,16 +102,14 @@ vecs_lst_gene = get_vectors(x= spe,
                             cluster_info = NULL,
                             bin_type = "square",
                             bin_param = c(2,2),
-                            test_genes = row.names(spe),
-                            w_x = w_x, w_y=w_y)
+                            test_genes = row.names(spe))
 test_that("Invalid colnames for transctipt with list input", {
     expect_error(get_vectors(x= list(sample1=df),
                              sample_names = c("sample1"),
                              cluster_info = NULL,
                              bin_type = "square",
                              bin_param = c(2,2),
-                             test_genes = gs,
-                             w_x = w_x, w_y=w_y))
+                             test_genes = gs))
 })
 colnames(df) =c("feature_name","cell","x","y")
 vecs_lst_gene_lst = get_vectors(x= list(sample1=df),
@@ -127,8 +117,7 @@ vecs_lst_gene_lst = get_vectors(x= list(sample1=df),
                                 cluster_info = NULL,
                                 bin_type = "square",
                                 bin_param = c(2,2),
-                                test_genes = gs,
-                                w_x = w_x, w_y=w_y)
+                                test_genes = gs)
 
 test_that("Test can only vectorise genes - output length mathces", {
     expect_equal(length(vecs_lst_gene), 1)
@@ -170,15 +159,13 @@ spe_invalid <- SpatialExperiment(
     assays = list(molecules = mol_inv),sample_id ="rep1" )
 
 
-w_x=c(0,25)
 w_y=c(0,25)
 vecs_lst_cluster = get_vectors(x= NULL,
                                cluster_info = clusters,
                                sample_names="sample1",
                                bin_type = "square",
                                bin_param = c(2,2),
-                               test_genes = NULL,
-                               w_x = w_x, w_y=w_y)
+                               test_genes = NULL)
 spe <- SpatialExperiment(
     assays = list(molecules = mol),sample_id ="sample1" )
 
@@ -186,8 +173,7 @@ vecs_lst_gene = get_vectors(x= spe,sample_names="sample1" ,
                             cluster_info = NULL,
                             bin_type = "square",
                             bin_param = c(2,2),
-                            test_genes = row.names(spe),
-                            w_x = w_x, w_y=w_y)
+                            test_genes = row.names(spe))
 
 test_that("Test can vectorise genes and clusters - output mathces", {
     expect_equal(as.vector(vecs_lst_cluster$cluster_mt), c(2,0,2,3))
@@ -200,50 +186,43 @@ test_that("Invaid input",{
                              cluster_info = clusters,
                              bin_type="square",
                              bin_param=c(2,2),
-                             test_genes =matrix(0, nrow=5, ncol=2),
-                             w_x=c(0,25), w_y=c(0,25)))
+                             test_genes =matrix(0, nrow=5, ncol=2)))
     
     expect_error(get_vectors(x=trans,  sample_names="sample1",
                              cluster_info = clusters,
                              bin_type="hexagon",
                              bin_param=c(2,2),
-                             test_genes = row.names(spe),
-                             w_x=c(0,25), w_y=c(0,25)))
+                             test_genes = row.names(spe)))
     expect_error(get_vectors(x=NULL,  sample_names="sample1",
                              cluster_info = clusters,
                              bin_type="hexagon",
                              bin_param=c(2,2),
-                             test_genes = row.names(spe),
-                             w_x=c(0,25), w_y=c(0,25)))
+                             test_genes = row.names(spe)))
     expect_error(get_vectors(x=NULL,  sample_names="sample1",
                              cluster_info = clusters,
                              bin_type="circle",
                              bin_param=c(2,2),
-                             test_genes = row.names(spe),
-                             w_x=c(0,25), w_y=c(0,25)))
+                             test_genes = row.names(spe)))
     expect_error(get_vectors(x=NULL,  sample_names="sample1",
                              cluster_info = clusters,
                              bin_type="square",
-                             bin_param=c(2),
-                             w_x=c(0,25), w_y=c(0,25)))
+                             bin_param=c(2)))
     expect_error(get_vectors(x=NULL, cluster_info = NULL,
                              sample_names="sample1",
                              bin_type="hexagon",
                              bin_param=c(2),
-                             test_genes = row.names(spe),
-                             w_x=c(0,25), w_y=c(0,25)))
+                             test_genes = row.names(spe)))
     expect_error(get_vectors(x=NULL,  sample_names="sample1",
                              cluster_info=invalid_cluster,
                              bin_type="square",
                              bin_param=c(2,2),
-                             test_genes = row.names(spe),
-                             w_x=c(0,25), w_y=c(0,25)))
+                             test_genes = row.names(spe)))
     expect_error(get_vectors(x=spe,  sample_names="sample1",
                              cluster_info=invalid_cluster,
                              bin_type="square",
                              bin_param=c(2,2),
                              test_genes = row.names(spe),
-                             w_x=c(0,25), w_y=c(0,25), use_cm=TRUE))
+                             use_cm=TRUE))
     
     #  can not match test_genes from x
     expect_error(get_vectors(x= spe,
@@ -251,24 +230,21 @@ test_that("Invaid input",{
                              test_genes =c("geneA","geneB"),
                              cluster_info=clusters,
                              bin_type="square",
-                             bin_param=c(2,2),
-                             w_x=c(0,25), w_y=c(0,25)))
+                             bin_param=c(2,2)))
     # mismatch sample_names and clsuetr_info$sample
     expect_error(get_vectors(x= NULL,
                              cluster_info = clusters,
                              sample_names="sample2",
                              bin_type = "square",
                              bin_param = c(2,2),
-                             test_genes = NULL,
-                             w_x = w_x, w_y=w_y))
+                             test_genes = NULL))
     # missing y coordiantes for transcript 
     expect_error(get_vectors(x= spe_invalid,
                              cluster_info = NULL,
                              sample_names="rep1",
                              bin_type = "square",
                              bin_param = c(2,2),
-                             test_genes = unique(invalid_trans_df$feature_name),
-                             w_x = w_x, w_y=w_y))
+                             test_genes = unique(invalid_trans_df$feature_name)))
     
 })
 
@@ -286,8 +262,8 @@ clusters = data.frame(x = c(1, 2,20,21,22,23,24),
 clusters$sample="rep1"
 clusters$cell_id= colnames(cm)
 # simulate coordiantes for genes
-w_x=c(0,25)
-w_y=c(0,25)
+# w_x=c(0,25)
+# w_y=c(0,25)
 # cell_1 = (1,0,0,0)
 # cell_2 = (1,0,0,0)
 # cell_3 = (0,0,0,1)
@@ -300,8 +276,7 @@ vecs_lst = get_vectors(x= sce, cluster_info = clusters,
                        sample_names = "rep1",
                        bin_type = "square",
                        bin_param = c(2,2),
-                       test_genes = row.names(cm),
-                       w_x = w_x, w_y=w_y)
+                       test_genes = row.names(cm))
 
 test_that("Test can use count matrix (square) - output vector matches", {
     expect_equal(as.vector(vecs_lst$gene_mt),
@@ -316,8 +291,7 @@ test_that("Invaid input",{
     expect_error(get_vectors(x=sce,sample_names = "rep1",
                              cluster_info = NULL,
                              bin_type="square",
-                             bin_param=c(2,2),test_genes = row.names(cm),
-                             w_x=c(0,25), w_y=c(0,25)))
+                             bin_param=c(2,2),test_genes = row.names(cm)))
     
 })
 
@@ -335,8 +309,8 @@ clusters = data.frame(x = c(1, 2,20,21,22,23,24),
 clusters$sample="rep1"
 clusters$cell_id= colnames(cm)
 # simulate coordinates for genes
-w_x=c(0,25)
-w_y=c(0,25)
+# w_x=c(0,25)
+# w_y=c(0,25)
 # cell_1 = (1,0,0,0)
 # cell_2 = (1,0,0,0)
 # cell_3 = (0,0,0,1)
@@ -391,15 +365,14 @@ vecs_lst_cm = get_vectors(x= sce_m, cluster_info = clusters,
                           sample_names = "rep1",
                           bin_type = "square",
                           bin_param = c(2,2),
-                          test_genes = row.names(cm),
-                          w_x = w_x, w_y=w_y)
+                          test_genes = row.names(cm)
+                          )
 vecs_lst_tr = get_vectors(x= spe_m,
                           cluster_info = clusters,
                           sample_names = "rep1",
                           bin_type = "square",
                           bin_param = c(2,2),
-                          test_genes = row.names(cm),
-                          w_x = w_x, w_y=w_y)
+                          test_genes = row.names(cm))
 test_that("Test count matrix vectors match with transcript vectors - gene vectors", {
     expect_equal(as.vector(vecs_lst_tr$gene_mt),
                  as.vector(vecs_lst_cm$gene_mt))
@@ -415,8 +388,7 @@ vecs_lst = get_vectors(x= sce_m, cluster_info = clusters,
                        sample_names = "rep1",
                        bin_type = "hexagon",
                        bin_param = c(10),
-                       test_genes = row.names(cm),
-                       w_x = w_x, w_y=w_y)
+                       test_genes = row.names(cm))
 
 test_that("Test can use count matrix (hex) - output vector matches", {
     expect_equal(as.vector(vecs_lst$gene_mt),
@@ -453,14 +425,13 @@ spe_rep1 <- SpatialExperiment(
 clusters = data.frame(x = c(3, 5,11,21,2,23,19),
                       y = c(20, 24, 1,2,3,4,5), cluster="cluster_1")
 clusters$sample="rep1"
-w_x=c(0,25)
-w_y=c(0,25)
+
+
 vecs_lst_full = get_vectors(x=spe_rep1,sample_names = "rep1",
                             cluster_info = clusters,
                             bin_type = "square",
                             bin_param = c(2,2),
-                            test_genes = c("A","B","C"),
-                            w_x = w_x, w_y=w_y,n_cores = 2)
+                            test_genes = c("A","B","C"),n_cores = 2)
 
 
 test_that("Test can vectorise genes and clusters - output mathces", {
@@ -508,15 +479,13 @@ vector_lst_1core = get_vectors(x= spe_rep2, sample_names = "rep2",
                                cluster_info = NULL,
                                bin_type="square",
                                bin_param=c(2,2),
-                               test_genes = feature_names,
-                               w_x=c(0,100), w_y=c(0,100), n_cores = 1)
+                               test_genes = feature_names,n_cores = 1)
 
 vector_lst_5core = get_vectors(x= spe_rep2, sample_names = "rep2",
                                cluster_info = NULL,
                                bin_type="square",
                                bin_param=c(2,2),
-                               test_genes = feature_names,
-                               w_x=c(0,100), w_y=c(0,100), n_cores = 2)
+                               test_genes = feature_names,n_cores = 2)
 test_that("Test can result from sequential matches with result from parallel",{
     expect_equal(as.vector(vector_lst_1core$gene_mt), 
                  as.vector(vector_lst_5core$gene_mt))
@@ -556,7 +525,6 @@ vector_lst_twosample = get_vectors(x= sce_two, sample_names =c("sp1","sp2"),
                                    bin_type="square",
                                    bin_param=c(2,2),
                                    test_genes = paste("gene", 1:10, sep=""),
-                                   w_x=c(0,25), w_y=c(0,25), 
                                    n_cores = 1)
 test_that("Test can result from sequential matches with result from parallel",{
     expect_equal(as.vector(vector_lst_twosample$cluster_mt[,"A"]), 
@@ -589,15 +557,12 @@ clusters = data.frame(x = c(3, 5,11,21,2,23,19),
                       y = c(20, 24, 1,2,3,4,5), cluster="cluster_1")
 set.seed(98)
 clusters$sample=sample(c("s1","s2"),size = 7,replace = TRUE)
-w_x=c(0,25)
-w_y=c(0,25)
 vecs_lst = get_vectors(x=list("s1"=trans, "s2"=trans),
                             sample_names = c("s1","s2"),
                             cluster_info = clusters,
                             bin_type = "square",
                             bin_param = c(2,2),
-                            test_genes = c("A","B","C"),
-                            w_x = w_x, w_y=w_y,n_cores = 1)
+                            test_genes = c("A","B","C"),n_cores = 1)
 test_that("Test can work for a list input with 2 samples",{
     expect_equal(as.vector(vecs_lst$cluster_mt[,"cluster_1"]), 
                  c(0,0,1,2,2,0,1,1))

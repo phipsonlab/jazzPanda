@@ -26,10 +26,6 @@
 #' two giving the numbers of rectangular quadrats in the x and y directions. If
 #' the \code{bin_type} is "hexagonal", this will be a number giving the side
 #' length of hexagons. Positive numbers only.
-#' @param w_x A numeric vector of length two specifying the x coordinate
-#' limits of enclosing box.
-#' @param w_y A numeric vector of length two specifying the y coordinate
-#' limits of enclosing box.
 #' @param use_cm A boolean value that specifies whether to create spatial 
 #' vectors for genes using the count matrix and cell coordinates instead of 
 #' the transcript coordinates when both types of information are available. 
@@ -52,10 +48,6 @@
 #' two giving the numbers of rectangular quadrats in the x and y directions. If
 #' the \code{bin_type} is "hexagonal", this will be a number giving the side
 #' length of hexagons. Positive numbers only.
-#' @param w_x A numeric vector of length two specifying the x coordinate
-#' limits of enclosing box.
-#' @param w_y A numeric vector of length two specifying the y coordinate
-#' limits of enclosing box.
 #' @param cluster_info A dataframe/matrix containing the centroid coordinates,
 #' cluster and sample label for each cell.The column names must include
 #' "x" (x coordinate), "y" (y coordinate),
@@ -94,25 +86,24 @@
 #'                              name_lst=list(dummy_A=c("A","C"),
 #'                                              dummy_B=c("A","B","C")),
 #'                              bin_type="square",
-#'                              bin_param=c(2,2),
-#'                              w_x=c(0,25), w_y=c(0,25), cluster_info=NULL)
+#'                              bin_param=c(2,2),cluster_info=NULL)
 #'
 create_genesets<-function(x, name_lst, 
                         cluster_info, sample_names, bin_type, bin_param,
-                        w_x, w_y, use_cm = FALSE, n_cores=1){
+                        use_cm = FALSE, n_cores=1){
     primary_class <- class(x)[1]
     if (primary_class == "list"){
+        uni_genes <- unique(unlist(lapply(x, function(df) df$feature_name)))
         for (sp in sample_names){
             sub_x <- x[[sp]]
             req_cols <- c("feature_name","x","y")
             if (length(setdiff(req_cols, colnames(sub_x))) != 0){
                 stop("Invalid columns in input x. Every list element in x must
             contain columns 'feature_name','x', 'y', 
-                for every transcipt")}
-            uni_genes <- unique(sub_x$feature_name)
+                for every transcipt")} }
     if (length(setdiff(as.vector(unique(unlist(name_lst))),uni_genes))>0){
             stop("Invalid name_lst, 
-                can not find genes in the input name_lst from x")}}
+                can not find genes in the input name_lst from x")}
     test_genes <- intersect(as.vector(unique(unlist(name_lst))), uni_genes)
     }else {
     if (length(setdiff(as.vector(unique(unlist(name_lst))), row.names(x)))>0){
@@ -124,7 +115,7 @@ create_genesets<-function(x, name_lst,
     
     res_lst <- get_vectors(x=x, cluster_info=cluster_info, 
                 sample_names=sample_names, bin_type=bin_type, 
-                bin_param=bin_param,test_genes=test_genes, w_x=w_x, w_y=w_y, 
+                bin_param=bin_param,test_genes=test_genes, 
                 use_cm = use_cm, n_cores=n_cores)
     gene_vecs <- as.matrix(res_lst$gene_mt)
     
