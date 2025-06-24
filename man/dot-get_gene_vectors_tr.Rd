@@ -10,8 +10,7 @@
   bin_type,
   bin_param,
   bin_length,
-  w_x,
-  w_y
+  range_list
 )
 }
 \arguments{
@@ -34,11 +33,13 @@ length of hexagons. Positive numbers only.}
 
 \item{bin_length}{A positive integer giving the length of total bins}
 
-\item{w_x}{A numeric vector of length two specifying the x coordinate
-limits of enclosing box.}
-
-\item{w_y}{A numeric vector of length two specifying the y coordinate
-limits of enclosing box.}
+\item{range_list}{A named list of spatial ranges for each sample. 
+Each element should be a list with two components:
+\code{w_x} and \code{w_y}, which are numeric vectors of length 2 
+specifying the x- and y-axis ranges (e.g., from cell or 
+transcript coordinates).
+The range is calculated with 5% buffer to ensure all points fall 
+within the window.}
 }
 \value{
 a matrix contains the transcript count in each grid.

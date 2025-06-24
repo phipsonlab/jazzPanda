@@ -3,6 +3,7 @@
 - Backported updates from version 1.1.1 on Bioconductor devel
 
 # jazzPanda 1.1.1
+
 *Updated on June 24, 2025*
 
 Changes to the package include:

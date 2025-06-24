@@ -89,20 +89,11 @@
 #'     row = trans_info$feature_name, col = trans_info$cell )
 #' spe<- SpatialExperiment(
 #'      assays = list(molecules = trans_mol),sample_id ="sample1" )
-#' w_x <- c(min(floor(min(trans_info$x)),
-#'          floor(min(clusters$x))),
-#'       max(ceiling(max(trans_info$x)),
-#'           ceiling(max(clusters$x))))
-#' w_y <- c(min(floor(min(trans_info$y)),
-#'           floor(min(clusters$y))),
-#'       max(ceiling(max(trans_info$y)),
-#'           ceiling(max(clusters$y))))
 #' vecs_lst <- get_vectors(x=spe,sample_names=c("sample1"),
 #'                     cluster_info = clusters,
 #'                     bin_type = "square",
 #'                     bin_param = c(20,20),
-#'                     test_genes =c("gene_A1","gene_A2","gene_B1","gene_B2"),
-#'                     w_x = w_x, w_y=w_y)
+#'                     test_genes =c("gene_A1","gene_A2","gene_B1","gene_B2"))
 #' lasso_res <- lasso_markers(gene_mt=vecs_lst$gene_mt,
 #'                         cluster_mt = vecs_lst$cluster_mt,
 #'                         sample_names=c("sample1"),
@@ -178,20 +169,11 @@ get_top_mg <- function(obj, coef_cutoff=0.05) {
 #'     row = trans_info$feature_name, col = trans_info$cell )
 #' spe<- SpatialExperiment(
 #'      assays = list(molecules = trans_mol),sample_id ="sample1" )
-#' w_x <- c(min(floor(min(trans_info$x)),
-#'          floor(min(clusters$x))),
-#'       max(ceiling(max(trans_info$x)),
-#'           ceiling(max(clusters$x))))
-#' w_y <- c(min(floor(min(trans_info$y)),
-#'           floor(min(clusters$y))),
-#'       max(ceiling(max(trans_info$y)),
-#'           ceiling(max(clusters$y))))
 #' vecs_lst <- get_vectors(x=spe,sample_names=c("sample1"),
 #'                     cluster_info = clusters,
 #'                     bin_type = "square",
 #'                     bin_param = c(20,20),
-#'                     test_genes =c("gene_A1","gene_A2","gene_B1","gene_B2"),
-#'                     w_x = w_x, w_y=w_y)
+#'                     test_genes =c("gene_A1","gene_A2","gene_B1","gene_B2"))
 #' lasso_res <- lasso_markers(gene_mt=vecs_lst$gene_mt,
 #'                         cluster_mt = vecs_lst$cluster_mt,
 #'                         sample_names=c("sample1"),

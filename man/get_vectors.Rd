@@ -11,8 +11,6 @@ get_vectors(
   bin_type,
   bin_param,
   test_genes,
-  w_x,
-  w_y,
   use_cm = FALSE,
   n_cores = 1
 )
@@ -53,12 +51,6 @@ length of hexagons. Positive numbers only.}
 \item{test_genes}{A vector of strings giving the name of the genes you want
 to create gene vector. This will be used as column names for one of the 
 result matrix \code{gene_mt}.}
-
-\item{w_x}{A numeric vector of length two specifying the x coordinate
-limits of enclosing box.}
-
-\item{w_y}{A numeric vector of length two specifying the y coordinate
-limits of enclosing box.}
 
 \item{use_cm}{A boolean value that specifies whether to create spatial 
 vectors for genes using the count matrix and cell coordinates instead of 
@@ -135,22 +127,13 @@ trans_info$x=as.numeric(trans_info$x)
 trans_info$y=as.numeric(trans_info$y)
 trans_info$cell = sample(c("cell1","cell2","cell2"),replace=TRUE,
                         size=nrow(trans_info))
-w_x =  c(min(floor(min(trans_info$x)),
-         floor(min(clusters$x))),
-      max(ceiling(max(trans_info$x)),
-          ceiling(max(clusters$x))))
-w_y =  c(min(floor(min(trans_info$y)),
-          floor(min(clusters$y))),
-      max(ceiling(max(trans_info$y)),
-          ceiling(max(clusters$y))))
 # use named list as input
 vecs_lst = get_vectors(x= list("sample1" = trans_info),
                     sample_names=c("sample1"),
                     cluster_info = clusters,
                     bin_type = "square",
                     bin_param = c(5,5),
-                    test_genes =c("gene_A1","gene_A2","gene_B1","gene_B2"),
-                    w_x = w_x, w_y=w_y)
+                    test_genes =c("gene_A1","gene_A2","gene_B1","gene_B2"))
 # use SpatialExperiment object as input
 trans_mol <- BumpyMatrix::splitAsBumpyMatrix(
     trans_info[, c("x", "y")], 
@@ -161,7 +144,6 @@ vecs_lst_spe = get_vectors(x=spe,sample_names=c("sample1"),
                     cluster_info = clusters,
                     bin_type = "square",
                     bin_param = c(5,5),
-                    test_genes =c("gene_A1","gene_A2","gene_B1","gene_B2"),
-                    w_x = w_x, w_y=w_y)
+                    test_genes =c("gene_A1","gene_A2","gene_B1","gene_B2"))
 
 }

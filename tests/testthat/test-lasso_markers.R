@@ -32,27 +32,17 @@ trans_mol <- BumpyMatrix::splitAsBumpyMatrix(
 spe<- SpatialExperiment(
     assays = list(molecules = trans_mol),sample_id ="sample1" )
 
-w_x =  c(min(floor(min(trans_info$x)),
-             floor(min(clusters$x))),
-         max(ceiling(max(trans_info$x)),
-             ceiling(max(clusters$x))))
-w_y =  c(min(floor(min(trans_info$y)),
-             floor(min(clusters$y))),
-         max(ceiling(max(trans_info$y)),
-             ceiling(max(clusters$y))))
 
 vecs_lst = get_vectors(x=spe, cluster_info = clusters,
                        bin_type = "square",sample_names = "sample1",
                        bin_param = c(20,20),
-                       test_genes =c("gene_A1","gene_A2","gene_B1","gene_B2"),
-                       w_x = w_x, w_y=w_y)
+                       test_genes =c("gene_A1","gene_A2","gene_B1","gene_B2"))
 #### background
 
 background_sv = create_genesets(x =spe,sample_names = "sample1",
                                 name_lst=list(dummy_W=c("gene_A1","gene_B1")),
                                 bin_type="square",
-                                bin_param = c(20,20),
-                                w_x = w_x, w_y=w_y,cluster_info = NULL)
+                                bin_param = c(20,20),cluster_info = NULL)
 set.seed(100)
 lasso_res1 = lasso_markers(gene_mt=vecs_lst$gene_mt,
                            cluster_mt = vecs_lst$cluster_mt,
@@ -282,7 +272,7 @@ one_gene_res1 = lasso_markers(gene_mt=one_gene_mt,
                               sample_names=c("rep1"),
                               keep_positive=TRUE,
                               background=NULL)
-one_gene_top = get_top_mg(one_gene_res1, coef_cutoff = 1)
+one_gene_top = get_top_mg(one_gene_res1, coef_cutoff = 2)
 one_gene_full =get_full_mg(one_gene_res1, coef_cutoff = 0)
 test_that("high resolution results in 0 significant genes", {
     expect_equal(unique(one_gene_top[one_gene_top$gene == "gene_A",
@@ -327,30 +317,28 @@ sp2_trans_mol <- BumpyMatrix::splitAsBumpyMatrix(
 
 spe_sp2<- SpatialExperiment(
     assays = list(molecules = sp2_trans_mol),sample_id ="sample2" )
-
-w_x =  c(min(floor(min(trans_info$x)),floor(min(trans_info_sp2$x)),
-             floor(min(clusters$x))),
-         max(ceiling(max(trans_info$x)),ceiling(max(trans_info_sp2$x)),
-             ceiling(max(clusters$x))))
-w_y =  c(min(floor(min(trans_info$y)),floor(min(trans_info_sp2$y)),
-             floor(min(clusters$y))),
-         max(ceiling(max(trans_info$y)),ceiling(max(trans_info_sp2$y)),
-             ceiling(max(clusters$y))))
+# 
+# w_x =  c(min(floor(min(trans_info$x)),floor(min(trans_info_sp2$x)),
+#              floor(min(clusters$x))),
+#          max(ceiling(max(trans_info$x)),ceiling(max(trans_info_sp2$x)),
+#              ceiling(max(clusters$x))))
+# w_y =  c(min(floor(min(trans_info$y)),floor(min(trans_info_sp2$y)),
+#              floor(min(clusters$y))),
+#          max(ceiling(max(trans_info$y)),ceiling(max(trans_info_sp2$y)),
+#              ceiling(max(clusters$y))))
 
 twosample = SingleCellExperiment::cbind(spe,spe_sp2)
 vecs_lst = get_vectors(x=twosample, sample_names = c("sample1","sample2"),
                        cluster_info = clusters,
                        bin_type = "square",
                        bin_param = c(20,20),
-                       test_genes =c("gene_A1","gene_A2","gene_B1","gene_B2"),
-                       w_x = w_x, w_y=w_y)
+                       test_genes =c("gene_A1","gene_A2","gene_B1","gene_B2"))
 #### background
 
 background_sv = create_genesets(x=twosample, sample_names = c("sample1","sample2"),
                                 name_lst=list(dummy_W=c("gene_A1","gene_B1")),
                                 bin_type="square",
-                                bin_param = c(20,20),
-                                w_x = w_x, w_y=w_y,cluster_info = NULL)
+                                bin_param = c(20,20), cluster_info = NULL)
 set.seed(100)
 lasso_res_background = lasso_markers(gene_mt=vecs_lst$gene_mt,
                                      cluster_mt = vecs_lst$cluster_mt,
@@ -381,7 +369,6 @@ background_sv_all = create_genesets(x=twosample,
                                               dummy_B2=c("gene_B2")),
                                 bin_type="square",
                                 bin_param = c(20,20),
-                                w_x = w_x, w_y=w_y,
                                 cluster_info = NULL)
 lasso_nosig_bg = lasso_markers(gene_mt=vecs_lst$gene_mt,
                                      cluster_mt = vecs_lst$cluster_mt,

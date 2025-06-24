@@ -9,8 +9,7 @@
   bin_length,
   bin_type,
   bin_param,
-  w_x,
-  w_y,
+  range_list,
   sample_names
 )
 }
@@ -31,11 +30,13 @@ two giving the numbers of rectangular quadrats in the x and y directions. If
 the \code{bin_type} is "hexagonal", this will be a number giving the side
 length of hexagons. Positive numbers only.}
 
-\item{w_x}{A numeric vector of length two specifying the x coordinate
-limits of enclosing box.}
-
-\item{w_y}{A numeric vector of length two specifying the y coordinate
-limits of enclosing box.}
+\item{range_list}{A named list of spatial ranges for each sample. 
+Each element should be a list with two components:
+\code{w_x} and \code{w_y}, which are numeric vectors of length 2 
+specifying the x- and y-axis ranges (e.g., from cell or 
+transcript coordinates).
+The range is calculated with 5% buffer to ensure all points fall 
+within the window.}
 
 \item{sample_names}{a vector of strings giving the sample names}
 }

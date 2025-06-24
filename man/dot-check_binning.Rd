@@ -4,7 +4,7 @@
 \alias{.check_binning}
 \title{helper function to check the input of binning}
 \usage{
-.check_binning(bin_param, bin_type, w_x, w_y)
+.check_binning(bin_param, bin_type, range_list)
 }
 \arguments{
 \item{bin_param}{A numeric vector indicating the size of the bin. If the
@@ -16,11 +16,13 @@ length of hexagons. Positive numbers only.}
 \item{bin_type}{A string indicating which bin shape is to be used for
 vectorization. One of "square" (default), "rectangle", or "hexagon".}
 
-\item{w_x}{A numeric vector of length two specifying the x coordinate
-limits of enclosing box.}
-
-\item{w_y}{A numeric vector of length two specifying the y coordinate
-limits of enclosing box.}
+\item{range_list}{A named list of spatial ranges for each sample. 
+Each element should be a list with two components:
+\code{w_x} and \code{w_y}, which are numeric vectors of length 2 
+specifying the x- and y-axis ranges (e.g., from cell or 
+transcript coordinates).
+The range is calculated with 5% buffer to ensure all points fall 
+within the window.}
 }
 \value{
 the length of total bins
