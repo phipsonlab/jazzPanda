@@ -11,7 +11,15 @@
 \code{bin_type} is "square" or "rectangle", this will be a vector of length
 two giving the numbers of rectangular quadrats in the x and y directions. If
 the \code{bin_type} is "hexagonal", this will be a number giving the side
-length of hexagons. Positive numbers only.}
+length of hexagons. Positive numbers only.
+
+For example:
+  \itemize{
+    \item \code{c(3, 4)} means 3 bins along the x-axis and 4 bins
+      along the y-axis (a 3 × 4 grid).
+    \item \code{c(5, 5)} means 5 bins along the x-axis and 5 bins
+      along the y-axis (a 5 × 5 grid).
+  }}
 
 \item{bin_type}{A string indicating which bin shape is to be used for
 vectorization. One of "square" (default), "rectangle", or "hexagon".}

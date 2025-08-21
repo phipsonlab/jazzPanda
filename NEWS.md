@@ -1,6 +1,22 @@
 # jazzPanda 1.0.1
+*Updated on Sep 1, 2025*
+
+Changes to the package include:
+- **function `get_vectors()`**:  
+  - Buffer used for auto-detecting spatial windows has been changed from 5% to a fixed value of `1e-6`.  
+  - Added a new parameter to allow exporting the **calculated bounding box** for each sample.  
+
+- **function `compute_permp()`**:  
+  - Buffer for automatic spatial boundaries is now set to `1e-6`.  
+  - Fixed spatial bin indexing issues to ensure correct alignment when 
+    calcualting spatial vectors with count matrix.  
+
+
+
+# jazzPanda 1.0.1
 
 - Backported updates from version 1.1.1 on Bioconductor devel
+
 
 # jazzPanda 1.1.1
 

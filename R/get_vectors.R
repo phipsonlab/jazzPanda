@@ -16,6 +16,14 @@
 #' two giving the numbers of rectangular quadrats in the x and y directions. If
 #' the \code{bin_type} is "hexagonal", this will be a number giving the side
 #' length of hexagons. Positive numbers only.
+#' 
+#' For example:
+#'   \itemize{
+#'     \item \code{c(3, 4)} means 3 bins along the x-axis and 4 bins
+#'       along the y-axis (a 3 × 4 grid).
+#'     \item \code{c(5, 5)} means 5 bins along the x-axis and 5 bins
+#'       along the y-axis (a 5 × 5 grid).
+#'   }
 #' @param bin_length A positive integer giving the length of total bins
 #' @param range_list A named list of spatial ranges for each sample. 
 #' Each element should be a list with two components:
@@ -102,6 +110,14 @@
 #' two giving the numbers of rectangular quadrats in the x and y directions. If
 #' the \code{bin_type} is "hexagonal", this will be a number giving the side
 #' length of hexagons. Positive numbers only.
+#' 
+#' For example:
+#'   \itemize{
+#'     \item \code{c(3, 4)} means 3 bins along the x-axis and 4 bins
+#'       along the y-axis (a 3 × 4 grid).
+#'     \item \code{c(5, 5)} means 5 bins along the x-axis and 5 bins
+#'       along the y-axis (a 5 × 5 grid).
+#'   }
 #' @param test_genes A vector of strings giving the name of the genes you 
 #' want to test. This will be used as column names for one of the result matrix
 #' \code{gene_mt}.
@@ -166,16 +182,16 @@
             
             ix <- findInterval(i_info$x, tess$xgrid,
                                 all.inside = TRUE,
-                                left.open = FALSE,
+                                left.open = TRUE,
                                 rightmost.closed = TRUE)
             
             iy <- findInterval(i_info$y, tess$ygrid,
                                 all.inside = TRUE,
-                                left.open = FALSE,
+                                left.open = TRUE,
                                 rightmost.closed = TRUE)
-            # column major
-            iy <- bin_param[2] + 1 - iy  # flip y for column-major order
-            ind_vec <- (iy - 1) * bin_param[2] + ix
+            
+            iy_flipped <- bin_param[2] - iy + 1
+            ind_vec <- (iy_flipped - 1) * bin_param[1] + ix
             cluster_info$index_vec[cluster_info$sample == rp_nm] <- ind_vec
         }
     }
@@ -229,6 +245,14 @@
 #' two giving the numbers of rectangular quadrats in the x and y directions. If
 #' the \code{bin_type} is "hexagonal", this will be a number giving the side
 #' length of hexagons. Positive numbers only.
+#' 
+#' For example:
+#'   \itemize{
+#'     \item \code{c(3, 4)} means 3 bins along the x-axis and 4 bins
+#'       along the y-axis (a 3 × 4 grid).
+#'     \item \code{c(5, 5)} means 5 bins along the x-axis and 5 bins
+#'       along the y-axis (a 5 × 5 grid).
+#'   }
 #' @param range_list A named list of spatial ranges for each sample. 
 #' Each element should be a list with two components:
 #' \code{w_x} and \code{w_y}, which are numeric vectors of length 2 
@@ -271,12 +295,13 @@
         cl <- unlist(strsplit(nm, split="--"))[2]
         w_x <- range_list[[rp]]$w_x
         w_y <- range_list[[rp]]$w_y
+        w  <- owin(xrange = w_x, yrange = w_y)
         cluster_ppp <- ppp(cluster_info[cluster_info$sample==rp &
                                         cluster_info$cluster==cl,
                                         "x"],
                         cluster_info[cluster_info$sample==rp &
                                         cluster_info$cluster==cl,
-                                        "y"], w_x, w_y)
+                                        "y"],window = w)
         if (bin_type == "hexagon"){
             w <- owin(xrange=w_x, yrange=w_y)
             H <- hextess(W=w, bin_param[1])
@@ -303,6 +328,14 @@
 #' two giving the numbers of rectangular quadrats in the x and y directions. If
 #' the \code{bin_type} is "hexagonal", this will be a number giving the side
 #' length of hexagons. Positive numbers only.
+#'
+#' For example:
+#'   \itemize{
+#'     \item \code{c(3, 4)} means 3 bins along the x-axis and 4 bins
+#'       along the y-axis (a 3 × 4 grid).
+#'     \item \code{c(5, 5)} means 5 bins along the x-axis and 5 bins
+#'       along the y-axis (a 5 × 5 grid).
+#'   }
 #' @param range_list A named list of spatial ranges for each sample. 
 #' Each element should be a list with two components:
 #' \code{w_x} and \code{w_y}, which are numeric vectors of length 2 
@@ -319,7 +352,7 @@
     if (bin_type == "hexagon"){
         if (length(bin_param) != 1){
             stop("Invalid input bin_param, bin_param should be a vector
-                of length 2 for hexagon bins")
+                of length 1 for hexagon bins")
         }
         w <- owin(xrange=range_list[[1]]$w_x, yrange=range_list[[1]]$w_y)
         H <- hextess(W=w, bin_param[1])
@@ -413,7 +446,7 @@
         for (sp in sample_names){
             # x$imgData <- NULL
             sub_x <- x[,x$sample_id==sp]
-            cm_lst[[sp]] <- sub_x@assays@data$counts 
+            cm_lst[[sp]] <- sub_x@assays@data$counts}
         if (!is.null(x@assays@data$molecules)){
             for (sp in sample_names){
                 sub_x <- x[,x$sample_id==sp]
@@ -426,7 +459,7 @@
                 trans_lst[[sp]]<- tmp_data
                 }
         }else{ trans_lst <- NULL }
-            }
+
     }else if (primary_class == "list"){
         if (!all(sample_names %in% names(x))){
             stop("Input sample_names does not match names specified in x.")}
@@ -504,7 +537,15 @@ SingleCellExperiment, SpatialExperiment, or SpatialFeatureExperiment.")) }
 #' \code{bin_type} is "square" or "rectangle", this will be a vector of length
 #' two giving the numbers of rectangular quadrats in the x and y directions. If
 #' the \code{bin_type} is "hexagonal", this will be a number giving the side
-#' length of hexagons. Positive numbers only.
+#' length of hexagons. Positive numbers only. 
+#' 
+#' For example:
+#'   \itemize{
+#'     \item \code{c(3, 4)} means 3 bins along the x-axis and 4 bins
+#'       along the y-axis (a 3 × 4 grid).
+#'     \item \code{c(5, 5)} means 5 bins along the x-axis and 5 bins
+#'       along the y-axis (a 5 × 5 grid).
+#'   }
 #' @param test_genes A vector of strings giving the name of the genes you want
 #' to create gene vector. This will be used as column names for one of the 
 #' result matrix \code{gene_mt}.
@@ -515,6 +556,9 @@ SingleCellExperiment, SpatialExperiment, or SpatialFeatureExperiment.")) }
 #' @param n_cores A positive number specifying number of cores used for
 #' parallelizing permutation testing. Default is one core
 #' (sequential processing).
+#' @param return_boundary Logical. If TRUE, return the x- and y-coordinate 
+#' limits (`xrange`, `yrange`) of the enclosing box for each sample in 
+#' addition to the main result. The default setting is FALSE.
 #' @return a list of two matrices with the following components
 #' \item{\code{gene_mt}  }{contains the transcript count in each grid.
 #' Each row refers to a grid, and each column refers to a gene.}
@@ -522,7 +566,10 @@ SingleCellExperiment, SpatialExperiment, or SpatialFeatureExperiment.")) }
 #' cluster in each grid. Each row refers to a grid, and each column refers
 #' to a cluster.}
 #' The row order of \code{gene_mt} matches the row order of \code{cluster_mt}.
-
+#' \item{\code{boundary} (optional)}{Returned only if 
+#' \code{return_boundary = TRUE}. A list containing the x- and y-coordinate 
+#' limits of the enclosing box for each sample.}
+#'   
 #' @importFrom spatstat.geom ppp
 #' @importFrom spatstat.geom quadratcount
 #' @importFrom dplyr distinct
@@ -581,7 +628,8 @@ SingleCellExperiment, SpatialExperiment, or SpatialFeatureExperiment.")) }
 #'                     test_genes =c("gene_A1","gene_A2","gene_B1","gene_B2"))
 #' 
 get_vectors<- function(x, cluster_info, sample_names, bin_type, bin_param,
-                        test_genes, use_cm = FALSE, n_cores=1){
+                        test_genes, use_cm = FALSE, n_cores=1, 
+                        return_boundary=FALSE){
     # check input
     if ((is.null(x) ==TRUE) &  (is.null(cluster_info) == TRUE) ){
         stop("Invalid input, no coordinates information is specified") }
@@ -626,15 +674,14 @@ get_vectors<- function(x, cluster_info, sample_names, bin_type, bin_param,
         range_list <- lapply(trans_lst, function(d) {
             x_rng <- range(d$x, na.rm = TRUE)
             y_rng <- range(d$y, na.rm = TRUE)
-            
-            # 1% padding on each side
-            pad_x <- BUFFER_FRAC * diff(x_rng)
-            pad_y <- BUFFER_FRAC * diff(y_rng)
-            
             list(
-                    w_x = c(x_rng[1] - pad_x, x_rng[2] + pad_x),
-                    w_y = c(y_rng[1] - pad_y, y_rng[2] + pad_y)
+                w_x = c(floor(x_rng[1]) - PAD_VAL, ceiling(x_rng[2]) + PAD_VAL),
+                w_y = c(floor(y_rng[1]) - PAD_VAL, ceiling(y_rng[2]) + PAD_VAL)
             )
+            # list(
+            #         w_x = c(x_rng[1] - pad_x, x_rng[2] + pad_x),
+            #         w_y = c(y_rng[1] - pad_y, y_rng[2] + pad_y)
+            # )
         })
     }else{
         # check the range for cell coordinates only 
@@ -643,13 +690,16 @@ get_vectors<- function(x, cluster_info, sample_names, bin_type, bin_param,
                 function(d) {
                             x_rng <- range(d$x, na.rm = TRUE)
                             y_rng <- range(d$y, na.rm = TRUE)
-                            
-                            # 1% padding on each side
-                            pad_x <- BUFFER_FRAC * diff(x_rng)
-                            pad_y <- BUFFER_FRAC * diff(y_rng)
-                            list(w_x = c(x_rng[1] - pad_x, x_rng[2] + pad_x),
-                                w_y = c(y_rng[1] - pad_y, y_rng[2] + pad_y)
+                            list(
+            w_x = c(floor(x_rng[1]) - PAD_VAL, ceiling(x_rng[2]) + PAD_VAL),
+            w_y = c(floor(y_rng[1]) - PAD_VAL, ceiling(y_rng[2]) + PAD_VAL)
                             )
+                            # # 5% padding on each side
+                            # pad_x <- BUFFER_FRAC * diff(x_rng)
+                            # pad_y <- BUFFER_FRAC * diff(y_rng)
+                            # list(w_x = c(x_rng[1] - pad_x, x_rng[2] + pad_x),
+                            #     w_y = c(y_rng[1] - pad_y, y_rng[2] + pad_y)
+                            # )
                         })
         
     }
@@ -686,5 +736,8 @@ get_vectors<- function(x, cluster_info, sample_names, bin_type, bin_param,
         result$cluster_mt <- as.matrix(vec_cluster)}
     if ((is.null(trans_lst) == FALSE) | (is.null(cm_lst) == FALSE)){
         result$gene_mt <- as.matrix(vec_gene_mt)}
+    if (return_boundary){
+        result$boundary <- range_list
+    }
     return (result)
 }

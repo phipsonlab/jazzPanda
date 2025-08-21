@@ -12,7 +12,8 @@ get_vectors(
   bin_param,
   test_genes,
   use_cm = FALSE,
-  n_cores = 1
+  n_cores = 1,
+  return_boundary = FALSE
 )
 }
 \arguments{
@@ -46,7 +47,15 @@ vectorization. One of "square" (default), "rectangle", or "hexagon".}
 \code{bin_type} is "square" or "rectangle", this will be a vector of length
 two giving the numbers of rectangular quadrats in the x and y directions. If
 the \code{bin_type} is "hexagonal", this will be a number giving the side
-length of hexagons. Positive numbers only.}
+length of hexagons. Positive numbers only. 
+
+For example:
+  \itemize{
+    \item \code{c(3, 4)} means 3 bins along the x-axis and 4 bins
+      along the y-axis (a 3 × 4 grid).
+    \item \code{c(5, 5)} means 5 bins along the x-axis and 5 bins
+      along the y-axis (a 5 × 5 grid).
+  }}
 
 \item{test_genes}{A vector of strings giving the name of the genes you want
 to create gene vector. This will be used as column names for one of the 
@@ -60,6 +69,10 @@ The default setting is FALSE.}
 \item{n_cores}{A positive number specifying number of cores used for
 parallelizing permutation testing. Default is one core
 (sequential processing).}
+
+\item{return_boundary}{Logical. If TRUE, return the x- and y-coordinate limits 
+(`xrange`, `yrange`) of the enclosing box for each sample in addition to 
+the main result. The default setting is FALSE.}
 }
 \value{
 a list of two matrices with the following components
@@ -69,6 +82,9 @@ Each row refers to a grid, and each column refers to a gene.}
 cluster in each grid. Each row refers to a grid, and each column refers
 to a cluster.}
 The row order of \code{gene_mt} matches the row order of \code{cluster_mt}.
+\item{\code{boundary} (optional)}{Returned only if 
+\code{return_boundary = TRUE}. A list containing the x- and y-coordinate 
+limits of the enclosing box for each sample.}
 }
 \description{
 This function will convert the coordinates into a numeric vector for
