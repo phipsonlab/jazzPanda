@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">jazzPanda</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -48,7 +48,8 @@
 <span>  <span class="va">bin_param</span>,</span>
 <span>  n_cores <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  <span class="va">gene_mt</span>,</span>
-<span>  <span class="va">cluster_names</span></span>
+<span>  <span class="va">cluster_names</span>,</span>
+<span>  <span class="va">window_range</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -100,6 +101,14 @@ Each row refers to a grid, and each column refers to a gene.</p></dd>
 <dt id="arg-cluster-names">cluster_names<a class="anchor" aria-label="anchor" href="#arg-cluster-names"></a></dt>
 <dd><p>A list of strings giving the name and order of the
 clusters</p></dd>
+
+
+<dt id="arg-window-range">window_range<a class="anchor" aria-label="anchor" href="#arg-window-range"></a></dt>
+<dd><p>A  list of spatial ranges for x and y.
+This list contains two components:
+<code>w_x</code> and <code>w_y</code>, which are numeric vectors of length 2
+specifying the x- and y-axis ranges (e.g., from cell or
+transcript coordinates).</p></dd>
 
 </dl></div>
     <div class="section level2">

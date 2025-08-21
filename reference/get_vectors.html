@@ -9,7 +9,7 @@ genes and clusters."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">jazzPanda</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -51,7 +51,8 @@ genes and clusters.</p>
 <span>  <span class="va">bin_param</span>,</span>
 <span>  <span class="va">test_genes</span>,</span>
 <span>  use_cm <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  n_cores <span class="op">=</span> <span class="fl">1</span></span>
+<span>  n_cores <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  return_boundary <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -98,7 +99,12 @@ vectorization. One of "square" (default), "rectangle", or "hexagon".</p></dd>
 <code>bin_type</code> is "square" or "rectangle", this will be a vector of length
 two giving the numbers of rectangular quadrats in the x and y directions. If
 the <code>bin_type</code> is "hexagonal", this will be a number giving the side
-length of hexagons. Positive numbers only.</p></dd>
+length of hexagons. Positive numbers only.</p>
+<p>For example:</p><ul><li><p><code>c(3, 4)</code> means 3 bins along the x-axis and 4 bins
+      along the y-axis (a 3 × 4 grid).</p></li>
+<li><p><code>c(5, 5)</code> means 5 bins along the x-axis and 5 bins
+      along the y-axis (a 5 × 5 grid).</p></li>
+</ul></dd>
 
 
 <dt id="arg-test-genes">test_genes<a class="anchor" aria-label="anchor" href="#arg-test-genes"></a></dt>
@@ -119,6 +125,12 @@ The default setting is FALSE.</p></dd>
 parallelizing permutation testing. Default is one core
 (sequential processing).</p></dd>
 
+
+<dt id="arg-return-boundary">return_boundary<a class="anchor" aria-label="anchor" href="#arg-return-boundary"></a></dt>
+<dd><p>Logical. If TRUE, return the x- and y-coordinate limits
+(`xrange`, `yrange`) of the enclosing box for each sample in addition to
+the main result. The default setting is FALSE.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -133,7 +145,12 @@ cluster in each grid. Each row refers to a grid, and each column refers
 to a cluster.</p></dd>
 
 </dl><p>The row order of <code>gene_mt</code> matches the row order of <code>cluster_mt</code>.</p>
-    </div>
+<dl><dt><code>boundary</code> (optional)</dt>
+<dd><p>Returned only if
+<code>return_boundary = TRUE</code>. A list containing the x- and y-coordinate
+limits of the enclosing box for each sample.</p></dd>
+
+</dl></div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>This function can be used to generate input for <code><a href="lasso_markers.html">lasso_markers</a></code>
@@ -193,7 +210,8 @@ based on <code>x</code>.</p>
 <span class="r-in"><span>                    bin_type <span class="op">=</span> <span class="st">"square"</span>,</span></span>
 <span class="r-in"><span>                    bin_param <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>,<span class="fl">5</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                    test_genes <span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"gene_A1"</span>,<span class="st">"gene_A2"</span>,<span class="st">"gene_B1"</span>,<span class="st">"gene_B2"</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>2 points were rejected as lying outside the specified window</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>1 point was rejected as lying outside the specified window</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>6 points were rejected as lying outside the specified window</span>
 <span class="r-in"><span><span class="co"># use SpatialExperiment object as input</span></span></span>
 <span class="r-in"><span><span class="va">trans_mol</span> <span class="op">&lt;-</span> <span class="fu">BumpyMatrix</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BumpyMatrix/man/splitAsBumpyMatrix.html" class="external-link">splitAsBumpyMatrix</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>    <span class="va">trans_info</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"y"</span><span class="op">)</span><span class="op">]</span>, </span></span>
@@ -205,7 +223,8 @@ based on <code>x</code>.</p>
 <span class="r-in"><span>                    bin_type <span class="op">=</span> <span class="st">"square"</span>,</span></span>
 <span class="r-in"><span>                    bin_param <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>,<span class="fl">5</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                    test_genes <span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"gene_A1"</span>,<span class="st">"gene_A2"</span>,<span class="st">"gene_B1"</span>,<span class="st">"gene_B2"</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>2 points were rejected as lying outside the specified window</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>1 point was rejected as lying outside the specified window</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>6 points were rejected as lying outside the specified window</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

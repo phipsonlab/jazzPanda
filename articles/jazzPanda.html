@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">jazzPanda</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -53,7 +53,7 @@
 
       <h1>jazzPanda example</h1>
             
-            <h4 data-toc-skip class="date">24 Jun 2025</h4>
+            <h4 data-toc-skip class="date">21 Aug 2025</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/phipsonlab/jazzPanda/blob/main/vignettes/jazzPanda.Rmd" class="external-link"><code>vignettes/jazzPanda.Rmd</code></a></small>
       <div class="d-none name"><code>jazzPanda.Rmd</code></div>
@@ -400,11 +400,14 @@ genes and clusters</p>
 <span>                                bin_type<span class="op">=</span><span class="st">"square"</span>,</span>
 <span>                                bin_param<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">grid_length</span>,<span class="va">grid_length</span><span class="op">)</span>, </span>
 <span>                                test_genes <span class="op">=</span> <span class="va">all_real_genes</span><span class="op">)</span></span></code></pre></div>
-<p>If your data has different scales (e.g.,<code>w_x</code> and
-<code>w_y</code>) for cluster coordinates and gene coordinates, you can
-construct separate spatial vectors for clusters and genes. Please make
-sure you use consistent bin parameters (<code>bin_type</code> &amp;
-<code>bin_param</code>) to get the spatial vectors.</p>
+<p>The fucntion <code>get_vector()</code> now automatically detects the
+bounding box to define spatial vectors. This makes it robust to
+scenarios where different samples have very different spatial extents
+(e.g., one sample is much larger than another). </p>
+<p>If you want to define gene vectors from transcript coordinates, the
+cell and transcript coordinates must be in the same coordinate frame and
+scale (same units, same origin). If they aren’t, transform/rescale one
+to match the other before calling <code>get_vector()</code> </p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">seed_number</span><span class="op">&lt;-</span> <span class="fl">589</span></span>
 <span><span class="va">grid_length</span> <span class="op">&lt;-</span> <span class="fl">10</span></span>
@@ -419,12 +422,12 @@ sure you use consistent bin parameters (<code>bin_type</code> &amp;
 <span><span class="co"># the gene vectors can be accessed as:</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">cluster_sq10_vectors</span><span class="op">$</span><span class="va">cluster_mt</span><span class="op">)</span> </span></code></pre></div>
 <pre><code><span><span class="co">##      c5 c8 c3 c2 c1 c4 c6 c7</span></span>
-<span><span class="co">## [1,]  0  0  0  0  3  1  0  0</span></span>
-<span><span class="co">## [2,]  0  0  1  0  6  0  0  0</span></span>
-<span><span class="co">## [3,]  0  0  1  0  7  0  0  0</span></span>
-<span><span class="co">## [4,]  0  0  5  0  1  2  1  1</span></span>
-<span><span class="co">## [5,]  0  0  1  0  0  3  7  1</span></span>
-<span><span class="co">## [6,]  0  0  4  0  0  2  2  1</span></span></code></pre>
+<span><span class="co">## [1,]  0  2  1  0  7  1  0  1</span></span>
+<span><span class="co">## [2,]  0  1  1  0  6  0  0  0</span></span>
+<span><span class="co">## [3,]  0  0  3  0 13  1  0  0</span></span>
+<span><span class="co">## [4,]  0  0  4  0  2  3  2  1</span></span>
+<span><span class="co">## [5,]  0  0  1  0  0  7  9  2</span></span>
+<span><span class="co">## [6,]  0  0  3  0  0  3  3  2</span></span></code></pre>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># cluster_sq10_vectors$cluster_mt is equivalent to rep1_sq10_vectors$cluster_mt</span></span>
 <span></span>
@@ -439,26 +442,24 @@ sure you use consistent bin parameters (<code>bin_type</code> &amp;
 <span><span class="co"># the gene vectors can be accessed as:</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">gene_sq10_vectors</span><span class="op">$</span><span class="va">gene_mt</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##      CD68 DST EPCAM ERBB2 FOXA1 KRT7 LUM MYLK PECAM1 PTPRC SERPINA3 AQP1 VWF</span></span>
-<span><span class="co">## [1,]    6   0     4    10     6    8   4    0      0     1        0    2   0</span></span>
-<span><span class="co">## [2,]    2   8    70   112    55   82  14    0      0     1        4    1   1</span></span>
-<span><span class="co">## [3,]    1  20    75   133    55   78  16    1      0     0        3    1   3</span></span>
-<span><span class="co">## [4,]    9   6    34   100    27   41  61    0      2     7        0    1   0</span></span>
-<span><span class="co">## [5,]   17   3     9    26    10   12  23    0      3    35        2    0   1</span></span>
-<span><span class="co">## [6,]   13   0     8    34    18    4  12    2      6    19       11    1   0</span></span>
+<span><span class="co">## [1,]    9   9    34    76    34   68  13    2      7     3        6    5   2</span></span>
+<span><span class="co">## [2,]    4  21   101   170    72  107  34    7     10     2        2   10  10</span></span>
+<span><span class="co">## [3,]    6  23   146   249   113  147  25    2      0     0        3    3   5</span></span>
+<span><span class="co">## [4,]   14   6    50   153    71  103  81    0      3    16        0    1   1</span></span>
+<span><span class="co">## [5,]   28   7    10    45    16   21  20    0      8    52        2    1   1</span></span>
+<span><span class="co">## [6,]   21   3     7    46    24    5  39    3     12    21       13    4   0</span></span>
 <span><span class="co">##      CCDC80 ITM2C POSTN FGL2 MZB1 IL7R LYZ</span></span>
-<span><span class="co">## [1,]      8     0    11    1    0    0   5</span></span>
-<span><span class="co">## [2,]      5     2    24    3    2    8   6</span></span>
-<span><span class="co">## [3,]      9     2    10    0    1    0   0</span></span>
-<span><span class="co">## [4,]     19    16    56    1    7   10   1</span></span>
-<span><span class="co">## [5,]      6     1    17   15    0   25  16</span></span>
-<span><span class="co">## [6,]     11     9    21    4    3   26   9</span></span></code></pre>
+<span><span class="co">## [1,]     13    20    30    4    4    1  12</span></span>
+<span><span class="co">## [2,]     21     4    38    2    2    7   6</span></span>
+<span><span class="co">## [3,]     12     4    15    0    1    1   3</span></span>
+<span><span class="co">## [4,]     23    17    67    5    7   12   9</span></span>
+<span><span class="co">## [5,]      6    26    18   41   11   33  57</span></span>
+<span><span class="co">## [6,]     36    21    52   27   13   34  30</span></span></code></pre>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># gene_sq10_vectors$gene_mt is equivalent to rep1_sq10_vectors$gene_mt</span></span></code></pre></div>
 <p>The constructed spatial vectors can be used to quantify
-cluster-cluster and gene-gene correlation.</p>
-<div class="section level5">
-<h5 id="cluster-cluster-correlation">Cluster-Cluster correlation<a class="anchor" aria-label="anchor" href="#cluster-cluster-correlation"></a>
-</h5>
+cluster-cluster and gene-gene correlation. #### Cluster-Cluster
+correlation</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">exp_ord</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"c"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">8</span>, sep<span class="op">=</span><span class="st">""</span><span class="op">)</span></span>
 <span><span class="va">rep1_sq10_vectors</span><span class="op">$</span><span class="va">cluster_mt</span> <span class="op">&lt;-</span> <span class="va">rep1_sq10_vectors</span><span class="op">$</span><span class="va">cluster_mt</span><span class="op">[</span>,<span class="va">exp_ord</span><span class="op">]</span></span>
@@ -478,7 +479,6 @@ cluster-cluster and gene-gene correlation.</p>
 <span>                title <span class="op">=</span> <span class="st">"cluster-cluster correlation (square bin = 40x40)"</span></span>
 <span>                <span class="op">)</span></span></code></pre></div>
 <p><img src="jazzPanda_files/figure-html/unnamed-chunk-3-1.png" width="576"></p>
-</div>
 <div class="section level5">
 <h5 id="gene-cluster-correlation">Gene-Cluster correlation<a class="anchor" aria-label="anchor" href="#gene-cluster-correlation"></a>
 </h5>
@@ -576,29 +576,29 @@ arise in defining a SpatialExperiment object for your data.</p>
 <code class="sourceCode R"><span><span class="co"># spatial vector for every cluster </span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">rep1_sq10_vectors_lst</span><span class="op">$</span><span class="va">cluster_mt</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##      c5 c8 c3 c2 c1 c4 c6 c7</span></span>
-<span><span class="co">## [1,]  0  0  0  0  0  1  0  0</span></span>
-<span><span class="co">## [2,]  0  0  1  0  7  0  0  0</span></span>
-<span><span class="co">## [3,]  0  0  0  0  5  0  0  0</span></span>
-<span><span class="co">## [4,]  0  0  4  0  4  1  0  1</span></span>
-<span><span class="co">## [5,]  0  0  2  0  0  3  5  1</span></span>
-<span><span class="co">## [6,]  0  0  2  0  0  2  3  0</span></span></code></pre>
+<span><span class="co">## [1,]  0  0  0  0  4  1  0  1</span></span>
+<span><span class="co">## [2,]  0  1  2  0  7  0  0  0</span></span>
+<span><span class="co">## [3,]  0  0  1  0 10  0  0  0</span></span>
+<span><span class="co">## [4,]  0  0  6  0  5  2  1  1</span></span>
+<span><span class="co">## [5,]  0  0  1  0  0  8  7  2</span></span>
+<span><span class="co">## [6,]  0  0  4  0  0  3  3  2</span></span></code></pre>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># spatial vector for every gene </span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">rep1_sq10_vectors_lst</span><span class="op">$</span><span class="va">gene_mt</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##      CD68 DST EPCAM ERBB2 FOXA1 KRT7 LUM MYLK PECAM1 PTPRC SERPINA3 AQP1 VWF</span></span>
-<span><span class="co">## [1,]    6   0     4    10     6    8   4    0      0     1        0    2   0</span></span>
-<span><span class="co">## [2,]    2   8    70   112    55   82  14    0      0     1        4    1   1</span></span>
-<span><span class="co">## [3,]    1  20    75   133    55   78  16    1      0     0        3    1   3</span></span>
-<span><span class="co">## [4,]    9   6    34   100    27   41  61    0      2     7        0    1   0</span></span>
-<span><span class="co">## [5,]   17   3     9    26    10   12  23    0      3    35        2    0   1</span></span>
-<span><span class="co">## [6,]   13   0     8    34    18    4  12    2      6    19       11    1   0</span></span>
+<span><span class="co">## [1,]    9   9    34    76    34   68  13    2      7     3        6    5   2</span></span>
+<span><span class="co">## [2,]    4  21   101   170    72  107  34    7     10     2        2   10  10</span></span>
+<span><span class="co">## [3,]    6  23   146   249   113  147  25    2      0     0        3    3   5</span></span>
+<span><span class="co">## [4,]   14   6    50   153    71  103  81    0      3    16        0    1   1</span></span>
+<span><span class="co">## [5,]   28   7    10    45    16   21  20    0      8    52        2    1   1</span></span>
+<span><span class="co">## [6,]   21   3     7    46    24    5  39    3     12    21       13    4   0</span></span>
 <span><span class="co">##      CCDC80 ITM2C POSTN FGL2 MZB1 IL7R LYZ</span></span>
-<span><span class="co">## [1,]      8     0    11    1    0    0   5</span></span>
-<span><span class="co">## [2,]      5     2    24    3    2    8   6</span></span>
-<span><span class="co">## [3,]      9     2    10    0    1    0   0</span></span>
-<span><span class="co">## [4,]     19    16    56    1    7   10   1</span></span>
-<span><span class="co">## [5,]      6     1    17   15    0   25  16</span></span>
-<span><span class="co">## [6,]     11     9    21    4    3   26   9</span></span></code></pre>
+<span><span class="co">## [1,]     13    20    30    4    4    1  12</span></span>
+<span><span class="co">## [2,]     21     4    38    2    2    7   6</span></span>
+<span><span class="co">## [3,]     12     4    15    0    1    1   3</span></span>
+<span><span class="co">## [4,]     23    17    67    5    7   12   9</span></span>
+<span><span class="co">## [5,]      6    26    18   41   11   33  57</span></span>
+<span><span class="co">## [6,]     36    21    52   27   13   34  30</span></span></code></pre>
 </div>
 <div class="section level5">
 <h5 id="from-a-spatialexperiment-object">From a SpatialExperiment object<a class="anchor" aria-label="anchor" href="#from-a-spatialexperiment-object"></a>
@@ -611,7 +611,7 @@ to <code>lasso_markers</code> to identify marker genes.</p>
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/pachterlab/SpatialFeatureExperiment" class="external-link">SpatialFeatureExperiment</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">SingleCellExperiment</span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/mrbakhsh/TENxXeniumData" class="external-link">TENxXeniumData</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">ExperimentHub</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Bioconductor/ExperimentHub" class="external-link">ExperimentHub</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/MarioniLab/scran/" class="external-link">scran</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://bioconductor.org/packages/scater/" class="external-link">scater</a></span><span class="op">)</span></span>
 <span><span class="va">eh</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/ExperimentHub/man/ExperimentHub-class.html" class="external-link">ExperimentHub</a></span><span class="op">(</span><span class="op">)</span></span>
@@ -661,9 +661,9 @@ to <code>lasso_markers</code> to identify marker genes.</p>
 <span><span class="co"># spatial vector for every cluster </span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">example_vectors_cm</span><span class="op">$</span><span class="va">cluster_mt</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##      c1 c2 c3</span></span>
-<span><span class="co">## [1,]  1  2  0</span></span>
-<span><span class="co">## [2,]  1  2  0</span></span>
-<span><span class="co">## [3,]  3  1  0</span></span>
+<span><span class="co">## [1,]  2  3  0</span></span>
+<span><span class="co">## [2,]  2  2  0</span></span>
+<span><span class="co">## [3,]  2  1  0</span></span>
 <span><span class="co">## [4,]  2  0  0</span></span>
 <span><span class="co">## [5,]  6  6  0</span></span>
 <span><span class="co">## [6,]  1  3  0</span></span></code></pre>
@@ -671,9 +671,9 @@ to <code>lasso_markers</code> to identify marker genes.</p>
 <code class="sourceCode R"><span><span class="co"># spatial vector for every gene </span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">example_vectors_cm</span><span class="op">$</span><span class="va">gene_mt</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##      2010300C02Rik Acsbg1 Acta2 Acvrl1 Adamts2</span></span>
-<span><span class="co">## [1,]            19     16     3      1       0</span></span>
-<span><span class="co">## [2,]             9      4     0      1       0</span></span>
-<span><span class="co">## [3,]             1      9     0      1       0</span></span>
+<span><span class="co">## [1,]            21     20     3      2       0</span></span>
+<span><span class="co">## [2,]             9      2     0      0       0</span></span>
+<span><span class="co">## [3,]             1      7     0      1       0</span></span>
 <span><span class="co">## [4,]            24     17     0      5       0</span></span>
 <span><span class="co">## [5,]             9     18     1      4       0</span></span>
 <span><span class="co">## [6,]            12     20     0      1       0</span></span></code></pre>
@@ -938,38 +938,38 @@ p-value for every pair of gene cluster and cluster vector.</p>
 <span><span class="co"># observed correlation for every pair of gene and cluster vector</span></span>
 <span><span class="va">obs_corr</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_cor.html">get_cor</a></span><span class="op">(</span><span class="va">perm_p</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">obs_corr</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">##                c5          c8           c3         c2        c1         c4</span></span>
-<span><span class="co">## CD68  -0.22317269  0.12645151  0.283701259 -0.3676428 0.1145035  0.5782531</span></span>
-<span><span class="co">## DST    0.46580727 -0.01113685 -0.006465607  0.4280724 0.5990437 -0.2020797</span></span>
-<span><span class="co">## EPCAM -0.07660194 -0.25965526 -0.331048736  0.4139198 0.8997768 -0.2322690</span></span>
-<span><span class="co">## ERBB2  0.08132658 -0.20630552 -0.239234497  0.6346182 0.7542465 -0.2106126</span></span>
-<span><span class="co">## FOXA1 -0.08714428 -0.23944947 -0.316094059  0.3740040 0.9240646 -0.2296122</span></span>
-<span><span class="co">## KRT7  -0.10256736 -0.21612730 -0.285528377  0.2426547 0.9441443 -0.1655689</span></span>
+<pre><code><span><span class="co">##                c5          c8         c3         c2          c1         c4</span></span>
+<span><span class="co">## CD68  -0.26037887  0.06259766  0.2360819 -0.4126090 -0.02885842  0.5951329</span></span>
+<span><span class="co">## DST    0.47226365 -0.13560127 -0.4095928  0.4282446  0.51097133 -0.3263375</span></span>
+<span><span class="co">## EPCAM -0.11473423 -0.35287011 -0.5724549  0.3454557  0.86438353 -0.3496045</span></span>
+<span><span class="co">## ERBB2  0.08159437 -0.34437593 -0.5542681  0.6259111  0.69027586 -0.3613350</span></span>
+<span><span class="co">## FOXA1 -0.12850033 -0.33199825 -0.5574530  0.2897598  0.90412737 -0.3504568</span></span>
+<span><span class="co">## KRT7  -0.15416641 -0.29950775 -0.5313655  0.1429002  0.93365427 -0.2936415</span></span>
 <span><span class="co">##               c6         c7</span></span>
-<span><span class="co">## CD68   0.3259654  0.2877653</span></span>
-<span><span class="co">## DST   -0.2158951 -0.2709316</span></span>
-<span><span class="co">## EPCAM -0.2782382 -0.3011172</span></span>
-<span><span class="co">## ERBB2 -0.2503053 -0.2680633</span></span>
-<span><span class="co">## FOXA1 -0.2733937 -0.2925103</span></span>
-<span><span class="co">## KRT7  -0.2571191 -0.2824858</span></span></code></pre>
+<span><span class="co">## CD68   0.2343318  0.1504930</span></span>
+<span><span class="co">## DST   -0.3835009 -0.4094809</span></span>
+<span><span class="co">## EPCAM -0.4591613 -0.4444322</span></span>
+<span><span class="co">## ERBB2 -0.4587071 -0.4455121</span></span>
+<span><span class="co">## FOXA1 -0.4489792 -0.4284400</span></span>
+<span><span class="co">## KRT7  -0.4350895 -0.4261375</span></span></code></pre>
 <div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># permutation adjusted p-value for every pair of gene and cluster vector</span></span>
 <span><span class="va">perm_res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_perm_adjp.html">get_perm_adjp</a></span><span class="op">(</span><span class="va">perm_p</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">perm_res</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">##                c5        c8       c3         c2          c1          c4</span></span>
-<span><span class="co">## CD68  1.000000000 0.7475857 0.188383 1.00000000 1.000000000 0.002854289</span></span>
-<span><span class="co">## DST   0.006660007 1.0000000 1.000000 0.17982018 0.007992008 1.000000000</span></span>
-<span><span class="co">## EPCAM 1.000000000 1.0000000 1.000000 0.24775225 0.004995005 1.000000000</span></span>
-<span><span class="co">## ERBB2 1.000000000 1.0000000 1.000000 0.00999001 0.004995005 1.000000000</span></span>
-<span><span class="co">## FOXA1 1.000000000 1.0000000 1.000000 0.62937063 0.004995005 1.000000000</span></span>
-<span><span class="co">## KRT7  1.000000000 1.0000000 1.000000 1.00000000 0.004995005 1.000000000</span></span>
-<span><span class="co">##               c6         c7</span></span>
-<span><span class="co">## CD68  0.02920157 0.07104007</span></span>
-<span><span class="co">## DST   1.00000000 1.00000000</span></span>
-<span><span class="co">## EPCAM 1.00000000 1.00000000</span></span>
-<span><span class="co">## ERBB2 1.00000000 1.00000000</span></span>
-<span><span class="co">## FOXA1 1.00000000 1.00000000</span></span>
-<span><span class="co">## KRT7  1.00000000 1.00000000</span></span></code></pre>
+<pre><code><span><span class="co">##                c5        c8        c3          c2          c1          c4</span></span>
+<span><span class="co">## CD68  1.000000000 0.6909757 0.1558442 1.000000000 1.000000000 0.003330003</span></span>
+<span><span class="co">## DST   0.006660007 1.0000000 1.0000000 0.009990010 0.003996004 1.000000000</span></span>
+<span><span class="co">## EPCAM 1.000000000 1.0000000 1.0000000 0.107892108 0.003996004 1.000000000</span></span>
+<span><span class="co">## ERBB2 1.000000000 1.0000000 1.0000000 0.006660007 0.003996004 1.000000000</span></span>
+<span><span class="co">## FOXA1 1.000000000 1.0000000 1.0000000 0.402930403 0.003996004 1.000000000</span></span>
+<span><span class="co">## KRT7  1.000000000 1.0000000 1.0000000 1.000000000 0.003996004 1.000000000</span></span>
+<span><span class="co">##               c6        c7</span></span>
+<span><span class="co">## CD68  0.05532929 0.2597403</span></span>
+<span><span class="co">## DST   1.00000000 1.0000000</span></span>
+<span><span class="co">## EPCAM 1.00000000 1.0000000</span></span>
+<span><span class="co">## ERBB2 1.00000000 1.0000000</span></span>
+<span><span class="co">## FOXA1 1.00000000 1.0000000</span></span>
+<span><span class="co">## KRT7  1.00000000 1.0000000</span></span></code></pre>
 <div class="section level5">
 <h5 id="visualise-top-marker-genes-detected-by-correlation-approach">Visualise top marker genes detected by correlation approach<a class="anchor" aria-label="anchor" href="#visualise-top-marker-genes-detected-by-correlation-approach"></a>
 </h5>
@@ -1096,7 +1096,13 @@ label for every gene.</p>
 <h4 id="linear-modeling-approach-to-detect-marker-genes">Linear modeling approach to detect marker genes<a class="anchor" aria-label="anchor" href="#linear-modeling-approach-to-detect-marker-genes"></a>
 </h4>
 <p>We can create spatial vectors for negative control genes and include
-them as background noise “clusters”.</p>
+them as background noise “clusters”. </p>
+<p>When calling <code><a href="../reference/lasso_markers.html">lasso_markers()</a></code> for detecting marker genes,
+please make sure the <code>gene_mt</code> and <code>cluster_mt</code>
+are calculated from the the same <code>get_vector()</code> call so they
+share the exact same auto-detected bounding box. Mixing outputs from
+separate calls can misalign the spatial bins and lead to incorrect
+results.</p>
 <div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">probe_nm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">rep1_nc_data</span><span class="op">[</span><span class="va">rep1_nc_data</span><span class="op">$</span><span class="va">category</span><span class="op">==</span><span class="st">"probe"</span>,<span class="st">"feature_name"</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="va">codeword_nm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">rep1_nc_data</span><span class="op">[</span><span class="va">rep1_nc_data</span><span class="op">$</span><span class="va">category</span><span class="op">==</span><span class="st">"codeword"</span>,</span>
@@ -1120,23 +1126,23 @@ them as background noise “clusters”.</p>
 <span><span class="co"># the top result table </span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">rep1_top_df_nc</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##        gene top_cluster  glm_coef   pearson max_gg_corr max_gc_corr</span></span>
-<span><span class="co">## CD68   CD68          c4  4.513173 0.5782531   0.5567695   0.5782531</span></span>
-<span><span class="co">## DST     DST          c1  2.078093 0.5990437   0.7532704   0.5990437</span></span>
-<span><span class="co">## EPCAM EPCAM          c1 10.941894 0.8997768   0.9669918   0.8997768</span></span>
-<span><span class="co">## ERBB2 ERBB2          c1 15.433168 0.7542465   0.9167675   0.7542465</span></span>
-<span><span class="co">## FOXA1 FOXA1          c1 10.554687 0.9240646   0.9669918   0.9240646</span></span>
-<span><span class="co">## KRT7   KRT7          c1 14.310149 0.9441443   0.9643155   0.9441443</span></span></code></pre>
+<span><span class="co">## CD68   CD68          c4  4.449040 0.5951329   0.5143408   0.5951329</span></span>
+<span><span class="co">## DST     DST          c1  2.055449 0.5109713   0.6765032   0.5109713</span></span>
+<span><span class="co">## EPCAM EPCAM          c1 10.669336 0.8643835   0.9547929   0.8643835</span></span>
+<span><span class="co">## ERBB2 ERBB2          c1 14.743715 0.6902759   0.8864028   0.6902759</span></span>
+<span><span class="co">## FOXA1 FOXA1          c1 10.225876 0.9041274   0.9547929   0.9041274</span></span>
+<span><span class="co">## KRT7   KRT7          c1 14.158329 0.9336543   0.9541634   0.9336543</span></span></code></pre>
 <div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># the full result table </span></span>
 <span><span class="va">rep1_full_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_full_mg.html">get_full_mg</a></span><span class="op">(</span><span class="va">rep1_lasso_with_nc</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">rep1_full_df</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">##      gene cluster  glm_coef      p_value   pearson max_gg_corr max_gc_corr</span></span>
-<span><span class="co">## 36   AQP1      c8 7.5643698 3.654085e-23 0.8200364   0.8564451   0.8200364</span></span>
-<span><span class="co">## 37   AQP1      c3 0.9101783 1.302659e-02 0.3671819   0.8564451   0.8200364</span></span>
-<span><span class="co">## 40 CCDC80      c3 4.3660758 2.044282e-22 0.7428737   0.8546367   0.7428737</span></span>
-<span><span class="co">## 41 CCDC80      c7 1.7709563 5.906983e-03 0.2668176   0.8546367   0.7428737</span></span>
-<span><span class="co">## 1    CD68      c4 4.5131728 1.016673e-08 0.5782531   0.5567695   0.5782531</span></span>
-<span><span class="co">## 2    CD68      c1 0.4528253 1.710351e-04 0.1145035   0.5567695   0.5782531</span></span></code></pre>
+<pre><code><span><span class="co">##      gene cluster glm_coef      p_value   pearson max_gg_corr max_gc_corr</span></span>
+<span><span class="co">## 32   AQP1      c8 7.016576 1.783816e-25 0.8270796   0.8442294   0.8270796</span></span>
+<span><span class="co">## 33   AQP1      c6 1.720408 7.631997e-05 0.3209543   0.8442294   0.8270796</span></span>
+<span><span class="co">## 34   AQP1      c3 1.039118 2.122195e-03 0.2099349   0.8442294   0.8270796</span></span>
+<span><span class="co">## 38 CCDC80      c3 3.867855 1.849497e-20 0.7163637   0.8086714   0.7163637</span></span>
+<span><span class="co">## 39 CCDC80      c7 1.533487 3.734641e-02 0.2349379   0.8086714   0.7163637</span></span>
+<span><span class="co">## 1    CD68      c4 4.449040 2.744019e-11 0.5951329   0.5143408   0.5951329</span></span></code></pre>
 <div class="section level5">
 <h5 id="visualise-top-marker-genes-detected-by-linear-modelling-approach">Visualise top marker genes detected by linear modelling
 approach<a class="anchor" aria-label="anchor" href="#visualise-top-marker-genes-detected-by-linear-modelling-approach"></a>
@@ -1188,7 +1194,7 @@ marker genes for every cluster.</p>
 <span>        <span class="va">layout_design</span> <span class="op">&lt;-</span> <span class="va">lyt</span> <span class="op">+</span> <span class="fu">patchwork</span><span class="fu">::</span><span class="fu"><a href="https://patchwork.data-imaginist.com/reference/plot_layout.html" class="external-link">plot_layout</a></span><span class="op">(</span>widths <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">3</span><span class="op">)</span><span class="op">)</span> </span>
 <span>        <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">layout_design</span><span class="op">)</span></span>
 <span><span class="op">}</span><span class="op">}</span></span></code></pre></div>
-<p><img src="jazzPanda_files/figure-html/lasso-rep1%20vis-1.png" width="576"><img src="jazzPanda_files/figure-html/lasso-rep1%20vis-2.png" width="576"><img src="jazzPanda_files/figure-html/lasso-rep1%20vis-3.png" width="576"><img src="jazzPanda_files/figure-html/lasso-rep1%20vis-4.png" width="576"><img src="jazzPanda_files/figure-html/lasso-rep1%20vis-5.png" width="576"><img src="jazzPanda_files/figure-html/lasso-rep1%20vis-6.png" width="576"><img src="jazzPanda_files/figure-html/lasso-rep1%20vis-7.png" width="576"><img src="jazzPanda_files/figure-html/lasso-rep1%20vis-8.png" width="576"></p>
+<p><img src="jazzPanda_files/figure-html/lasso-rep1%20vis-1.png" width="576"><img src="jazzPanda_files/figure-html/lasso-rep1%20vis-2.png" width="576"><img src="jazzPanda_files/figure-html/lasso-rep1%20vis-3.png" width="576"><img src="jazzPanda_files/figure-html/lasso-rep1%20vis-4.png" width="576"><img src="jazzPanda_files/figure-html/lasso-rep1%20vis-5.png" width="576"><img src="jazzPanda_files/figure-html/lasso-rep1%20vis-6.png" width="576"><img src="jazzPanda_files/figure-html/lasso-rep1%20vis-7.png" width="576"></p>
 </div>
 <div class="section level5">
 <h5 id="visualise-cluster-vector-and-the-top-marker-genes-at-spatial-vector-level-1">Visualise cluster vector and the top marker genes at spatial vector
@@ -1325,6 +1331,12 @@ function <code>lasso_markers</code>.</p>
 <div class="section level4">
 <h4 id="linear-modeling-approach-to-detect-marker-genes-1">Linear modeling approach to detect marker genes<a class="anchor" aria-label="anchor" href="#linear-modeling-approach-to-detect-marker-genes-1"></a>
 </h4>
+<p>When calling <code><a href="../reference/lasso_markers.html">lasso_markers()</a></code> for detecting marker genes,
+please make sure the <code>gene_mt</code> and <code>cluster_mt</code>
+are calculated from the the same <code>get_vector()</code> call so they
+share the exact same auto-detected bounding box. Mixing outputs from
+separate calls can misalign the spatial bins and lead to incorrect
+results.</p>
 <div class="sourceCode" id="cb47"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">grid_length</span><span class="op">&lt;-</span><span class="fl">10</span></span>
 <span><span class="va">twosample_spe</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="va">rep1_sub</span>, <span class="va">rep2_sub</span><span class="op">)</span></span>
@@ -1364,22 +1376,22 @@ function <code>lasso_markers</code>.</p>
 <span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">tworep_res</span><span class="op">$</span><span class="va">top_cluster</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## </span></span>
 <span><span class="co">## c1 c2 c3 c4 c5 c6 c7 c8 </span></span>
-<span><span class="co">##  2  3  3  3  2  2  2  3</span></span></code></pre>
+<span><span class="co">##  3  2  3  3  2  2  2  3</span></span></code></pre>
 <div class="sourceCode" id="cb49"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">tworep_res</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##        gene top_cluster  glm_coef   pearson max_gg_corr max_gc_corr</span></span>
-<span><span class="co">## CD68   CD68          c4  3.035319 0.7259190   0.7043708   0.7259190</span></span>
-<span><span class="co">## DST     DST          c5  8.108966 0.8774345   0.8481269   0.8774345</span></span>
-<span><span class="co">## EPCAM EPCAM          c1 10.359878 0.6430295   0.9483847   0.6430295</span></span>
-<span><span class="co">## ERBB2 ERBB2          c2 25.061551 0.7912525   0.9285817   0.7912525</span></span>
-<span><span class="co">## FOXA1 FOXA1          c2 10.626810 0.6511438   0.9483847   0.6511438</span></span>
-<span><span class="co">## KRT7   KRT7          c1 13.529539 0.6604230   0.9394121   0.6604230</span></span>
+<span><span class="co">## CD68   CD68          c4  2.867318 0.6989050   0.6511176   0.6989050</span></span>
+<span><span class="co">## DST     DST          c5  7.489462 0.8670218   0.8197079   0.8670218</span></span>
+<span><span class="co">## EPCAM EPCAM          c1  9.178748 0.6198084   0.9389694   0.6198084</span></span>
+<span><span class="co">## ERBB2 ERBB2          c2 21.395744 0.7780134   0.9051871   0.7780134</span></span>
+<span><span class="co">## FOXA1 FOXA1          c1  8.642193 0.5549087   0.9389694   0.6054385</span></span>
+<span><span class="co">## KRT7   KRT7          c1 11.974428 0.6505399   0.9154447   0.6505399</span></span>
 <span><span class="co">##            celltype</span></span>
 <span><span class="co">## CD68    Macrophages</span></span>
 <span><span class="co">## DST   Myoepithelial</span></span>
 <span><span class="co">## EPCAM         Tumor</span></span>
 <span><span class="co">## ERBB2          DCIS</span></span>
-<span><span class="co">## FOXA1          DCIS</span></span>
+<span><span class="co">## FOXA1         Tumor</span></span>
 <span><span class="co">## KRT7          Tumor</span></span></code></pre>
 <div class="section level5">
 <h5 id="visualise-the-top-marker-genes-for-each-cluster">Visualise the top marker genes for each cluster<a class="anchor" aria-label="anchor" href="#visualise-the-top-marker-genes-for-each-cluster"></a>
@@ -1547,27 +1559,27 @@ accounting for multiple samples and background noise</p>
 <span><span class="co">## other attached packages:</span></span>
 <span><span class="co">##  [1] scater_1.36.0                   scran_1.36.0                   </span></span>
 <span><span class="co">##  [3] scuttle_1.18.0                  TENxXeniumData_1.4.0           </span></span>
-<span><span class="co">##  [5] ExperimentHub_2.16.0            AnnotationHub_3.16.0           </span></span>
-<span><span class="co">##  [7] BiocFileCache_2.16.0            dbplyr_2.5.0                   </span></span>
-<span><span class="co">##  [9] SpatialFeatureExperiment_1.10.1 ggpubr_0.6.0                   </span></span>
-<span><span class="co">## [11] tidyr_1.3.1                     spatstat_3.3-3                 </span></span>
-<span><span class="co">## [13] spatstat.linnet_3.2-6           spatstat.model_3.3-6           </span></span>
-<span><span class="co">## [15] rpart_4.1.24                    spatstat.explore_3.4-3         </span></span>
+<span><span class="co">##  [5] ExperimentHub_2.16.1            AnnotationHub_3.16.1           </span></span>
+<span><span class="co">##  [7] BiocFileCache_2.16.1            dbplyr_2.5.0                   </span></span>
+<span><span class="co">##  [9] SpatialFeatureExperiment_1.10.1 ggpubr_0.6.1                   </span></span>
+<span><span class="co">## [11] tidyr_1.3.1                     spatstat_3.4-0                 </span></span>
+<span><span class="co">## [13] spatstat.linnet_3.3-1           spatstat.model_3.4-0           </span></span>
+<span><span class="co">## [15] rpart_4.1.24                    spatstat.explore_3.5-2         </span></span>
 <span><span class="co">## [17] nlme_3.1-168                    spatstat.random_3.4-1          </span></span>
-<span><span class="co">## [19] spatstat.geom_3.4-1             spatstat.univar_3.1-3          </span></span>
-<span><span class="co">## [21] spatstat.data_3.1-6             gridExtra_2.3                  </span></span>
+<span><span class="co">## [19] spatstat.geom_3.5-0             spatstat.univar_3.1-4          </span></span>
+<span><span class="co">## [21] spatstat.data_3.1-8             gridExtra_2.3                  </span></span>
 <span><span class="co">## [23] ggrepel_0.9.6                   ggraph_2.2.1                   </span></span>
 <span><span class="co">## [25] igraph_2.1.4                    corrplot_0.95                  </span></span>
 <span><span class="co">## [27] caret_7.0-1                     lattice_0.22-7                 </span></span>
-<span><span class="co">## [29] glmnet_4.1-9                    Matrix_1.7-3                   </span></span>
-<span><span class="co">## [31] dplyr_1.1.4                     data.table_1.17.6              </span></span>
+<span><span class="co">## [29] glmnet_4.1-10                   Matrix_1.7-3                   </span></span>
+<span><span class="co">## [31] dplyr_1.1.4                     data.table_1.17.8              </span></span>
 <span><span class="co">## [33] ggplot2_3.5.2                   SpatialExperiment_1.18.1       </span></span>
 <span><span class="co">## [35] SingleCellExperiment_1.30.1     SummarizedExperiment_1.38.1    </span></span>
 <span><span class="co">## [37] Biobase_2.68.0                  GenomicRanges_1.60.0           </span></span>
-<span><span class="co">## [39] GenomeInfoDb_1.44.0             IRanges_2.42.0                 </span></span>
+<span><span class="co">## [39] GenomeInfoDb_1.44.1             IRanges_2.42.0                 </span></span>
 <span><span class="co">## [41] S4Vectors_0.46.0                BiocGenerics_0.54.0            </span></span>
 <span><span class="co">## [43] generics_0.1.4                  MatrixGenerics_1.20.0          </span></span>
-<span><span class="co">## [45] matrixStats_1.5.0               jazzPanda_0.2.3                </span></span>
+<span><span class="co">## [45] matrixStats_1.5.0               jazzPanda_1.1.1                </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## loaded via a namespace (and not attached):</span></span>
 <span><span class="co">##   [1] fs_1.6.6                  spatialreg_1.3-6         </span></span>
@@ -1584,29 +1596,29 @@ accounting for multiple samples and background noise</p>
 <span><span class="co">##  [23] sass_0.4.10               mvtnorm_1.3-3            </span></span>
 <span><span class="co">##  [25] proxy_0.4-27              pkgdown_2.1.3            </span></span>
 <span><span class="co">##  [27] systemfonts_1.2.3         R.utils_2.13.0           </span></span>
-<span><span class="co">##  [29] parallelly_1.45.0         limma_3.64.1             </span></span>
-<span><span class="co">##  [31] RSQLite_2.4.1             shape_1.4.6.1            </span></span>
+<span><span class="co">##  [29] parallelly_1.45.1         limma_3.64.3             </span></span>
+<span><span class="co">##  [31] RSQLite_2.4.2             shape_1.4.6.1            </span></span>
 <span><span class="co">##  [33] car_3.1-3                 spdep_1.3-13             </span></span>
 <span><span class="co">##  [35] ggbeeswarm_0.7.2          abind_1.4-8              </span></span>
-<span><span class="co">##  [37] R.methodsS3_1.8.2         terra_1.8-54             </span></span>
+<span><span class="co">##  [37] R.methodsS3_1.8.2         terra_1.8-60             </span></span>
 <span><span class="co">##  [39] lifecycle_1.0.4           multcomp_1.4-28          </span></span>
-<span><span class="co">##  [41] yaml_2.3.10               edgeR_4.6.2              </span></span>
+<span><span class="co">##  [41] yaml_2.3.10               edgeR_4.6.3              </span></span>
 <span><span class="co">##  [43] carData_3.0-5             rhdf5_2.52.1             </span></span>
-<span><span class="co">##  [45] recipes_1.3.1             SparseArray_1.8.0        </span></span>
+<span><span class="co">##  [45] recipes_1.3.1             SparseArray_1.8.1        </span></span>
 <span><span class="co">##  [47] blob_1.2.4                dqrng_0.4.1              </span></span>
-<span><span class="co">##  [49] crayon_1.5.3              cowplot_1.1.3            </span></span>
+<span><span class="co">##  [49] crayon_1.5.3              cowplot_1.2.0            </span></span>
 <span><span class="co">##  [51] beachmat_2.24.0           KEGGREST_1.48.1          </span></span>
 <span><span class="co">##  [53] magick_2.8.7              metapod_1.16.0           </span></span>
-<span><span class="co">##  [55] zeallot_0.2.0             pillar_1.10.2            </span></span>
+<span><span class="co">##  [55] zeallot_0.2.0             pillar_1.11.0            </span></span>
 <span><span class="co">##  [57] knitr_1.50                rjson_0.2.23             </span></span>
 <span><span class="co">##  [59] boot_1.3-31               future.apply_1.20.0      </span></span>
 <span><span class="co">##  [61] codetools_0.2-20          wk_0.9.4                 </span></span>
 <span><span class="co">##  [63] glue_1.8.0                vctrs_0.6.5              </span></span>
 <span><span class="co">##  [65] png_0.1-8                 gtable_0.3.6             </span></span>
 <span><span class="co">##  [67] cachem_1.1.0              gower_1.0.2              </span></span>
-<span><span class="co">##  [69] xfun_0.52                 mime_0.13                </span></span>
+<span><span class="co">##  [69] xfun_0.53                 mime_0.13                </span></span>
 <span><span class="co">##  [71] S4Arrays_1.8.1            prodlim_2025.04.28       </span></span>
-<span><span class="co">##  [73] DropletUtils_1.28.0       tidygraph_1.3.1          </span></span>
+<span><span class="co">##  [73] DropletUtils_1.28.1       tidygraph_1.3.1          </span></span>
 <span><span class="co">##  [75] coda_0.19-4.1             survival_3.8-3           </span></span>
 <span><span class="co">##  [77] timeDate_4041.110         sfheaders_0.4.4          </span></span>
 <span><span class="co">##  [79] iterators_1.0.14          hardhat_1.4.1            </span></span>
@@ -1618,7 +1630,7 @@ accounting for multiple samples and background noise</p>
 <span><span class="co">##  [91] irlba_2.3.5.1             vipor_0.4.7              </span></span>
 <span><span class="co">##  [93] KernSmooth_2.23-26        spData_2.3.4             </span></span>
 <span><span class="co">##  [95] DBI_1.2.3                 nnet_7.3-20              </span></span>
-<span><span class="co">##  [97] tidyselect_1.2.1          curl_6.4.0               </span></span>
+<span><span class="co">##  [97] tidyselect_1.2.1          curl_7.0.0               </span></span>
 <span><span class="co">##  [99] bit_4.6.0                 compiler_4.5.1           </span></span>
 <span><span class="co">## [101] BiocNeighbors_2.2.0       h5mread_1.0.1            </span></span>
 <span><span class="co">## [103] desc_1.4.3                DelayedArray_0.34.1      </span></span>
@@ -1626,7 +1638,7 @@ accounting for multiple samples and background noise</p>
 <span><span class="co">## [107] rappdirs_0.3.3            tiff_0.1-12              </span></span>
 <span><span class="co">## [109] stringr_1.5.1             digest_0.6.37            </span></span>
 <span><span class="co">## [111] goftest_1.2-3             fftwtools_0.9-11         </span></span>
-<span><span class="co">## [113] spatstat.utils_3.1-4      rmarkdown_2.29           </span></span>
+<span><span class="co">## [113] spatstat.utils_3.1-5      rmarkdown_2.29           </span></span>
 <span><span class="co">## [115] XVector_0.48.0            htmltools_0.5.8.1        </span></span>
 <span><span class="co">## [117] pkgconfig_2.0.3           jpeg_0.1-11              </span></span>
 <span><span class="co">## [119] sparseMatrixStats_1.20.0  fastmap_1.2.0            </span></span>
@@ -1639,9 +1651,9 @@ accounting for multiple samples and background noise</p>
 <span><span class="co">## [133] RCurl_1.98-1.17           magrittr_2.0.3           </span></span>
 <span><span class="co">## [135] Formula_1.2-5             GenomeInfoDbData_1.2.14  </span></span>
 <span><span class="co">## [137] s2_1.1.9                  patchwork_1.3.1          </span></span>
-<span><span class="co">## [139] Rhdf5lib_1.30.0           Rcpp_1.0.14              </span></span>
+<span><span class="co">## [139] Rhdf5lib_1.30.0           Rcpp_1.1.0               </span></span>
 <span><span class="co">## [141] viridis_0.6.5             stringi_1.8.7            </span></span>
-<span><span class="co">## [143] pROC_1.18.5               MASS_7.3-65              </span></span>
+<span><span class="co">## [143] pROC_1.19.0.1             MASS_7.3-65              </span></span>
 <span><span class="co">## [145] plyr_1.8.9                parallel_4.5.1           </span></span>
 <span><span class="co">## [147] listenv_0.9.1             deldir_2.0-4             </span></span>
 <span><span class="co">## [149] Biostrings_2.76.0         graphlayouts_1.2.2       </span></span>
@@ -1651,9 +1663,9 @@ accounting for multiple samples and background noise</p>
 <span><span class="co">## [157] LearnBayes_2.15.1         BiocVersion_3.21.1       </span></span>
 <span><span class="co">## [159] evaluate_1.0.4            BiocManager_1.30.26      </span></span>
 <span><span class="co">## [161] foreach_1.5.2             tweenr_2.0.3             </span></span>
-<span><span class="co">## [163] purrr_1.0.4               polyclip_1.10-7          </span></span>
-<span><span class="co">## [165] future_1.58.0             ggforce_0.5.0            </span></span>
-<span><span class="co">## [167] rsvd_1.0.5                broom_1.0.8              </span></span>
+<span><span class="co">## [163] purrr_1.1.0               polyclip_1.10-7          </span></span>
+<span><span class="co">## [165] future_1.67.0             ggforce_0.5.0            </span></span>
+<span><span class="co">## [167] rsvd_1.0.5                broom_1.0.9              </span></span>
 <span><span class="co">## [169] e1071_1.7-16              rstatix_0.7.2            </span></span>
 <span><span class="co">## [171] viridisLite_0.4.2         class_7.3-23             </span></span>
 <span><span class="co">## [173] ragg_1.4.0                tibble_3.3.0             </span></span>

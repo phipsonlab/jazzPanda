@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">jazzPanda</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,7 +34,23 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.2.3" id="jazzpanda-023">jazzPanda 0.2.3<a class="anchor" aria-label="anchor" href="#jazzpanda-023"></a></h2>
+<h2 class="pkg-version" data-toc-text="1.1.1" id="jazzpanda-111-102-release">jazzPanda 1.1.1 (1.0.2 (release))<a class="anchor" aria-label="anchor" href="#jazzpanda-111-102-release"></a></h2>
+<p><em>Updated on Sep 1, 2025</em></p>
+<p>Changes to the package include: - <strong>function <code><a href="../reference/get_vectors.html">get_vectors()</a></code></strong>:<br>
+- Buffer used for auto-detecting spatial windows has been changed from 5% to a fixed value of <code>1e-6</code>.<br>
+- Added a new parameter to allow exporting the <strong>calculated bounding box</strong> for each sample.</p>
+<ul><li>
+<strong>function <code><a href="../reference/compute_permp.html">compute_permp()</a></code></strong>:
+<ul><li>Buffer for automatic spatial boundaries is now set to <code>1e-6</code>.<br></li>
+<li>Fixed spatial bin indexing issues to ensure correct alignment when calcualting spatial vectors with count matrix.</li>
+</ul></li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.0.1" id="jazzpanda-101">jazzPanda 1.0.1<a class="anchor" aria-label="anchor" href="#jazzpanda-101"></a></h2>
+<ul><li>Backported updates from version 1.1.1 on Bioconductor devel</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.1.1" id="jazzpanda-111">jazzPanda 1.1.1<a class="anchor" aria-label="anchor" href="#jazzpanda-111"></a></h2>
 <p><em>Updated on June 24, 2025</em></p>
 <p>Changes to the package include:</p>
 <ul><li>

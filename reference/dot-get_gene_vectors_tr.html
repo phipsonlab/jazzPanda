@@ -9,7 +9,7 @@ every gene"></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">jazzPanda</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -79,7 +79,12 @@ vectorization. One of "square" (default), "rectangle", or "hexagon".</p></dd>
 <code>bin_type</code> is "square" or "rectangle", this will be a vector of length
 two giving the numbers of rectangular quadrats in the x and y directions. If
 the <code>bin_type</code> is "hexagonal", this will be a number giving the side
-length of hexagons. Positive numbers only.</p></dd>
+length of hexagons. Positive numbers only.</p>
+<p>For example:</p><ul><li><p><code>c(3, 4)</code> means 3 bins along the x-axis and 4 bins
+      along the y-axis (a 3 × 4 grid).</p></li>
+<li><p><code>c(5, 5)</code> means 5 bins along the x-axis and 5 bins
+      along the y-axis (a 5 × 5 grid).</p></li>
+</ul></dd>
 
 
 <dt id="arg-bin-length">bin_length<a class="anchor" aria-label="anchor" href="#arg-bin-length"></a></dt>
