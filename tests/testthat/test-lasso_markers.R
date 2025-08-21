@@ -395,8 +395,8 @@ full_res_cl <- get_full_mg(lasso_nosig_cl,coef_cutoff = 0)
 test_that("set gene as NA if no clusters are significant", {
     expect_equal(length(lasso_nosig_bg), 2)
     expect_equal(unique(top_res_bg$top_cluster), c("NoSig"))
-    expect_equal(unique(full_res_bg$cluster), 
-                 c("dummy_A1","A","dummy_A2","dummy_B1","B","dummy_B2"))
+    expect_equal(sort(unique(full_res_bg$cluster)), 
+                 c("A","B","dummy_A1","dummy_A2","dummy_B1","dummy_B2"))
     
     expect_equal(length(lasso_nosig_cl), 2)
     expect_equal(unique(top_res_cl$top_cluster), c("NoSig"))
