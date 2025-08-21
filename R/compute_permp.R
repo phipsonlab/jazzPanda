@@ -1,3 +1,4 @@
+
 #' Compute observation statistic for permutation framework
 #'
 #' @param x a named list (of transcript detection coordinates) or 
@@ -43,17 +44,20 @@
 #' Each row refers to a grid, and each column refers to a gene.}
 .compute_observation<- function(x, cluster_info, correlation_method, n_cores,
                             test_genes,bin_type, bin_param, use_cm){
-    vectors_lst <- get_vectors(x=x,sample_names=unique(cluster_info$sample),
+    sample_nm<-unique(cluster_info$sample)
+    vectors_lst <- get_vectors(x=x,sample_names=sample_nm,
                                 cluster_info = cluster_info,
                                 bin_type=bin_type,
                                 bin_param=bin_param,
                                 test_genes=test_genes, n_cores=n_cores,
-                                use_cm =use_cm)
-
+                                use_cm =use_cm,
+                                return_boundary=TRUE)
+    
     # calculate correlation of permuted clusters and gene
     obs.stat <- cor(x=vectors_lst$gene_mt, y=vectors_lst$cluster_mt,
                         method=correlation_method)
-    return (list(obs.stat = obs.stat, gene_mt=vectors_lst$gene_mt))
+    return (list(obs.stat = obs.stat, gene_mt=vectors_lst$gene_mt,
+                boundary=vectors_lst$boundary[[sample_nm]]))
 }
 
 #' Compute permutation statistics for permutation framework
@@ -80,6 +84,11 @@
 #' Each row refers to a grid, and each column refers to a gene.
 #' @param cluster_names A list of strings giving the name and order of the
 #' clusters
+#' @param window_range A  list of spatial ranges for x and y. 
+#' This list contains two components:
+#' \code{w_x} and \code{w_y}, which are numeric vectors of length 2 
+#' specifying the x- and y-axis ranges (e.g., from cell or 
+#' transcript coordinates).
 #' @importFrom foreach foreach
 #' @importFrom foreach `%dopar%`
 #' @importFrom stats cor
@@ -89,19 +98,13 @@
 .compute_permutation<- function(cluster_info, perm.size = 1000,
                                 correlation_method = "pearson",  bin_type,
                                 bin_param, n_cores=1, gene_mt,
-                                cluster_names){
+                                cluster_names, window_range){
     n_clusters <- length(unique(cluster_info$cluster))
     t.perm.array<- array(0, dim = c(ncol(gene_mt),
                             length(cluster_names),perm.size))
-    # Compute padded ranges for this sample
-    x_rng <- range(cluster_info$x, na.rm = TRUE)
-    y_rng <- range(cluster_info$y, na.rm = TRUE)
-    
-    pad_x <- BUFFER_FRAC * diff(x_rng)
-    pad_y <- BUFFER_FRAC * diff(y_rng)
-    
-    w_x <- c(x_rng[1] - pad_x, x_rng[2] + pad_x)
-    w_y <- c(y_rng[1] - pad_y, y_rng[2] + pad_y)
+
+    w_x <- window_range$w_x
+    w_y <- window_range$w_y
     
     if (bin_type == "hexagon"){
         w <-owin(xrange=w_x, yrange=w_y)
@@ -280,7 +283,6 @@ compute_permp<-function(x, cluster_info, perm.size, bin_type,
         message(sprintf("Running %s permutation in sequential", perm.size))
     }
 
-
     # permutation stats
     perm_stat <- .compute_permutation(cluster_info= cluster_info,
                                         perm.size = perm.size,
@@ -288,7 +290,8 @@ compute_permp<-function(x, cluster_info, perm.size, bin_type,
                                         bin_type=bin_type,
                                         bin_param=bin_param, n_cores=n_cores,
                                         gene_mt = obs_res$gene_mt,
-                                        cluster_names =colnames(obs.stat) )
+                                        cluster_names =colnames(obs.stat),
+                                        window_range=obs_res$boundary)
     # permutation stats
     perm.arrays<- perm_stat$t.perm
 

@@ -351,10 +351,17 @@ rep1_sq10_vectors <- get_vectors(x= rep1_sub,
                                 bin_param=c(grid_length,grid_length), 
                                 test_genes = all_real_genes)
 ```
-If your data has different scales (e.g.,` w_x` and `w_y`) for cluster 
-coordinates and gene coordinates, you can construct separate spatial vectors 
-for clusters and genes. Please make sure you use consistent bin parameters 
-(`bin_type` & `bin_param`) to get the spatial vectors. 
+
+The fucntion `get_vector()` now automatically detects the bounding box to 
+define spatial vectors. This makes it robust to scenarios where different 
+samples have very different spatial extents (e.g., one sample is much larger 
+than another). \n
+
+If you want to define gene vectors from transcript coordinates, the cell and 
+transcript coordinates must be in the same coordinate frame and scale
+(same units, same origin). If they aren’t, transform/rescale one to match 
+the other before calling `get_vector()` \n 
+
 ```{r create rep1 different cluster-vec and gene vec}
 seed_number<- 589
 grid_length <- 10
@@ -383,9 +390,9 @@ head(gene_sq10_vectors$gene_mt)
 # gene_sq10_vectors$gene_mt is equivalent to rep1_sq10_vectors$gene_mt
 
 ```
+
 The constructed spatial vectors can be used to quantify cluster-cluster and
 gene-gene correlation.
-
 #### Cluster-Cluster correlation
 ```{r fig.width=6, fig.height=6}
 exp_ord <- paste("c", 1:8, sep="")
@@ -931,7 +938,13 @@ function to get the most relevant cluster label for every gene.
 
 ### Linear modeling approach to detect marker genes 
 We can create spatial vectors for negative control genes and include
-them as background noise "clusters".
+them as background noise "clusters". \n 
+
+When calling `lasso_markers()` for detecting marker genes, please make sure 
+the `gene_mt` and `cluster_mt` are calculated from the the same 
+`get_vector()` call so they share the exact same auto-detected bounding box. 
+Mixing outputs from separate calls can misalign the spatial bins and lead to 
+incorrect results.\n
 ```{r rep1 lasso_markers with background}
 probe_nm <- unique(rep1_nc_data[rep1_nc_data$category=="probe","feature_name"])
 codeword_nm <- unique(rep1_nc_data[rep1_nc_data$category=="codeword",
@@ -1139,6 +1152,11 @@ genes by providing additional sample information as the input for the function
 `lasso_markers`.
 
 ### Linear modeling approach to detect marker genes 
+When calling `lasso_markers()` for detecting marker genes, please make sure 
+the `gene_mt` and `cluster_mt` are calculated from the the same 
+`get_vector()` call so they share the exact same auto-detected bounding box. 
+Mixing outputs from separate calls can misalign the spatial bins and lead to 
+incorrect results.\n
 ```{r tworep no background}
 grid_length<-10
 twosample_spe<-cbind(rep1_sub, rep2_sub)

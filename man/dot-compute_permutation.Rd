@@ -12,7 +12,8 @@
   bin_param,
   n_cores = 1,
   gene_mt,
-  cluster_names
+  cluster_names,
+  window_range
 )
 }
 \arguments{
@@ -45,6 +46,12 @@ Each row refers to a grid, and each column refers to a gene.}
 
 \item{cluster_names}{A list of strings giving the name and order of the
 clusters}
+
+\item{window_range}{A  list of spatial ranges for x and y. 
+This list contains two components:
+\code{w_x} and \code{w_y}, which are numeric vectors of length 2 
+specifying the x- and y-axis ranges (e.g., from cell or 
+transcript coordinates).}
 }
 \value{
 A matrix with permutation statistics

@@ -387,8 +387,8 @@ test_that("Test count matrix vectors match with transcript vectors - cluster vec
 vecs_lst = get_vectors(x= sce_m, cluster_info = clusters,
                        sample_names = "rep1",
                        bin_type = "hexagon",
-                       bin_param = c(10),
-                       test_genes = row.names(cm))
+                       bin_param = c(10),n_cores = 1,
+                       test_genes = row.names(cm), use_cm = TRUE)
 
 test_that("Test can use count matrix (hex) - output vector matches", {
     expect_equal(as.vector(vecs_lst$gene_mt),
@@ -573,4 +573,73 @@ test_that("Test can work for a list input with 2 samples",{
     expect_equal(as.vector(vecs_lst$gene_mt[1:4,"C"]), 
                  as.vector(vecs_lst$gene_mt[5:8,"C"]))
     
+})
+
+
+
+#########################################################################
+# tests/test-square-indexing.R
+library(spatstat.geom)
+# tests/test-square-indexing-3x4.R
+test_that("3x4 bins: manual linear index must use nx (not ny)", {
+    cluster_info = as.data.frame(cbind(x = c(0, 0.7, 1.7, 1.8, 1.6, 3),
+                                       y = c(4, 3.7, 1.7, 1.8, 1.6, 0),
+                                       cluster = c("c1", "c2","c3",
+                                                   "c2","c2","c2"),
+                                       cell_id = c("cell1", "cell2", "cell3",
+                                                   "cell4", "cell5","cell6"),
+                                       sample="sample1"))
+    #(2, 0, 0)
+    #(0, 0, 3)
+    #(0, 0, 0)
+    #(0, 0, 1)
+    
+    cluster_info$x = as.numeric(cluster_info$x)
+    cluster_info$y = as.numeric(cluster_info$y)
+    
+    cm <- matrix(c(1,2,3,4,5,6,
+                   2,2,0,4,5,6),
+                 nrow=2, byrow=TRUE)
+    colnames(cm) <- paste0("cell", 1:6)
+    rownames(cm) <- c("geneA","geneB")
+    se = SingleCellExperiment(list(sample1 = cm))
+    sv_lst = get_vectors(x=se, cluster_info = cluster_info,
+                         sample_names=c("sample1"),
+                         test_genes=c("geneA", "geneB"),
+                         bin_param = c(3,4),# this means 3 bins in x, 4 bins in y
+                         bin_type ="rectangle", 
+                         use_cm=TRUE, return_boundary = TRUE)
+    expect_equal(sv_lst$cluster_mt[,"c1"], c(1,0,0,
+                                             0,0,0,
+                                             0,0,0,
+                                             0,0,0))
+    expect_equal(sv_lst$cluster_mt[,"c2"], c(1, 0, 0, 
+                                             0, 0, 0, 
+                                             0, 2, 0, 
+                                             0, 0, 1))
+    expect_equal(sv_lst$cluster_mt[,"c3"], c(0,0,0,
+                                             0,0,0,
+                                             0,1,0,
+                                             0,0,0))
+    # cell1 = c(1, 0, 0, 0 , 0 , 0, 0 ,0 ,0, 0 ,0 ,0)
+    # cell2 = c(1, 0, 0, 0 , 0 , 0, 0 ,0 ,0, 0 ,0 ,0)
+    # cell3 = c(0, 0, 0, 0 , 0 , 0, 0 ,1 ,0, 0 ,0 ,0)
+    # cell4 = c(0, 0, 0, 0 , 0 , 0, 0 ,1 ,0, 0 ,0 ,0)
+    # cell5 = c(0, 0, 0, 0 , 0 , 0, 0 ,1 ,0, 0 ,0 ,0)
+    # cell6 = c(0, 0, 0, 0 , 0 , 0, 0 ,0 ,0, 0 ,0 ,1)
+    # as.vector(t(quadratcount(ppp(cluster_info$x[6], 
+    #                              cluster_info$y[6], 
+    #                              window = owin(xrange =sv_lst$boundary$sample1$w_x, 
+    #                                            yrange = sv_lst$boundary$sample1$w_y)), 
+    #                                                 nx = 3, ny = 4)))
+   
+    
+    expect_equal(sv_lst$gene_mt[,"geneA"], c(3, 0, 0,
+                                             0, 0, 0,
+                                             0, 12, 0, 
+                                             0, 0, 6))
+    expect_equal(sv_lst$gene_mt[,"geneB"], c(4, 0, 0,
+                                             0, 0, 0, 
+                                             0, 9, 0, 
+                                             0, 0, 6))
 })
