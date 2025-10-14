@@ -383,7 +383,11 @@ rand_cl_mt = matrix(runif(n=1600,min=0, max = 1),
                     ncol=2, 
                     nrow=nrow(vecs_lst$cluster_mt))
 colnames(rand_cl_mt)=colnames(vecs_lst$cluster_mt)[1:2]
-rand_cl_mt = as.data.frame(cbind(rand_cl_mt, vecs_lst$cluster_mt[, c(3:4)]))
+rand_cl_mt = data.frame(rand_cl_mt,
+                        vecs_lst$cluster_mt[, c(3:4), drop=FALSE],
+                        stringsAsFactors=FALSE)
+rand_cl_mt[,1:2] <- lapply(rand_cl_mt[,1:2], as.numeric)
+
 lasso_nosig_cl = lasso_markers(gene_mt=vecs_lst$gene_mt,
                             cluster_mt = rand_cl_mt,
                             sample_names=c("sample1","sample2"),

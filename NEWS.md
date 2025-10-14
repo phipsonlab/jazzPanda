@@ -1,3 +1,9 @@
+# jazzPanda 1.1.2
+*Updated on Oct 14, 2025*
+
+- Minor bug fix for Bioconductor devel.
+
+
 # jazzPanda 1.0.1
 *Updated on Sep 1, 2025*
 
