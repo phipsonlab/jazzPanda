@@ -1,8 +1,8 @@
 Package: jazzPanda
 Type: Package
 Title: Finding spatially relevant marker genes in image based spatial transcriptomics data 
-Version: 1.1.2
-Date: 2024-07-25
+Version: 1.1.3
+Date: 2025-10-14
 Authors@R: 
   c(person(given = "Melody",
            family = "Jin",
