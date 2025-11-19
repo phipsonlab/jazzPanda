@@ -1,0 +1,197 @@
+# Vectorise the spatial coordinates
+
+This function will convert the coordinates into a numeric vector for
+genes and clusters.
+
+## Usage
+
+``` r
+get_vectors(
+  x,
+  cluster_info,
+  sample_names,
+  bin_type,
+  bin_param,
+  test_genes,
+  use_cm = FALSE,
+  n_cores = 1,
+  return_boundary = FALSE
+)
+```
+
+## Arguments
+
+- x:
+
+  a named list (of transcript detection coordinates) or
+  SingleCellExperiment or SpatialExperiment or SpatialFeatureExperiment
+  object. If a named list is provided, every list element is a dataframe
+  containing the transcript detection coordinates and column names must
+  include "feature_name" (gene name), "x" (x coordinate), "y" (y
+  coordinate). The list names must match samples in cluster_info.
+
+- cluster_info:
+
+  A dataframe/matrix containing the centroid coordinates, cluster label
+  and sample for each cell.The column names must include "x" (x
+  coordinate), "y" (y coordinate), "cluster" (cluster label) and
+  "sample" (sample). It is strongly recommended to use syntactically
+  valid names for columns clusters and samples. If invalid names are
+  detected, the function
+  [`make.names`](https://rdrr.io/r/base/make.names.html) will be
+  employed to generate valid names. A message will also be displayed to
+  indicate this change.
+
+- sample_names:
+
+  a vector of strings giving the sample names. It is strongly
+  recommended to use syntactically valid names for columns clusters and
+  samples. If invalid names are detected, the function
+  [`make.names`](https://rdrr.io/r/base/make.names.html) will be
+  employed to generate valid names. A message will also be displayed to
+  indicate this change.
+
+- bin_type:
+
+  A string indicating which bin shape is to be used for vectorization.
+  One of "square" (default), "rectangle", or "hexagon".
+
+- bin_param:
+
+  A numeric vector indicating the size of the bin. If the `bin_type` is
+  "square" or "rectangle", this will be a vector of length two giving
+  the numbers of rectangular quadrats in the x and y directions. If the
+  `bin_type` is "hexagonal", this will be a number giving the side
+  length of hexagons. Positive numbers only.
+
+  For example:
+
+  - `c(3, 4)` means 3 bins along the x-axis and 4 bins along the y-axis
+    (a 3 × 4 grid).
+
+  - `c(5, 5)` means 5 bins along the x-axis and 5 bins along the y-axis
+    (a 5 × 5 grid).
+
+- test_genes:
+
+  A vector of strings giving the name of the genes you want to create
+  gene vector. This will be used as column names for one of the result
+  matrix `gene_mt`.
+
+- use_cm:
+
+  A boolean value that specifies whether to create spatial vectors for
+  genes using the count matrix and cell coordinates instead of the
+  transcript coordinates when both types of information are available.
+  The default setting is FALSE.
+
+- n_cores:
+
+  A positive number specifying number of cores used for parallelizing
+  permutation testing. Default is one core (sequential processing).
+
+- return_boundary:
+
+  Logical. If TRUE, return the x- and y-coordinate limits (\`xrange\`,
+  \`yrange\`) of the enclosing box for each sample in addition to the
+  main result. The default setting is FALSE.
+
+## Value
+
+a list of two matrices with the following components
+
+- `gene_mt` :
+
+  contains the transcript count in each grid. Each row refers to a grid,
+  and each column refers to a gene.
+
+- `cluster_mt` :
+
+  contains the number of cells in a specific cluster in each grid. Each
+  row refers to a grid, and each column refers to a cluster.
+
+The row order of `gene_mt` matches the row order of `cluster_mt`.
+
+- `boundary` (optional):
+
+  Returned only if `return_boundary = TRUE`. A list containing the x-
+  and y-coordinate limits of the enclosing box for each sample.
+
+## Details
+
+This function can be used to generate input for
+[`lasso_markers`](https://phipsonlab.github.io/jazzPanda/reference/lasso_markers.md)
+by specifying all the parameters.
+
+Suppose the input data contains \\n\\ genes, \\c\\ clusters, and \\k\\
+samples, we want to use \\a \times a\\ square bin to convert the
+coordinates of genes and clusters into 1d vectors.
+
+If \\k=1\\, the returned list will contain one matrix for gene vectors
+(`gene_mt`) of dimension \\a^2 \times n\\ and one matrix for cluster
+vectors (`cluster_mt`) of dimension \\a^2 \times c\\.
+
+If \\k\>1\\, gene and cluster vectors are constructed for each sample
+separately and concat together. There will be additional k columns on
+the returned `cluster_mt`, which is the one-hot encoding of the sample
+information.
+
+Moreover, this function can vectorise genes and clusters separately
+based on the input. If `x` is NULL, this function will return vectorised
+clusters based on `cluster_info`. If `cluster_info` is NULL, this
+function will return vectorised genes based on `x`.
+
+## Examples
+
+``` r
+library(SpatialExperiment)
+set.seed(100)
+#  simulate coordinates for clusters
+df_clA = data.frame(x = rnorm(n=100, mean=20, sd=5),
+                 y = rnorm(n=100, mean=20, sd=5), cluster="A")
+df_clB = data.frame(x = rnorm(n=100, mean=100, sd=5),
+                y = rnorm(n=100, mean=100, sd=5), cluster="B")
+
+clusters = rbind(df_clA, df_clB)
+clusters$sample="sample1"
+
+# simulate coordinates for genes
+trans_info = data.frame(rbind(cbind(x = rnorm(n=10, mean=20,sd=5),
+                                y = rnorm(n=10, mean=20, sd=5),
+                                 feature_name="gene_A1"),
+                           cbind(x = rnorm(n=10, mean=20, sd=5),
+                                 y = rnorm(n=10, mean=20, sd=5),
+                                 feature_name="gene_A2"),
+                           cbind(x = rnorm(n=10, mean=100, sd=5),
+                                 y = rnorm(n=10, mean=100, sd=5),
+                                 feature_name="gene_B1"),
+                           cbind(x = rnorm(n=10, mean=100, sd=5),
+                                 y = rnorm(n=10, mean=100, sd=5),
+                                 feature_name="gene_B2")))
+trans_info$x=as.numeric(trans_info$x)
+trans_info$y=as.numeric(trans_info$y)
+trans_info$cell = sample(c("cell1","cell2","cell2"),replace=TRUE,
+                        size=nrow(trans_info))
+# use named list as input
+vecs_lst = get_vectors(x= list("sample1" = trans_info),
+                    sample_names=c("sample1"),
+                    cluster_info = clusters,
+                    bin_type = "square",
+                    bin_param = c(5,5),
+                    test_genes =c("gene_A1","gene_A2","gene_B1","gene_B2"))
+#> Warning: 1 point was rejected as lying outside the specified window
+#> Warning: 6 points were rejected as lying outside the specified window
+# use SpatialExperiment object as input
+trans_mol <- BumpyMatrix::splitAsBumpyMatrix(
+    trans_info[, c("x", "y")], 
+    row = trans_info$feature_name, col = trans_info$cell )
+spe<- SpatialExperiment(
+     assays = list(molecules = trans_mol),sample_id ="sample1" )
+vecs_lst_spe = get_vectors(x=spe,sample_names=c("sample1"),
+                    cluster_info = clusters,
+                    bin_type = "square",
+                    bin_param = c(5,5),
+                    test_genes =c("gene_A1","gene_A2","gene_B1","gene_B2"))
+#> Warning: 1 point was rejected as lying outside the specified window
+#> Warning: 6 points were rejected as lying outside the specified window
+```

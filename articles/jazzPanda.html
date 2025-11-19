@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">jazzPanda</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -53,7 +53,7 @@
 
       <h1>jazzPanda example</h1>
             
-            <h4 data-toc-skip class="date">21 Aug 2025</h4>
+            <h4 data-toc-skip class="date">19 Nov 2025</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/phipsonlab/jazzPanda/blob/main/vignettes/jazzPanda.Rmd" class="external-link"><code>vignettes/jazzPanda.Rmd</code></a></small>
       <div class="d-none name"><code>jazzPanda.Rmd</code></div>
@@ -279,7 +279,7 @@ subset</p>
 <span>                    <span class="fu">patchwork</span><span class="fu">::</span><span class="fu"><a href="https://patchwork.data-imaginist.com/reference/plot_layout.html" class="external-link">plot_layout</a></span><span class="op">(</span>widths <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">4</span><span class="op">)</span>, heights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span> </span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">layout_design</span><span class="op">)</span></span></code></pre></div>
-<p><img src="jazzPanda_files/figure-html/rep%20clusters%20vis-1.png" width="576"></p>
+<p><img src="jazzPanda_files/figure-html/rep%20clusters%20vis-1.png" class="r-plt" width="576"></p>
 </div>
 <div class="section level3">
 <h3 id="spatial-vectors">Spatial vectors<a class="anchor" aria-label="anchor" href="#spatial-vectors"></a>
@@ -337,7 +337,7 @@ capture more details than square bins.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mar<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.1</span>,<span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">vec_its</span>, main <span class="op">=</span> <span class="st">""</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/title.html" class="external-link">title</a></span><span class="op">(</span>main <span class="op">=</span> <span class="st">"hex binning"</span>, line <span class="op">=</span> <span class="op">-</span><span class="fl">2</span><span class="op">)</span></span></code></pre></div>
-<p><img src="jazzPanda_files/figure-html/plot%20spatial%20genes-1.png" width="576"></p>
+<p><img src="jazzPanda_files/figure-html/plot%20spatial%20genes-1.png" class="r-plt" width="576"></p>
 </div>
 <div class="section level4">
 <h4 id="example-of-cluster-vectors-from-scratch">Example of cluster vectors from scratch<a class="anchor" aria-label="anchor" href="#example-of-cluster-vectors-from-scratch"></a>
@@ -383,7 +383,7 @@ capture more details than square bins.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mar<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.1</span>,<span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">vec_its</span>, main <span class="op">=</span> <span class="st">""</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/title.html" class="external-link">title</a></span><span class="op">(</span>main <span class="op">=</span> <span class="st">"hex binning"</span>, line <span class="op">=</span> <span class="op">-</span><span class="fl">2</span><span class="op">)</span></span></code></pre></div>
-<p><img src="jazzPanda_files/figure-html/plot%20spatial%20clusters-1.png" width="576"></p>
+<p><img src="jazzPanda_files/figure-html/plot%20spatial%20clusters-1.png" class="r-plt" width="576"></p>
 <p>The function <code><a href="../reference/get_vectors.html">get_vectors()</a></code> can be used to create spatial
 vectors for all the genes and clusters. These spatial vectors may take
 the form of squares, rectangles, or hexagons specified by the
@@ -478,7 +478,7 @@ correlation</p>
 <span>                insig <span class="op">=</span> <span class="st">"blank"</span>, </span>
 <span>                title <span class="op">=</span> <span class="st">"cluster-cluster correlation (square bin = 40x40)"</span></span>
 <span>                <span class="op">)</span></span></code></pre></div>
-<p><img src="jazzPanda_files/figure-html/unnamed-chunk-3-1.png" width="576"></p>
+<p><img src="jazzPanda_files/figure-html/unnamed-chunk-3-1.png" class="r-plt" width="576"></p>
 <div class="section level5">
 <h5 id="gene-cluster-correlation">Gene-Cluster correlation<a class="anchor" aria-label="anchor" href="#gene-cluster-correlation"></a>
 </h5>
@@ -508,7 +508,7 @@ correlation</p>
 <span>            legend.text<span class="op">=</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="st">"Average gene-gene correlation"</span><span class="op">)</span><span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="st">"Average gene-cluster correlation"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="jazzPanda_files/figure-html/gene_cluster_corr-1.png" width="576"></p>
+<p><img src="jazzPanda_files/figure-html/gene_cluster_corr-1.png" class="r-plt" width="576"></p>
 <p>We can also construct a gene network based on the spatial vector for
 the genes.</p>
 </div>
@@ -532,7 +532,7 @@ the genes.</p>
 <span>    <span class="fu"><a href="https://ggraph.data-imaginist.com/reference/geom_node_point.html" class="external-link">geom_node_point</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"lightblue"</span>, size <span class="op">=</span> <span class="fl">5</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://ggraph.data-imaginist.com/reference/geom_node_text.html" class="external-link">geom_node_text</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>label <span class="op">=</span> <span class="va">name</span><span class="op">)</span>, </span>
 <span>                    vjust <span class="op">=</span> <span class="fl">1</span>, hjust <span class="op">=</span> <span class="fl">1</span>,size<span class="op">=</span><span class="fl">2</span>,color<span class="op">=</span><span class="st">"orange"</span>, repel <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> </span></code></pre></div>
-<p><img src="jazzPanda_files/figure-html/gene_graph-1.png" width="576"></p>
+<p><img src="jazzPanda_files/figure-html/gene_graph-1.png" class="r-plt" width="576"></p>
 </div>
 </div>
 <div class="section level4">
@@ -614,10 +614,12 @@ to <code>lasso_markers</code> to identify marker genes.</p>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Bioconductor/ExperimentHub" class="external-link">ExperimentHub</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/MarioniLab/scran/" class="external-link">scran</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://bioconductor.org/packages/scater/" class="external-link">scater</a></span><span class="op">)</span></span>
-<span><span class="va">eh</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/ExperimentHub/man/ExperimentHub-class.html" class="external-link">ExperimentHub</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="va">q</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/AnnotationHub/man/AnnotationHub-class.html" class="external-link">query</a></span><span class="op">(</span><span class="va">eh</span>, <span class="st">"TENxXenium"</span><span class="op">)</span></span>
-<span><span class="va">spe_example</span> <span class="op">&lt;-</span> <span class="va">q</span><span class="op">[[</span><span class="st">"EH8547"</span><span class="op">]</span><span class="op">]</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">spe_example</span><span class="op">)</span><span class="op">$</span><span class="va">cell_id</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/row_colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">spe_example</span><span class="op">)</span></span>
+<span><span class="va">eh</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/ExperimentHub/man/ExperimentHub-class.html" class="external-link">ExperimentHub</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">q</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/AnnotationHub/man/AnnotationHub-class.html" class="external-link">query</a></span><span class="op">(</span><span class="va">eh</span>, <span class="st">"TENxXenium"</span><span class="op">)</span></span>
+<span><span class="va">spe_example</span> <span class="op">&lt;-</span> <span class="va">q</span><span class="op">[[</span><span class="st">"EH8547"</span><span class="op">]</span><span class="op">]</span></span></code></pre></div>
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">spe_example</span><span class="op">)</span><span class="op">$</span><span class="va">cell_id</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/row_colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">spe_example</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span>
 <span><span class="co"># use a subset data</span></span>
 <span><span class="va">subset_cells</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/row_colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">spe_example</span><span class="op">)</span>, size <span class="op">=</span> <span class="fl">100</span>, replace <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
@@ -667,7 +669,7 @@ to <code>lasso_markers</code> to identify marker genes.</p>
 <span><span class="co">## [4,]  2  0  0</span></span>
 <span><span class="co">## [5,]  6  6  0</span></span>
 <span><span class="co">## [6,]  1  3  0</span></span></code></pre>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># spatial vector for every gene </span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">example_vectors_cm</span><span class="op">$</span><span class="va">gene_mt</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##      2010300C02Rik Acsbg1 Acta2 Acvrl1 Adamts2</span></span>
@@ -677,7 +679,7 @@ to <code>lasso_markers</code> to identify marker genes.</p>
 <span><span class="co">## [4,]            24     17     0      5       0</span></span>
 <span><span class="co">## [5,]             9     18     1      4       0</span></span>
 <span><span class="co">## [6,]            12     20     0      1       0</span></span></code></pre>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># -----------------------------------------------------------------------------</span></span>
 <span><span class="co"># build spatial vectors from transcript coordinates and cluster coordinates </span></span>
 <span><span class="va">example_vectors_tr</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_vectors.html">get_vectors</a></span><span class="op">(</span>x<span class="op">=</span> <span class="va">spe_sub</span>,</span>
@@ -696,7 +698,7 @@ to <code>lasso_markers</code> to identify marker genes.</p>
 <div class="section level5">
 <h5 id="from-a-spatialfeatureexperiment-object">From a SpatialFeatureExperiment object<a class="anchor" aria-label="anchor" href="#from-a-spatialfeatureexperiment-object"></a>
 </h5>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sfe_example</span> <span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/pkg/SpatialFeatureExperiment/man/SpatialFeatureExperiment.html" class="external-link">SpatialFeatureExperiment</a></span><span class="op">(</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>counts <span class="op">=</span> <span class="va">spe_sub</span><span class="op">@</span><span class="va">assays</span><span class="op">@</span><span class="va">data</span><span class="op">$</span><span class="va">counts</span><span class="op">)</span>,</span>
 <span>    colData <span class="op">=</span> <span class="va">spe_sub</span><span class="op">@</span><span class="va">colData</span>,</span>
@@ -745,7 +747,7 @@ coordinates The defined example_vectors_cm can be passed to
 coordinate information is available, you can alternatively create a
 SpatialExperiment object and compute the spatial vectors using the
 transcript coordinates.</p>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sce_example</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/SingleCellExperiment/man/SingleCellExperiment.html" class="external-link">SingleCellExperiment</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>sample01 <span class="op">=</span> <span class="va">cm</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co"># -----------------------------------------------------------------------------</span></span>
 <span><span class="co"># build spatial vectors from count matrix and cluster coordinates </span></span>
@@ -794,7 +796,7 @@ defined example_vectors_cm can be passed to <code>lasso_markers</code>
 to identify marker genes. \ If transcript coordinate information is
 available, you can alternatively create a SpatialExperiment object and
 compute the spatial vectors using the transcript coordinates.</p>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://satijalab.org/seurat" class="external-link">Seurat</a></span><span class="op">)</span></span>
 <span><span class="co"># suppose cm is the count matrix</span></span>
 <span><span class="va">seu_obj</span> <span class="op">&lt;-</span> <span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/CreateSeuratObject.html" class="external-link">CreateSeuratObject</a></span><span class="op">(</span>counts <span class="op">=</span> <span class="va">cm</span><span class="op">)</span></span>
@@ -875,7 +877,7 @@ cluster spatial vector is linear. </p>
 <td>Fibroblasts</td>
 </tr>
 </tbody></table>
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">genes_lst</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ERBB2"</span>,<span class="st">"AQP1"</span>,<span class="st">"LUM"</span>,<span class="st">"IL7R"</span>,<span class="st">"MZB1"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="kw">for</span> <span class="op">(</span><span class="va">i_cluster</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"c1"</span>,<span class="st">"c8"</span>,<span class="st">"c3"</span>,<span class="st">"c6"</span>,<span class="st">"c7"</span><span class="op">)</span><span class="op">)</span><span class="op">{</span></span>
@@ -909,7 +911,7 @@ cluster spatial vector is linear. </p>
 <span>                <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">i_cluster</span>,<span class="st">" - cluster vector"</span>, sep<span class="op">=</span><span class="st">""</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
 <span>                <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="st">"gene vector"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
-<p><img src="jazzPanda_files/figure-html/linear%20vector%20to%20vector%20plot-1.png" width="672"><img src="jazzPanda_files/figure-html/linear%20vector%20to%20vector%20plot-2.png" width="672"><img src="jazzPanda_files/figure-html/linear%20vector%20to%20vector%20plot-3.png" width="672"><img src="jazzPanda_files/figure-html/linear%20vector%20to%20vector%20plot-4.png" width="672"><img src="jazzPanda_files/figure-html/linear%20vector%20to%20vector%20plot-5.png" width="672"></p>
+<p><img src="jazzPanda_files/figure-html/linear%20vector%20to%20vector%20plot-1.png" class="r-plt" width="672"><img src="jazzPanda_files/figure-html/linear%20vector%20to%20vector%20plot-2.png" class="r-plt" width="672"><img src="jazzPanda_files/figure-html/linear%20vector%20to%20vector%20plot-3.png" class="r-plt" width="672"><img src="jazzPanda_files/figure-html/linear%20vector%20to%20vector%20plot-4.png" class="r-plt" width="672"><img src="jazzPanda_files/figure-html/linear%20vector%20to%20vector%20plot-5.png" class="r-plt" width="672"></p>
 </div>
 <div class="section level3">
 <h3 id="scenario-1-one-sample">Scenario 1: one sample<a class="anchor" aria-label="anchor" href="#scenario-1-one-sample"></a>
@@ -923,7 +925,7 @@ p-value for every pair of gene cluster and cluster vector.</p>
 <div class="section level4">
 <h4 id="correlation-based-method-to-detect-marker-genes">Correlation-based method to detect marker genes<a class="anchor" aria-label="anchor" href="#correlation-based-method-to-detect-marker-genes"></a>
 </h4>
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="va">seed_number</span><span class="op">)</span></span>
 <span><span class="va">perm_p</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/compute_permp.html">compute_permp</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">rep1_sub</span>,</span>
 <span>                        cluster_info<span class="op">=</span><span class="va">rep1_clusters</span>, </span>
@@ -952,19 +954,19 @@ p-value for every pair of gene cluster and cluster vector.</p>
 <span><span class="co">## ERBB2 -0.4587071 -0.4455121</span></span>
 <span><span class="co">## FOXA1 -0.4489792 -0.4284400</span></span>
 <span><span class="co">## KRT7  -0.4350895 -0.4261375</span></span></code></pre>
-<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># permutation adjusted p-value for every pair of gene and cluster vector</span></span>
 <span><span class="va">perm_res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_perm_adjp.html">get_perm_adjp</a></span><span class="op">(</span><span class="va">perm_p</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">perm_res</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">##                c5        c8        c3          c2          c1          c4</span></span>
-<span><span class="co">## CD68  1.000000000 0.7209457 0.2037962 1.000000000 1.000000000 0.003330003</span></span>
-<span><span class="co">## DST   0.006660007 1.0000000 1.0000000 0.006660007 0.003996004 1.000000000</span></span>
-<span><span class="co">## EPCAM 1.000000000 1.0000000 1.0000000 0.119880120 0.003996004 1.000000000</span></span>
-<span><span class="co">## ERBB2 1.000000000 1.0000000 1.0000000 0.006660007 0.003996004 1.000000000</span></span>
-<span><span class="co">## FOXA1 1.000000000 1.0000000 1.0000000 0.439560440 0.003996004 1.000000000</span></span>
-<span><span class="co">## KRT7  1.000000000 1.0000000 1.0000000 1.000000000 0.003996004 1.000000000</span></span>
+<pre><code><span><span class="co">##                c5        c8        c3         c2          c1          c4</span></span>
+<span><span class="co">## CD68  1.000000000 0.7076257 0.1478521 1.00000000 1.000000000 0.003330003</span></span>
+<span><span class="co">## DST   0.006660007 1.0000000 1.0000000 0.01998002 0.003996004 1.000000000</span></span>
+<span><span class="co">## EPCAM 1.000000000 1.0000000 1.0000000 0.10789211 0.003996004 1.000000000</span></span>
+<span><span class="co">## ERBB2 1.000000000 1.0000000 1.0000000 0.00999001 0.003996004 1.000000000</span></span>
+<span><span class="co">## FOXA1 1.000000000 1.0000000 1.0000000 0.44622045 0.003996004 1.000000000</span></span>
+<span><span class="co">## KRT7  1.000000000 1.0000000 1.0000000 1.00000000 0.003996004 1.000000000</span></span>
 <span><span class="co">##               c6        c7</span></span>
-<span><span class="co">## CD68  0.06301391 0.2760875</span></span>
+<span><span class="co">## CD68  0.06608776 0.2488421</span></span>
 <span><span class="co">## DST   1.00000000 1.0000000</span></span>
 <span><span class="co">## EPCAM 1.00000000 1.0000000</span></span>
 <span><span class="co">## ERBB2 1.00000000 1.0000000</span></span>
@@ -977,7 +979,7 @@ p-value for every pair of gene cluster and cluster vector.</p>
 genes for the corresponding cluster. We can rank the marker genes by the
 observed correlationand plot the transcript detection coordinates for
 the top three marker genes for every cluster.</p>
-<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">res_df_1000</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">perm_p</span><span class="op">$</span><span class="va">perm.pval.adj</span><span class="op">)</span></span>
 <span><span class="va">res_df_1000</span><span class="op">$</span><span class="va">gene</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/row.names.html" class="external-link">row.names</a></span><span class="op">(</span><span class="va">res_df_1000</span><span class="op">)</span></span>
 <span><span class="va">cluster_names</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">rep1_clusters</span><span class="op">$</span><span class="va">cluster</span><span class="op">)</span><span class="op">)</span></span>
@@ -1019,7 +1021,7 @@ the top three marker genes for every cluster.</p>
 <span>    <span class="va">layout_design</span> <span class="op">&lt;-</span> <span class="va">lyt</span> <span class="op">+</span> <span class="fu">patchwork</span><span class="fu">::</span><span class="fu"><a href="https://patchwork.data-imaginist.com/reference/plot_layout.html" class="external-link">plot_layout</a></span><span class="op">(</span>widths <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">3</span><span class="op">)</span><span class="op">)</span> </span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">layout_design</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
-<p><img src="jazzPanda_files/figure-html/rep1%20permutation%20vis-1.png" width="576"><img src="jazzPanda_files/figure-html/rep1%20permutation%20vis-2.png" width="576"><img src="jazzPanda_files/figure-html/rep1%20permutation%20vis-3.png" width="576"><img src="jazzPanda_files/figure-html/rep1%20permutation%20vis-4.png" width="576"><img src="jazzPanda_files/figure-html/rep1%20permutation%20vis-5.png" width="576"><img src="jazzPanda_files/figure-html/rep1%20permutation%20vis-6.png" width="576"><img src="jazzPanda_files/figure-html/rep1%20permutation%20vis-7.png" width="576"><img src="jazzPanda_files/figure-html/rep1%20permutation%20vis-8.png" width="576"></p>
+<p><img src="jazzPanda_files/figure-html/rep1%20permutation%20vis-1.png" class="r-plt" width="576"><img src="jazzPanda_files/figure-html/rep1%20permutation%20vis-2.png" class="r-plt" width="576"><img src="jazzPanda_files/figure-html/rep1%20permutation%20vis-3.png" class="r-plt" width="576"><img src="jazzPanda_files/figure-html/rep1%20permutation%20vis-4.png" class="r-plt" width="576"><img src="jazzPanda_files/figure-html/rep1%20permutation%20vis-5.png" class="r-plt" width="576"><img src="jazzPanda_files/figure-html/rep1%20permutation%20vis-6.png" class="r-plt" width="576"><img src="jazzPanda_files/figure-html/rep1%20permutation%20vis-7.png" class="r-plt" width="576"><img src="jazzPanda_files/figure-html/rep1%20permutation%20vis-8.png" class="r-plt" width="576"></p>
 </div>
 <div class="section level5">
 <h5 id="visualise-cluster-vector-and-the-top-marker-genes-at-spatial-vector-level">Visualise cluster vector and the top marker genes at spatial vector
@@ -1030,7 +1032,7 @@ marker gene vectors, we can plot the cluster vector on x-axis, and the
 marker gene vector on y-axis. The figure below shows the relationship
 between the cluster vector and the top marker gene vectors detected by
 correlation approach.</p>
-<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cluster_names</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"c"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">8</span>, sep<span class="op">=</span><span class="st">""</span><span class="op">)</span></span>
 <span><span class="va">plot_lst</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="kw">for</span> <span class="op">(</span><span class="va">cl</span> <span class="kw">in</span> <span class="va">cluster_names</span><span class="op">)</span><span class="op">{</span></span>
@@ -1085,7 +1087,7 @@ correlation approach.</p>
 <span>                            common.legend <span class="op">=</span> <span class="cn">FALSE</span>, legend <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">combined_plot</span> </span></code></pre></div>
-<p><img src="jazzPanda_files/figure-html/vvplot_corr-1.png" width="768">
+<p><img src="jazzPanda_files/figure-html/vvplot_corr-1.png" class="r-plt" width="768">
 The other method to identify linearly correlated genes for each cluster
 is to construct a linear model for each gene. We can use the
 <code>lasso_markers</code> function to get the most relevant cluster
@@ -1103,7 +1105,7 @@ are calculated from the the same <code>get_vector()</code> call so they
 share the exact same auto-detected bounding box. Mixing outputs from
 separate calls can misalign the spatial bins and lead to incorrect
 results.</p>
-<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">probe_nm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">rep1_nc_data</span><span class="op">[</span><span class="va">rep1_nc_data</span><span class="op">$</span><span class="va">category</span><span class="op">==</span><span class="st">"probe"</span>,<span class="st">"feature_name"</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="va">codeword_nm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">rep1_nc_data</span><span class="op">[</span><span class="va">rep1_nc_data</span><span class="op">$</span><span class="va">category</span><span class="op">==</span><span class="st">"codeword"</span>,</span>
 <span>                                    <span class="st">"feature_name"</span><span class="op">]</span><span class="op">)</span></span>
@@ -1132,7 +1134,7 @@ results.</p>
 <span><span class="co">## ERBB2 ERBB2          c1 14.743715 0.6902759   0.8864028   0.6902759</span></span>
 <span><span class="co">## FOXA1 FOXA1          c1 10.225876 0.9041274   0.9547929   0.9041274</span></span>
 <span><span class="co">## KRT7   KRT7          c1 14.158329 0.9336543   0.9541634   0.9336543</span></span></code></pre>
-<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># the full result table </span></span>
 <span><span class="va">rep1_full_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_full_mg.html">get_full_mg</a></span><span class="op">(</span><span class="va">rep1_lasso_with_nc</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">rep1_full_df</span><span class="op">)</span></span></code></pre></div>
@@ -1150,7 +1152,7 @@ approach<a class="anchor" aria-label="anchor" href="#visualise-top-marker-genes-
 <p>We can rank the marker genes by its linear model coefficient to the
 cluster ans plot the transcript detection coordinates for the top three
 marker genes for every cluster.</p>
-<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cluster_names</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"c"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">8</span>, sep<span class="op">=</span><span class="st">""</span><span class="op">)</span></span>
 <span><span class="kw">for</span> <span class="op">(</span><span class="va">cl</span> <span class="kw">in</span> <span class="fu"><a href="https://generics.r-lib.org/reference/setops.html" class="external-link">setdiff</a></span><span class="op">(</span><span class="va">cluster_names</span>,<span class="st">"NoSig"</span><span class="op">)</span><span class="op">)</span><span class="op">{</span></span>
 <span>    <span class="va">inters</span><span class="op">&lt;-</span><span class="va">rep1_top_df_nc</span><span class="op">[</span><span class="va">rep1_top_df_nc</span><span class="op">$</span><span class="va">top_cluster</span><span class="op">==</span><span class="va">cl</span>,<span class="st">"gene"</span><span class="op">]</span></span>
@@ -1194,7 +1196,7 @@ marker genes for every cluster.</p>
 <span>        <span class="va">layout_design</span> <span class="op">&lt;-</span> <span class="va">lyt</span> <span class="op">+</span> <span class="fu">patchwork</span><span class="fu">::</span><span class="fu"><a href="https://patchwork.data-imaginist.com/reference/plot_layout.html" class="external-link">plot_layout</a></span><span class="op">(</span>widths <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">3</span><span class="op">)</span><span class="op">)</span> </span>
 <span>        <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">layout_design</span><span class="op">)</span></span>
 <span><span class="op">}</span><span class="op">}</span></span></code></pre></div>
-<p><img src="jazzPanda_files/figure-html/lasso-rep1%20vis-1.png" width="576"><img src="jazzPanda_files/figure-html/lasso-rep1%20vis-2.png" width="576"><img src="jazzPanda_files/figure-html/lasso-rep1%20vis-3.png" width="576"><img src="jazzPanda_files/figure-html/lasso-rep1%20vis-4.png" width="576"><img src="jazzPanda_files/figure-html/lasso-rep1%20vis-5.png" width="576"><img src="jazzPanda_files/figure-html/lasso-rep1%20vis-6.png" width="576"><img src="jazzPanda_files/figure-html/lasso-rep1%20vis-7.png" width="576"></p>
+<p><img src="jazzPanda_files/figure-html/lasso-rep1%20vis-1.png" class="r-plt" width="576"><img src="jazzPanda_files/figure-html/lasso-rep1%20vis-2.png" class="r-plt" width="576"><img src="jazzPanda_files/figure-html/lasso-rep1%20vis-3.png" class="r-plt" width="576"><img src="jazzPanda_files/figure-html/lasso-rep1%20vis-4.png" class="r-plt" width="576"><img src="jazzPanda_files/figure-html/lasso-rep1%20vis-5.png" class="r-plt" width="576"><img src="jazzPanda_files/figure-html/lasso-rep1%20vis-6.png" class="r-plt" width="576"><img src="jazzPanda_files/figure-html/lasso-rep1%20vis-7.png" class="r-plt" width="576"></p>
 </div>
 <div class="section level5">
 <h5 id="visualise-cluster-vector-and-the-top-marker-genes-at-spatial-vector-level-1">Visualise cluster vector and the top marker genes at spatial vector
@@ -1204,7 +1206,7 @@ level<a class="anchor" aria-label="anchor" href="#visualise-cluster-vector-and-t
 (detected by the linear modelling approach) on y-axis to validate the
 linear relationship assumption between the cluster vector and the marker
 gene vectors.</p>
-<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cluster_names</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"c"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">8</span>, sep<span class="op">=</span><span class="st">""</span><span class="op">)</span></span>
 <span><span class="va">plot_lst</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="kw">for</span> <span class="op">(</span><span class="va">cl</span> <span class="kw">in</span> <span class="va">cluster_names</span><span class="op">)</span><span class="op">{</span></span>
@@ -1257,7 +1259,7 @@ gene vectors.</p>
 <span>                            common.legend <span class="op">=</span> <span class="cn">FALSE</span>, legend <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">combined_plot</span> </span></code></pre></div>
-<p><img src="jazzPanda_files/figure-html/vvplot_glm-1.png" width="768"></p>
+<p><img src="jazzPanda_files/figure-html/vvplot_glm-1.png" class="r-plt" width="768"></p>
 </div>
 </div>
 </div>
@@ -1265,7 +1267,7 @@ gene vectors.</p>
 <h3 id="scenario-2-multiple-samples">Scenario 2: multiple samples<a class="anchor" aria-label="anchor" href="#scenario-2-multiple-samples"></a>
 </h3>
 <p>Load the replicate 2 from sample 1.</p>
-<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">rep2_sub</span>, <span class="va">rep2_clusters</span>, <span class="va">rep2_neg</span><span class="op">)</span></span>
 <span><span class="va">rep2_clusters</span><span class="op">$</span><span class="va">cluster</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">rep2_clusters</span><span class="op">$</span><span class="va">cluster</span>,</span>
 <span>                            levels<span class="op">=</span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"c"</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">8</span>, sep<span class="op">=</span><span class="st">""</span><span class="op">)</span><span class="op">)</span></span>
@@ -1279,7 +1281,7 @@ gene vectors.</p>
 <span><span class="co">##         c1  c2  c3  c4  c5  c6  c7  c8</span></span>
 <span><span class="co">##   rep1 745 205 221 127  87 176  45  99</span></span>
 <span><span class="co">##   rep2  27 476 313 190 360 256  99  94</span></span></code></pre>
-<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb47"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># record the transcript coordinates for rep2</span></span>
 <span><span class="va">rep2_transcripts</span> <span class="op">&lt;-</span><span class="fu">BumpyMatrix</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BumpyMatrix/man/unsplitAsDataFrame.html" class="external-link">unsplitAsDataFrame</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/SpatialExperiment/man/SpatialExperiment-assays.html" class="external-link">molecules</a></span><span class="op">(</span><span class="va">rep2_sub</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">rep2_transcripts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">rep2_transcripts</span><span class="op">)</span></span>
@@ -1293,7 +1295,7 @@ gene vectors.</p>
 </h5>
 <p>We can plot the coordinates of cells for every cluster in every
 replicate</p>
-<div class="sourceCode" id="cb46"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb48"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">rep_clusters</span>,</span>
 <span>        <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">x</span>, y <span class="op">=</span> <span class="va">y</span>, color<span class="op">=</span><span class="va">cluster</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
 <span>        <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>position<span class="op">=</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/position_jitterdodge.html" class="external-link">position_jitterdodge</a></span><span class="op">(</span>jitter.width<span class="op">=</span><span class="fl">0</span>, </span>
@@ -1323,7 +1325,7 @@ replicate</p>
 <span>            strip.text <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">rel</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
 <span>        <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="st">""</span><span class="op">)</span><span class="op">+</span></span>
 <span>        <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="st">""</span><span class="op">)</span></span></code></pre></div>
-<p><img src="jazzPanda_files/figure-html/tworep%20cluster%20vis-1.png" width="768"></p>
+<p><img src="jazzPanda_files/figure-html/tworep%20cluster%20vis-1.png" class="r-plt" width="768"></p>
 <p>When we have multiple replicates in the dataset, we can find marker
 genes by providing additional sample information as the input for the
 function <code>lasso_markers</code>.</p>
@@ -1337,7 +1339,7 @@ are calculated from the the same <code>get_vector()</code> call so they
 share the exact same auto-detected bounding box. Mixing outputs from
 separate calls can misalign the spatial bins and lead to incorrect
 results.</p>
-<div class="sourceCode" id="cb47"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb49"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">grid_length</span><span class="op">&lt;-</span><span class="fl">10</span></span>
 <span><span class="va">twosample_spe</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="va">rep1_sub</span>, <span class="va">rep2_sub</span><span class="op">)</span></span>
 <span><span class="co"># get spatial vectors</span></span>
@@ -1377,7 +1379,7 @@ results.</p>
 <pre><code><span><span class="co">## </span></span>
 <span><span class="co">## c1 c2 c3 c4 c5 c6 c7 c8 </span></span>
 <span><span class="co">##  3  2  3  3  2  2  2  3</span></span></code></pre>
-<div class="sourceCode" id="cb49"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb51"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">tworep_res</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##        gene top_cluster  glm_coef   pearson max_gg_corr max_gc_corr</span></span>
 <span><span class="co">## CD68   CD68          c4  2.867318 0.6989050   0.6511176   0.6989050</span></span>
@@ -1396,7 +1398,7 @@ results.</p>
 <div class="section level5">
 <h5 id="visualise-the-top-marker-genes-for-each-cluster">Visualise the top marker genes for each cluster<a class="anchor" aria-label="anchor" href="#visualise-the-top-marker-genes-for-each-cluster"></a>
 </h5>
-<div class="sourceCode" id="cb51"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb53"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw">for</span> <span class="op">(</span><span class="va">cl</span> <span class="kw">in</span> <span class="va">all_celltypes</span><span class="op">$</span><span class="va">anno</span><span class="op">)</span><span class="op">{</span></span>
 <span>    <span class="va">inters</span><span class="op">&lt;-</span><span class="va">tworep_res</span><span class="op">[</span><span class="va">tworep_res</span><span class="op">$</span><span class="va">celltype</span><span class="op">==</span><span class="va">cl</span>,<span class="st">"gene"</span><span class="op">]</span></span>
 <span>    <span class="va">rounded_val</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">signif</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">tworep_res</span><span class="op">[</span><span class="va">inters</span>,<span class="st">"glm_coef"</span><span class="op">]</span><span class="op">)</span>,</span>
@@ -1460,7 +1462,7 @@ results.</p>
 <span></span>
 <span>        <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">layout_design</span><span class="op">)</span></span>
 <span><span class="op">}</span><span class="op">}</span></span></code></pre></div>
-<p><img src="jazzPanda_files/figure-html/top3%20marker%20gene-1.png" width="576"><img src="jazzPanda_files/figure-html/top3%20marker%20gene-2.png" width="576"><img src="jazzPanda_files/figure-html/top3%20marker%20gene-3.png" width="576"><img src="jazzPanda_files/figure-html/top3%20marker%20gene-4.png" width="576"><img src="jazzPanda_files/figure-html/top3%20marker%20gene-5.png" width="576"><img src="jazzPanda_files/figure-html/top3%20marker%20gene-6.png" width="576"><img src="jazzPanda_files/figure-html/top3%20marker%20gene-7.png" width="576"><img src="jazzPanda_files/figure-html/top3%20marker%20gene-8.png" width="576"></p>
+<p><img src="jazzPanda_files/figure-html/top3%20marker%20gene-1.png" class="r-plt" width="576"><img src="jazzPanda_files/figure-html/top3%20marker%20gene-2.png" class="r-plt" width="576"><img src="jazzPanda_files/figure-html/top3%20marker%20gene-3.png" class="r-plt" width="576"><img src="jazzPanda_files/figure-html/top3%20marker%20gene-4.png" class="r-plt" width="576"><img src="jazzPanda_files/figure-html/top3%20marker%20gene-5.png" class="r-plt" width="576"><img src="jazzPanda_files/figure-html/top3%20marker%20gene-6.png" class="r-plt" width="576"><img src="jazzPanda_files/figure-html/top3%20marker%20gene-7.png" class="r-plt" width="576"><img src="jazzPanda_files/figure-html/top3%20marker%20gene-8.png" class="r-plt" width="576"></p>
 </div>
 <div class="section level5">
 <h5 id="visualise-cluster-vector-and-the-top-marker-genes-at-spatial-vector-level-2">Visualise cluster vector and the top marker genes at spatial vector
@@ -1469,7 +1471,7 @@ level<a class="anchor" aria-label="anchor" href="#visualise-cluster-vector-and-t
 <p>The figure below shows the relationship between the cluster vector
 and the top marker gene vectors detected by linear modelling approach by
 accounting for multiple samples and background noise</p>
-<div class="sourceCode" id="cb52"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb54"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cluster_names</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"c"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">8</span>, sep<span class="op">=</span><span class="st">""</span><span class="op">)</span></span>
 <span><span class="va">plot_lst</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="kw">for</span> <span class="op">(</span><span class="va">cl</span> <span class="kw">in</span> <span class="va">cluster_names</span><span class="op">)</span><span class="op">{</span></span>
@@ -1525,7 +1527,7 @@ accounting for multiple samples and background noise</p>
 <span>                            common.legend <span class="op">=</span> <span class="cn">TRUE</span>, legend <span class="op">=</span> <span class="st">"top"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">combined_plot</span> </span></code></pre></div>
-<p><img src="jazzPanda_files/figure-html/vvplot_twosample-1.png" width="768"></p>
+<p><img src="jazzPanda_files/figure-html/vvplot_twosample-1.png" class="r-plt" width="768"></p>
 </div>
 </div>
 </div>
@@ -1533,11 +1535,11 @@ accounting for multiple samples and background noise</p>
 <div class="section level2">
 <h2 id="session-info">Session Info<a class="anchor" aria-label="anchor" href="#session-info"></a>
 </h2>
-<div class="sourceCode" id="cb53"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb55"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## R version 4.5.1 (2025-06-13)</span></span>
+<pre><code><span><span class="co">## R version 4.5.2 (2025-10-31)</span></span>
 <span><span class="co">## Platform: x86_64-pc-linux-gnu</span></span>
-<span><span class="co">## Running under: Ubuntu 24.04.2 LTS</span></span>
+<span><span class="co">## Running under: Ubuntu 24.04.3 LTS</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## Matrix products: default</span></span>
 <span><span class="co">## BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3 </span></span>
@@ -1557,121 +1559,121 @@ accounting for multiple samples and background noise</p>
 <span><span class="co">## [8] methods   base     </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## other attached packages:</span></span>
-<span><span class="co">##  [1] scater_1.36.0                   scran_1.36.0                   </span></span>
-<span><span class="co">##  [3] scuttle_1.18.0                  TENxXeniumData_1.4.0           </span></span>
-<span><span class="co">##  [5] ExperimentHub_2.16.1            AnnotationHub_3.16.1           </span></span>
-<span><span class="co">##  [7] BiocFileCache_2.16.1            dbplyr_2.5.0                   </span></span>
-<span><span class="co">##  [9] SpatialFeatureExperiment_1.10.1 ggpubr_0.6.1                   </span></span>
-<span><span class="co">## [11] tidyr_1.3.1                     spatstat_3.4-0                 </span></span>
-<span><span class="co">## [13] spatstat.linnet_3.3-1           spatstat.model_3.4-0           </span></span>
-<span><span class="co">## [15] rpart_4.1.24                    spatstat.explore_3.5-2         </span></span>
-<span><span class="co">## [17] nlme_3.1-168                    spatstat.random_3.4-1          </span></span>
-<span><span class="co">## [19] spatstat.geom_3.5-0             spatstat.univar_3.1-4          </span></span>
-<span><span class="co">## [21] spatstat.data_3.1-8             gridExtra_2.3                  </span></span>
-<span><span class="co">## [23] ggrepel_0.9.6                   ggraph_2.2.1                   </span></span>
-<span><span class="co">## [25] igraph_2.1.4                    corrplot_0.95                  </span></span>
+<span><span class="co">##  [1] scater_1.38.0                   scran_1.38.0                   </span></span>
+<span><span class="co">##  [3] scuttle_1.20.0                  TENxXeniumData_1.6.0           </span></span>
+<span><span class="co">##  [5] ExperimentHub_3.0.0             AnnotationHub_4.0.0            </span></span>
+<span><span class="co">##  [7] BiocFileCache_3.0.0             dbplyr_2.5.1                   </span></span>
+<span><span class="co">##  [9] SpatialFeatureExperiment_1.12.1 ggpubr_0.6.2                   </span></span>
+<span><span class="co">## [11] tidyr_1.3.1                     spatstat_3.4-1                 </span></span>
+<span><span class="co">## [13] spatstat.linnet_3.3-2           spatstat.model_3.4-2           </span></span>
+<span><span class="co">## [15] rpart_4.1.24                    spatstat.explore_3.5-3         </span></span>
+<span><span class="co">## [17] nlme_3.1-168                    spatstat.random_3.4-2          </span></span>
+<span><span class="co">## [19] spatstat.geom_3.6-0             spatstat.univar_3.1-5          </span></span>
+<span><span class="co">## [21] spatstat.data_3.1-9             gridExtra_2.3                  </span></span>
+<span><span class="co">## [23] ggrepel_0.9.6                   ggraph_2.2.2                   </span></span>
+<span><span class="co">## [25] igraph_2.2.1                    corrplot_0.95                  </span></span>
 <span><span class="co">## [27] caret_7.0-1                     lattice_0.22-7                 </span></span>
-<span><span class="co">## [29] glmnet_4.1-10                   Matrix_1.7-3                   </span></span>
+<span><span class="co">## [29] glmnet_4.1-10                   Matrix_1.7-4                   </span></span>
 <span><span class="co">## [31] dplyr_1.1.4                     data.table_1.17.8              </span></span>
-<span><span class="co">## [33] ggplot2_3.5.2                   SpatialExperiment_1.18.1       </span></span>
-<span><span class="co">## [35] SingleCellExperiment_1.30.1     SummarizedExperiment_1.38.1    </span></span>
-<span><span class="co">## [37] Biobase_2.68.0                  GenomicRanges_1.60.0           </span></span>
-<span><span class="co">## [39] GenomeInfoDb_1.44.2             IRanges_2.42.0                 </span></span>
-<span><span class="co">## [41] S4Vectors_0.46.0                BiocGenerics_0.54.0            </span></span>
-<span><span class="co">## [43] generics_0.1.4                  MatrixGenerics_1.20.0          </span></span>
-<span><span class="co">## [45] matrixStats_1.5.0               jazzPanda_0.2.4                </span></span>
+<span><span class="co">## [33] ggplot2_4.0.1                   SpatialExperiment_1.20.0       </span></span>
+<span><span class="co">## [35] SingleCellExperiment_1.32.0     SummarizedExperiment_1.40.0    </span></span>
+<span><span class="co">## [37] Biobase_2.70.0                  GenomicRanges_1.62.0           </span></span>
+<span><span class="co">## [39] Seqinfo_1.0.0                   IRanges_2.44.0                 </span></span>
+<span><span class="co">## [41] S4Vectors_0.48.0                BiocGenerics_0.56.0            </span></span>
+<span><span class="co">## [43] generics_0.1.4                  MatrixGenerics_1.22.0          </span></span>
+<span><span class="co">## [45] matrixStats_1.5.0               jazzPanda_1.3.0                </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## loaded via a namespace (and not attached):</span></span>
-<span><span class="co">##   [1] fs_1.6.6                  spatialreg_1.3-6         </span></span>
+<span><span class="co">##   [1] fs_1.6.6                  spatialreg_1.4-2         </span></span>
 <span><span class="co">##   [3] spatstat.sparse_3.1-0     bitops_1.0-9             </span></span>
-<span><span class="co">##   [5] sf_1.0-21                 EBImage_4.50.0           </span></span>
+<span><span class="co">##   [5] sf_1.0-22                 EBImage_4.52.0           </span></span>
 <span><span class="co">##   [7] lubridate_1.9.4           doParallel_1.0.17        </span></span>
 <span><span class="co">##   [9] httr_1.4.7                RColorBrewer_1.1-3       </span></span>
-<span><span class="co">##  [11] tools_4.5.1               backports_1.5.0          </span></span>
-<span><span class="co">##  [13] R6_2.6.1                  HDF5Array_1.36.0         </span></span>
-<span><span class="co">##  [15] mgcv_1.9-3                rhdf5filters_1.20.0      </span></span>
+<span><span class="co">##  [11] tools_4.5.2               backports_1.5.0          </span></span>
+<span><span class="co">##  [13] R6_2.6.1                  HDF5Array_1.38.0         </span></span>
+<span><span class="co">##  [15] mgcv_1.9-3                rhdf5filters_1.22.0      </span></span>
 <span><span class="co">##  [17] withr_3.0.2               sp_2.2-0                 </span></span>
-<span><span class="co">##  [19] cli_3.6.5                 textshaping_1.0.1        </span></span>
+<span><span class="co">##  [19] cli_3.6.5                 textshaping_1.0.4        </span></span>
 <span><span class="co">##  [21] sandwich_3.1-1            labeling_0.4.3           </span></span>
 <span><span class="co">##  [23] sass_0.4.10               mvtnorm_1.3-3            </span></span>
-<span><span class="co">##  [25] proxy_0.4-27              pkgdown_2.1.3            </span></span>
-<span><span class="co">##  [27] systemfonts_1.2.3         R.utils_2.13.0           </span></span>
-<span><span class="co">##  [29] parallelly_1.45.1         limma_3.64.3             </span></span>
-<span><span class="co">##  [31] RSQLite_2.4.2             shape_1.4.6.1            </span></span>
-<span><span class="co">##  [33] car_3.1-3                 spdep_1.3-13             </span></span>
-<span><span class="co">##  [35] ggbeeswarm_0.7.2          abind_1.4-8              </span></span>
-<span><span class="co">##  [37] R.methodsS3_1.8.2         terra_1.8-60             </span></span>
-<span><span class="co">##  [39] lifecycle_1.0.4           multcomp_1.4-28          </span></span>
-<span><span class="co">##  [41] yaml_2.3.10               edgeR_4.6.3              </span></span>
-<span><span class="co">##  [43] carData_3.0-5             rhdf5_2.52.1             </span></span>
-<span><span class="co">##  [45] recipes_1.3.1             SparseArray_1.8.1        </span></span>
-<span><span class="co">##  [47] blob_1.2.4                dqrng_0.4.1              </span></span>
-<span><span class="co">##  [49] crayon_1.5.3              cowplot_1.2.0            </span></span>
-<span><span class="co">##  [51] beachmat_2.24.0           KEGGREST_1.48.1          </span></span>
-<span><span class="co">##  [53] magick_2.8.7              metapod_1.16.0           </span></span>
-<span><span class="co">##  [55] zeallot_0.2.0             pillar_1.11.0            </span></span>
-<span><span class="co">##  [57] knitr_1.50                rjson_0.2.23             </span></span>
-<span><span class="co">##  [59] boot_1.3-31               future.apply_1.20.0      </span></span>
-<span><span class="co">##  [61] codetools_0.2-20          wk_0.9.4                 </span></span>
-<span><span class="co">##  [63] glue_1.8.0                vctrs_0.6.5              </span></span>
-<span><span class="co">##  [65] png_0.1-8                 gtable_0.3.6             </span></span>
-<span><span class="co">##  [67] cachem_1.1.0              gower_1.0.2              </span></span>
-<span><span class="co">##  [69] xfun_0.53                 mime_0.13                </span></span>
-<span><span class="co">##  [71] S4Arrays_1.8.1            prodlim_2025.04.28       </span></span>
-<span><span class="co">##  [73] DropletUtils_1.28.1       tidygraph_1.3.1          </span></span>
+<span><span class="co">##  [25] S7_0.2.1                  proxy_0.4-27             </span></span>
+<span><span class="co">##  [27] pkgdown_2.2.0             systemfonts_1.3.1        </span></span>
+<span><span class="co">##  [29] R.utils_2.13.0            parallelly_1.45.1        </span></span>
+<span><span class="co">##  [31] limma_3.66.0              RSQLite_2.4.4            </span></span>
+<span><span class="co">##  [33] shape_1.4.6.1             car_3.1-3                </span></span>
+<span><span class="co">##  [35] spdep_1.4-1               ggbeeswarm_0.7.2         </span></span>
+<span><span class="co">##  [37] abind_1.4-8               terra_1.8-80             </span></span>
+<span><span class="co">##  [39] R.methodsS3_1.8.2         lifecycle_1.0.4          </span></span>
+<span><span class="co">##  [41] multcomp_1.4-29           yaml_2.3.10              </span></span>
+<span><span class="co">##  [43] edgeR_4.8.0               carData_3.0-5            </span></span>
+<span><span class="co">##  [45] rhdf5_2.54.0              recipes_1.3.1            </span></span>
+<span><span class="co">##  [47] SparseArray_1.10.1        blob_1.2.4               </span></span>
+<span><span class="co">##  [49] dqrng_0.4.1               crayon_1.5.3             </span></span>
+<span><span class="co">##  [51] cowplot_1.2.0             beachmat_2.26.0          </span></span>
+<span><span class="co">##  [53] KEGGREST_1.50.0           magick_2.9.0             </span></span>
+<span><span class="co">##  [55] metapod_1.18.0            zeallot_0.2.0            </span></span>
+<span><span class="co">##  [57] pillar_1.11.1             knitr_1.50               </span></span>
+<span><span class="co">##  [59] rjson_0.2.23              boot_1.3-32              </span></span>
+<span><span class="co">##  [61] future.apply_1.20.0       codetools_0.2-20         </span></span>
+<span><span class="co">##  [63] wk_0.9.4                  glue_1.8.0               </span></span>
+<span><span class="co">##  [65] vctrs_0.6.5               png_0.1-8                </span></span>
+<span><span class="co">##  [67] gtable_0.3.6              cachem_1.1.0             </span></span>
+<span><span class="co">##  [69] gower_1.0.2               xfun_0.54                </span></span>
+<span><span class="co">##  [71] S4Arrays_1.10.0           prodlim_2025.04.28       </span></span>
+<span><span class="co">##  [73] DropletUtils_1.30.0       tidygraph_1.3.1          </span></span>
 <span><span class="co">##  [75] coda_0.19-4.1             survival_3.8-3           </span></span>
-<span><span class="co">##  [77] timeDate_4041.110         sfheaders_0.4.4          </span></span>
-<span><span class="co">##  [79] iterators_1.0.14          hardhat_1.4.1            </span></span>
-<span><span class="co">##  [81] units_0.8-7               lava_1.8.1               </span></span>
-<span><span class="co">##  [83] bluster_1.18.0            statmod_1.5.0            </span></span>
-<span><span class="co">##  [85] TH.data_1.1-3             ipred_0.9-15             </span></span>
+<span><span class="co">##  [77] timeDate_4051.111         sfheaders_0.4.4          </span></span>
+<span><span class="co">##  [79] iterators_1.0.14          hardhat_1.4.2            </span></span>
+<span><span class="co">##  [81] units_1.0-0               lava_1.8.2               </span></span>
+<span><span class="co">##  [83] bluster_1.20.0            statmod_1.5.1            </span></span>
+<span><span class="co">##  [85] TH.data_1.1-5             ipred_0.9-15             </span></span>
 <span><span class="co">##  [87] bit64_4.6.0-1             filelock_1.0.3           </span></span>
-<span><span class="co">##  [89] BumpyMatrix_1.16.0        bslib_0.9.0              </span></span>
+<span><span class="co">##  [89] BumpyMatrix_1.18.0        bslib_0.9.0              </span></span>
 <span><span class="co">##  [91] irlba_2.3.5.1             vipor_0.4.7              </span></span>
 <span><span class="co">##  [93] KernSmooth_2.23-26        spData_2.3.4             </span></span>
 <span><span class="co">##  [95] DBI_1.2.3                 nnet_7.3-20              </span></span>
 <span><span class="co">##  [97] tidyselect_1.2.1          curl_7.0.0               </span></span>
-<span><span class="co">##  [99] bit_4.6.0                 compiler_4.5.1           </span></span>
-<span><span class="co">## [101] BiocNeighbors_2.2.0       h5mread_1.0.1            </span></span>
-<span><span class="co">## [103] desc_1.4.3                DelayedArray_0.34.1      </span></span>
-<span><span class="co">## [105] scales_1.4.0              classInt_0.4-11          </span></span>
-<span><span class="co">## [107] rappdirs_0.3.3            tiff_0.1-12              </span></span>
-<span><span class="co">## [109] stringr_1.5.1             digest_0.6.37            </span></span>
-<span><span class="co">## [111] goftest_1.2-3             fftwtools_0.9-11         </span></span>
-<span><span class="co">## [113] spatstat.utils_3.1-5      rmarkdown_2.29           </span></span>
-<span><span class="co">## [115] XVector_0.48.0            htmltools_0.5.8.1        </span></span>
-<span><span class="co">## [117] pkgconfig_2.0.3           jpeg_0.1-11              </span></span>
-<span><span class="co">## [119] sparseMatrixStats_1.20.0  fastmap_1.2.0            </span></span>
-<span><span class="co">## [121] rlang_1.1.6               htmlwidgets_1.6.4        </span></span>
-<span><span class="co">## [123] UCSC.utils_1.4.0          DelayedMatrixStats_1.30.0</span></span>
+<span><span class="co">##  [99] bit_4.6.0                 compiler_4.5.2           </span></span>
+<span><span class="co">## [101] httr2_1.2.1               BiocNeighbors_2.4.0      </span></span>
+<span><span class="co">## [103] h5mread_1.2.0             desc_1.4.3               </span></span>
+<span><span class="co">## [105] DelayedArray_0.36.0       scales_1.4.0             </span></span>
+<span><span class="co">## [107] classInt_0.4-11           rappdirs_0.3.3           </span></span>
+<span><span class="co">## [109] tiff_0.1-12               stringr_1.6.0            </span></span>
+<span><span class="co">## [111] digest_0.6.38             goftest_1.2-3            </span></span>
+<span><span class="co">## [113] fftwtools_0.9-11          spatstat.utils_3.2-0     </span></span>
+<span><span class="co">## [115] rmarkdown_2.30            XVector_0.50.0           </span></span>
+<span><span class="co">## [117] htmltools_0.5.8.1         pkgconfig_2.0.3          </span></span>
+<span><span class="co">## [119] jpeg_0.1-11               sparseMatrixStats_1.22.0 </span></span>
+<span><span class="co">## [121] fastmap_1.2.0             rlang_1.1.6              </span></span>
+<span><span class="co">## [123] htmlwidgets_1.6.4         DelayedMatrixStats_1.32.0</span></span>
 <span><span class="co">## [125] farver_2.1.2              jquerylib_0.1.4          </span></span>
 <span><span class="co">## [127] zoo_1.8-14                jsonlite_2.0.0           </span></span>
-<span><span class="co">## [129] BiocParallel_1.42.1       ModelMetrics_1.2.2.2     </span></span>
-<span><span class="co">## [131] R.oo_1.27.1               BiocSingular_1.24.0      </span></span>
-<span><span class="co">## [133] RCurl_1.98-1.17           magrittr_2.0.3           </span></span>
-<span><span class="co">## [135] Formula_1.2-5             GenomeInfoDbData_1.2.14  </span></span>
-<span><span class="co">## [137] s2_1.1.9                  patchwork_1.3.1          </span></span>
-<span><span class="co">## [139] Rhdf5lib_1.30.0           Rcpp_1.1.0               </span></span>
-<span><span class="co">## [141] viridis_0.6.5             stringi_1.8.7            </span></span>
-<span><span class="co">## [143] pROC_1.19.0.1             MASS_7.3-65              </span></span>
-<span><span class="co">## [145] plyr_1.8.9                parallel_4.5.1           </span></span>
-<span><span class="co">## [147] listenv_0.9.1             deldir_2.0-4             </span></span>
-<span><span class="co">## [149] Biostrings_2.76.0         graphlayouts_1.2.2       </span></span>
-<span><span class="co">## [151] splines_4.5.1             tensor_1.5.1             </span></span>
-<span><span class="co">## [153] locfit_1.5-9.12           ggsignif_0.6.4           </span></span>
-<span><span class="co">## [155] ScaledMatrix_1.16.0       reshape2_1.4.4           </span></span>
-<span><span class="co">## [157] LearnBayes_2.15.1         BiocVersion_3.21.1       </span></span>
-<span><span class="co">## [159] evaluate_1.0.4            BiocManager_1.30.26      </span></span>
-<span><span class="co">## [161] foreach_1.5.2             tweenr_2.0.3             </span></span>
-<span><span class="co">## [163] purrr_1.1.0               polyclip_1.10-7          </span></span>
-<span><span class="co">## [165] future_1.67.0             ggforce_0.5.0            </span></span>
-<span><span class="co">## [167] rsvd_1.0.5                broom_1.0.9              </span></span>
-<span><span class="co">## [169] e1071_1.7-16              rstatix_0.7.2            </span></span>
-<span><span class="co">## [171] viridisLite_0.4.2         class_7.3-23             </span></span>
-<span><span class="co">## [173] ragg_1.4.0                tibble_3.3.0             </span></span>
-<span><span class="co">## [175] beeswarm_0.4.0            AnnotationDbi_1.70.0     </span></span>
-<span><span class="co">## [177] memoise_2.0.1             cluster_2.1.8.1          </span></span>
-<span><span class="co">## [179] timechange_0.3.0          globals_0.18.0</span></span></code></pre>
+<span><span class="co">## [129] BiocParallel_1.44.0       ModelMetrics_1.2.2.2     </span></span>
+<span><span class="co">## [131] R.oo_1.27.1               BiocSingular_1.26.0      </span></span>
+<span><span class="co">## [133] RCurl_1.98-1.17           magrittr_2.0.4           </span></span>
+<span><span class="co">## [135] Formula_1.2-5             s2_1.1.9                 </span></span>
+<span><span class="co">## [137] patchwork_1.3.2           Rhdf5lib_1.32.0          </span></span>
+<span><span class="co">## [139] Rcpp_1.1.0                viridis_0.6.5            </span></span>
+<span><span class="co">## [141] stringi_1.8.7             pROC_1.19.0.1            </span></span>
+<span><span class="co">## [143] MASS_7.3-65               plyr_1.8.9               </span></span>
+<span><span class="co">## [145] parallel_4.5.2            listenv_0.10.0           </span></span>
+<span><span class="co">## [147] deldir_2.0-4              Biostrings_2.78.0        </span></span>
+<span><span class="co">## [149] graphlayouts_1.2.2        splines_4.5.2            </span></span>
+<span><span class="co">## [151] tensor_1.5.1              locfit_1.5-9.12          </span></span>
+<span><span class="co">## [153] ggsignif_0.6.4            ScaledMatrix_1.18.0      </span></span>
+<span><span class="co">## [155] reshape2_1.4.5            LearnBayes_2.15.1        </span></span>
+<span><span class="co">## [157] BiocVersion_3.22.0        evaluate_1.0.5           </span></span>
+<span><span class="co">## [159] BiocManager_1.30.27       foreach_1.5.2            </span></span>
+<span><span class="co">## [161] tweenr_2.0.3              purrr_1.2.0              </span></span>
+<span><span class="co">## [163] polyclip_1.10-7           future_1.68.0            </span></span>
+<span><span class="co">## [165] ggforce_0.5.0             rsvd_1.0.5               </span></span>
+<span><span class="co">## [167] broom_1.0.10              e1071_1.7-16             </span></span>
+<span><span class="co">## [169] rstatix_0.7.3             viridisLite_0.4.2        </span></span>
+<span><span class="co">## [171] class_7.3-23              ragg_1.5.0               </span></span>
+<span><span class="co">## [173] tibble_3.3.0              beeswarm_0.4.0           </span></span>
+<span><span class="co">## [175] AnnotationDbi_1.72.0      memoise_2.0.1            </span></span>
+<span><span class="co">## [177] cluster_2.1.8.1           timechange_0.3.0         </span></span>
+<span><span class="co">## [179] globals_0.18.0</span></span></code></pre>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
@@ -1684,7 +1686,7 @@ accounting for multiple samples and background noise</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>
